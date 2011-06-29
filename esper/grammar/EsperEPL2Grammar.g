@@ -1654,12 +1654,12 @@ expressionList
     	;
    	
 expressionWithTimeList
-    	:   	expressionWithTime (COMMA! expressionWithTime)*
+    	:   	expressionWithTimeInclLast (COMMA! expressionWithTimeInclLast)*
     	;
 
 expressionWithTime
-	:   	(lastOperand) => lastOperand
-	|	(lastWeekdayOperand) => lastWeekdayOperand
+	:   	
+		(lastWeekdayOperand) => lastWeekdayOperand
 	|	(timePeriod) => timePeriod
 	|	(expressionQualifyable) => expressionQualifyable
 	|	(rangeOperand) => rangeOperand
@@ -1668,6 +1668,11 @@ expressionWithTime
 	|	(weekDayOperator) =>  weekDayOperator
 	| 	(numericParameterList) => numericParameterList
 	|	numberSetStar
+	;
+
+expressionWithTimeInclLast
+	:   	(lastOperand) => lastOperand
+	|	expressionWithTime
 	;
 
 expressionQualifyable

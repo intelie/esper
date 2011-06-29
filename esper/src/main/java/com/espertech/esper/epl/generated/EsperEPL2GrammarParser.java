@@ -834,14 +834,14 @@ public class EsperEPL2GrammarParser extends Parser {
                 int LA3_2 = input.LA(2);
                 if ( (LA3_2==IDENT) ) {
                     int LA3_117 = input.LA(3);
-                    if ( (LA3_117==COMMA) ) {
-                        alt3=1;
-                    }
-                    else if ( (LA3_117==RPAREN) ) {
-                        int LA3_175 = input.LA(4);
-                        if ( (LA3_175==GOES) ) {
+                    if ( (LA3_117==RPAREN) ) {
+                        int LA3_197 = input.LA(4);
+                        if ( (LA3_197==GOES) ) {
                             alt3=1;
                         }
+                    }
+                    else if ( (LA3_117==COMMA) ) {
+                        alt3=1;
                     }
                 }
             }
@@ -1031,10 +1031,10 @@ public class EsperEPL2GrammarParser extends Parser {
             if ( (LA6_0==LPAREN) ) {
                 int LA6_1 = input.LA(2);
                 if ( (LA6_1==IDENT) ) {
-                    int LA6_14 = input.LA(3);
-                    if ( (LA6_14==EQUALS) ) {
-                        int LA6_32 = input.LA(4);
-                        if ( ((LA6_32>=BOOLEAN_TRUE && LA6_32<=VALUE_NULL)||LA6_32==NUM_DOUBLE||LA6_32==LCURLY||LA6_32==PLUS||(LA6_32>=STRING_LITERAL && LA6_32<=QUOTED_STRING_LITERAL)||LA6_32==MINUS||LA6_32==NUM_INT||LA6_32==ATCHAR||(LA6_32>=NUM_LONG && LA6_32<=NUM_FLOAT)) ) {
+                    int LA6_10 = input.LA(3);
+                    if ( (LA6_10==EQUALS) ) {
+                        int LA6_31 = input.LA(4);
+                        if ( ((LA6_31>=BOOLEAN_TRUE && LA6_31<=VALUE_NULL)||LA6_31==NUM_DOUBLE||LA6_31==LCURLY||LA6_31==PLUS||(LA6_31>=STRING_LITERAL && LA6_31<=QUOTED_STRING_LITERAL)||LA6_31==MINUS||LA6_31==NUM_INT||LA6_31==ATCHAR||(LA6_31>=NUM_LONG && LA6_31<=NUM_FLOAT)) ) {
                             alt6=1;
                         }
                     }
@@ -9671,13 +9671,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     int LA146_0 = input.LA(1);
                     if ( (LA146_0==NUM_INT) ) {
                         int LA146_1 = input.LA(2);
-                        if ( (LA146_1==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
+                        if ( (LA146_1==EVENTS) ) {
+                            alt146=2;
+                        }
+                        else if ( (LA146_1==TIMEPERIOD_DAYS) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_1==TIMEPERIOD_MILLISECOND) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_1==TIMEPERIOD_MILLISEC) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_1==TIMEPERIOD_DAY) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else if ( (LA146_1==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
@@ -9685,30 +9685,6 @@ public class EsperEPL2GrammarParser extends Parser {
                         }
                         else if ( (LA146_1==TIMEPERIOD_HOUR) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
-                        }
-                        else if ( (LA146_1==TIMEPERIOD_WEEKS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_1==TIMEPERIOD_WEEK) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_1==TIMEPERIOD_MONTHS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_1==TIMEPERIOD_MONTH) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_1==TIMEPERIOD_SECONDS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_1==TIMEPERIOD_SECOND) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_1==TIMEPERIOD_SEC) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_1==EVENTS) ) {
-                            alt146=2;
                         }
                         else if ( (LA146_1==TIMEPERIOD_MINUTES) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
@@ -9725,10 +9701,34 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (LA146_1==TIMEPERIOD_YEAR) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_1==TIMEPERIOD_DAYS) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_1==TIMEPERIOD_SECONDS) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_1==TIMEPERIOD_DAY) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_1==TIMEPERIOD_SECOND) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_1==TIMEPERIOD_SEC) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_1==TIMEPERIOD_WEEKS) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_1==TIMEPERIOD_WEEK) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_1==TIMEPERIOD_MONTHS) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_1==TIMEPERIOD_MONTH) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_1==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_1==TIMEPERIOD_MILLISECOND) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_1==TIMEPERIOD_MILLISEC) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else {
@@ -9740,40 +9740,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     else if ( (LA146_0==NUM_LONG) ) {
                         int LA146_2 = input.LA(2);
-                        if ( (LA146_2==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
+                        if ( (LA146_2==EVENTS) ) {
+                            alt146=2;
+                        }
+                        else if ( (LA146_2==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else if ( (LA146_2==TIMEPERIOD_HOUR) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_2==TIMEPERIOD_WEEKS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_2==TIMEPERIOD_WEEK) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_2==TIMEPERIOD_SECONDS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_2==TIMEPERIOD_SECOND) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_2==TIMEPERIOD_SEC) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_2==TIMEPERIOD_MONTHS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_2==TIMEPERIOD_MONTH) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_2==EVENTS) ) {
-                            alt146=2;
-                        }
-                        else if ( (LA146_2==TIMEPERIOD_YEARS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_2==TIMEPERIOD_YEAR) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else if ( (LA146_2==TIMEPERIOD_DAYS) && (synpred2_EsperEPL2Grammar())) {
@@ -9791,6 +9764,21 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (LA146_2==TIMEPERIOD_MILLISEC) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
+                        else if ( (LA146_2==TIMEPERIOD_YEARS) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_2==TIMEPERIOD_YEAR) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_2==TIMEPERIOD_SECONDS) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_2==TIMEPERIOD_SECOND) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_2==TIMEPERIOD_SEC) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
                         else if ( (LA146_2==TIMEPERIOD_MINUTES) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
@@ -9798,6 +9786,18 @@ public class EsperEPL2GrammarParser extends Parser {
                             alt146=1;
                         }
                         else if ( (LA146_2==MIN) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_2==TIMEPERIOD_WEEKS) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_2==TIMEPERIOD_WEEK) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_2==TIMEPERIOD_MONTHS) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_2==TIMEPERIOD_MONTH) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else {
@@ -9809,19 +9809,16 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     else if ( (LA146_0==NUM_FLOAT) ) {
                         int LA146_3 = input.LA(2);
-                        if ( (LA146_3==TIMEPERIOD_SECONDS) && (synpred2_EsperEPL2Grammar())) {
+                        if ( (LA146_3==TIMEPERIOD_MONTHS) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_3==TIMEPERIOD_SECOND) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_3==TIMEPERIOD_MONTH) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_3==TIMEPERIOD_SEC) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_3==TIMEPERIOD_YEARS) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_3==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_3==TIMEPERIOD_HOUR) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_3==TIMEPERIOD_YEAR) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else if ( (LA146_3==EVENTS) ) {
@@ -9836,22 +9833,25 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (LA146_3==MIN) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_3==TIMEPERIOD_YEARS) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_3==TIMEPERIOD_SECONDS) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_3==TIMEPERIOD_YEAR) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_3==TIMEPERIOD_SECOND) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_3==TIMEPERIOD_SEC) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_3==TIMEPERIOD_WEEKS) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_3==TIMEPERIOD_WEEK) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else if ( (LA146_3==TIMEPERIOD_DAYS) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else if ( (LA146_3==TIMEPERIOD_DAY) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_3==TIMEPERIOD_MONTHS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_3==TIMEPERIOD_MONTH) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else if ( (LA146_3==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
@@ -9863,10 +9863,10 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (LA146_3==TIMEPERIOD_MILLISEC) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_3==TIMEPERIOD_WEEKS) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_3==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_3==TIMEPERIOD_WEEK) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_3==TIMEPERIOD_HOUR) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else {
@@ -9878,34 +9878,10 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     else if ( (LA146_0==NUM_DOUBLE) ) {
                         int LA146_4 = input.LA(2);
-                        if ( (LA146_4==EVENTS) ) {
-                            alt146=2;
-                        }
-                        else if ( (LA146_4==TIMEPERIOD_SECONDS) && (synpred2_EsperEPL2Grammar())) {
+                        if ( (LA146_4==TIMEPERIOD_MONTHS) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_4==TIMEPERIOD_SECOND) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_4==TIMEPERIOD_SEC) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_4==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_4==TIMEPERIOD_HOUR) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_4==TIMEPERIOD_YEARS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_4==TIMEPERIOD_YEAR) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_4==TIMEPERIOD_DAYS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_4==TIMEPERIOD_DAY) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_4==TIMEPERIOD_MONTH) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else if ( (LA146_4==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
@@ -9926,16 +9902,40 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (LA146_4==MIN) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_4==TIMEPERIOD_MONTHS) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_4==TIMEPERIOD_SECONDS) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_4==TIMEPERIOD_MONTH) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_4==TIMEPERIOD_SECOND) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_4==TIMEPERIOD_SEC) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_4==TIMEPERIOD_YEARS) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_4==TIMEPERIOD_YEAR) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_4==EVENTS) ) {
+                            alt146=2;
+                        }
+                        else if ( (LA146_4==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_4==TIMEPERIOD_HOUR) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else if ( (LA146_4==TIMEPERIOD_WEEKS) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else if ( (LA146_4==TIMEPERIOD_WEEK) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_4==TIMEPERIOD_DAYS) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_4==TIMEPERIOD_DAY) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else {
@@ -9947,22 +9947,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     else if ( (LA146_0==IDENT) ) {
                         int LA146_5 = input.LA(2);
-                        if ( (LA146_5==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_5==TIMEPERIOD_MILLISECOND) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_5==TIMEPERIOD_MILLISEC) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_5==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_5==TIMEPERIOD_HOUR) && (synpred2_EsperEPL2Grammar())) {
-                            alt146=1;
-                        }
-                        else if ( (LA146_5==TIMEPERIOD_SECONDS) && (synpred2_EsperEPL2Grammar())) {
+                        if ( (LA146_5==TIMEPERIOD_SECONDS) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else if ( (LA146_5==TIMEPERIOD_SECOND) && (synpred2_EsperEPL2Grammar())) {
@@ -9975,6 +9960,21 @@ public class EsperEPL2GrammarParser extends Parser {
                             alt146=1;
                         }
                         else if ( (LA146_5==TIMEPERIOD_WEEK) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_5==TIMEPERIOD_MONTHS) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_5==TIMEPERIOD_MONTH) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_5==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_5==TIMEPERIOD_MILLISECOND) && (synpred2_EsperEPL2Grammar())) {
+                            alt146=1;
+                        }
+                        else if ( (LA146_5==TIMEPERIOD_MILLISEC) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else if ( (LA146_5==TIMEPERIOD_DAYS) && (synpred2_EsperEPL2Grammar())) {
@@ -10001,10 +10001,10 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (LA146_5==EVENTS) ) {
                             alt146=2;
                         }
-                        else if ( (LA146_5==TIMEPERIOD_MONTHS) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_5==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
-                        else if ( (LA146_5==TIMEPERIOD_MONTH) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA146_5==TIMEPERIOD_HOUR) && (synpred2_EsperEPL2Grammar())) {
                             alt146=1;
                         }
                         else {
@@ -10280,11 +10280,11 @@ public class EsperEPL2GrammarParser extends Parser {
             case NUM_LONG:
                 {
                 int LA149_2 = input.LA(2);
-                if ( (LA149_2==MIN||(LA149_2>=TIMEPERIOD_YEAR && LA149_2<=TIMEPERIOD_MILLISECONDS)) ) {
-                    alt149=1;
-                }
-                else if ( (LA149_2==EVENTS) ) {
+                if ( (LA149_2==EVENTS) ) {
                     alt149=2;
+                }
+                else if ( (LA149_2==MIN||(LA149_2>=TIMEPERIOD_YEAR && LA149_2<=TIMEPERIOD_MILLISECONDS)) ) {
+                    alt149=1;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
@@ -10844,11 +10844,11 @@ public class EsperEPL2GrammarParser extends Parser {
             int LA159_0 = input.LA(1);
             if ( (LA159_0==CASE) ) {
                 int LA159_1 = input.LA(2);
-                if ( (LA159_1==WHEN) ) {
-                    alt159=1;
-                }
-                else if ( (LA159_1==WINDOW||LA159_1==ESCAPE||(LA159_1>=NOT_EXPR && LA159_1<=EVERY_EXPR)||LA159_1==WHERE||(LA159_1>=SUM && LA159_1<=COUNT)||LA159_1==CASE||LA159_1==OUTER||(LA159_1>=JOIN && LA159_1<=FULL)||(LA159_1>=EVENTS && LA159_1<=LAST)||(LA159_1>=UNIDIRECTIONAL && LA159_1<=CURRENT_TIMESTAMP)||(LA159_1>=SNAPSHOT && LA159_1<=INDEX)||(LA159_1>=BOOLEAN_TRUE && LA159_1<=VALUE_NULL)||(LA159_1>=DEFINE && LA159_1<=MATCHES)||LA159_1==WHILE||(LA159_1>=MERGE && LA159_1<=MATCHED)||LA159_1==NEWKW||LA159_1==NUM_DOUBLE||(LA159_1>=IDENT && LA159_1<=LCURLY)||LA159_1==LPAREN||(LA159_1>=PLUS && LA159_1<=QUESTION)||(LA159_1>=STRING_LITERAL && LA159_1<=QUOTED_STRING_LITERAL)||LA159_1==MINUS||LA159_1==NUM_INT||(LA159_1>=TICKED_STRING_LITERAL && LA159_1<=NUM_FLOAT)) ) {
+                if ( (LA159_1==WINDOW||LA159_1==ESCAPE||(LA159_1>=NOT_EXPR && LA159_1<=EVERY_EXPR)||LA159_1==WHERE||(LA159_1>=SUM && LA159_1<=COUNT)||LA159_1==CASE||LA159_1==OUTER||(LA159_1>=JOIN && LA159_1<=FULL)||(LA159_1>=EVENTS && LA159_1<=LAST)||(LA159_1>=UNIDIRECTIONAL && LA159_1<=CURRENT_TIMESTAMP)||(LA159_1>=SNAPSHOT && LA159_1<=INDEX)||(LA159_1>=BOOLEAN_TRUE && LA159_1<=VALUE_NULL)||(LA159_1>=DEFINE && LA159_1<=MATCHES)||LA159_1==WHILE||(LA159_1>=MERGE && LA159_1<=MATCHED)||LA159_1==NEWKW||LA159_1==NUM_DOUBLE||(LA159_1>=IDENT && LA159_1<=LCURLY)||LA159_1==LPAREN||(LA159_1>=PLUS && LA159_1<=QUESTION)||(LA159_1>=STRING_LITERAL && LA159_1<=QUOTED_STRING_LITERAL)||LA159_1==MINUS||LA159_1==NUM_INT||(LA159_1>=TICKED_STRING_LITERAL && LA159_1<=NUM_FLOAT)) ) {
                     alt159=2;
+                }
+                else if ( (LA159_1==WHEN) ) {
+                    alt159=1;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
@@ -16062,11 +16062,974 @@ public class EsperEPL2GrammarParser extends Parser {
             int LA248_0 = input.LA(1);
             if ( (LA248_0==IDENT) ) {
                 int LA248_1 = input.LA(2);
-                if ( (LA248_1==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
-                    alt248=1;
-                }
-                else if ( (LA248_1==LBRACK) && (synpred5_EsperEPL2Grammar())) {
-                    alt248=1;
+                if ( (LA248_1==DOT) ) {
+                    int LA248_50 = input.LA(3);
+                    if ( (LA248_50==IDENT) ) {
+                        int LA248_290 = input.LA(4);
+                        if ( (LA248_290==LPAREN) ) {
+                            int LA248_688 = input.LA(5);
+                            if ( (synpred5_EsperEPL2Grammar()) ) {
+                                alt248=1;
+                            }
+                            else if ( (true) ) {
+                                alt248=2;
+                            }
+                            else {
+                                if (state.backtracking>0) {state.failed=true; return retval;}
+                                NoViableAltException nvae =
+                                    new NoViableAltException("", 248, 688, input);
+                                throw nvae;
+                            }
+                        }
+                        else if ( (LA248_290==DOT) ) {
+                            int LA248_689 = input.LA(5);
+                            if ( (synpred5_EsperEPL2Grammar()) ) {
+                                alt248=1;
+                            }
+                            else if ( (true) ) {
+                                alt248=2;
+                            }
+                            else {
+                                if (state.backtracking>0) {state.failed=true; return retval;}
+                                NoViableAltException nvae =
+                                    new NoViableAltException("", 248, 689, input);
+                                throw nvae;
+                            }
+                        }
+                        else if ( (LA248_290==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==LBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==QUESTION) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==STAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==DIV) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==MOD) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==PLUS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==MINUS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==LOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==LT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==GT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==LE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==GE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==EQUALS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==IS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==SQL_NE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==NOT_EQUAL) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==BAND) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==BOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==BXOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==AND_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==OR_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==GROUP) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==HAVING) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==OUTPUT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==ORDER) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==ROW_LIMIT_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==FOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==EOF) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==WHEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==THEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==INSERT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==RPAREN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==RCURLY) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==COMMA) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==WHERE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==AS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==FROM) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==MEASURES) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==ALL) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==AFTER) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==PATTERN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==ASC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==DESC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==ELSE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==END) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==COLON) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==RBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==FOLLOWMAX_END) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==TIMEPERIOD_SECONDS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==TIMEPERIOD_SECOND) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==TIMEPERIOD_SEC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==NOT_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==IN_SET) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==BETWEEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==LIKE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==REGEXP) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_290==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else {
+                            if (state.backtracking>0) {state.failed=true; return retval;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("", 248, 290, input);
+                            throw nvae;
+                        }
+                    }
+                    else if ( (LA248_50==TICKED_STRING_LITERAL) ) {
+                        int LA248_291 = input.LA(4);
+                        if ( (LA248_291==DOT) ) {
+                            int LA248_748 = input.LA(5);
+                            if ( (synpred5_EsperEPL2Grammar()) ) {
+                                alt248=1;
+                            }
+                            else if ( (true) ) {
+                                alt248=2;
+                            }
+                            else {
+                                if (state.backtracking>0) {state.failed=true; return retval;}
+                                NoViableAltException nvae =
+                                    new NoViableAltException("", 248, 748, input);
+                                throw nvae;
+                            }
+                        }
+                        else if ( (LA248_291==LPAREN) ) {
+                            int LA248_749 = input.LA(5);
+                            if ( (synpred5_EsperEPL2Grammar()) ) {
+                                alt248=1;
+                            }
+                            else if ( (true) ) {
+                                alt248=2;
+                            }
+                            else {
+                                if (state.backtracking>0) {state.failed=true; return retval;}
+                                NoViableAltException nvae =
+                                    new NoViableAltException("", 248, 749, input);
+                                throw nvae;
+                            }
+                        }
+                        else if ( (LA248_291==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==LBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==QUESTION) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==STAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==DIV) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==MOD) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==PLUS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==MINUS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==LOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==LT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==GT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==LE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==GE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==EQUALS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==IS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==SQL_NE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==NOT_EQUAL) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==BAND) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==BOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==BXOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==AND_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==OR_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==GROUP) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==HAVING) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==OUTPUT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==ORDER) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==ROW_LIMIT_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==FOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==EOF) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==WHEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==THEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==INSERT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==RPAREN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==RCURLY) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==COMMA) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==WHERE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==AS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==FROM) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==MEASURES) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==ALL) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==AFTER) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==PATTERN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==ASC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==DESC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==ELSE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==END) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==COLON) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==RBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==FOLLOWMAX_END) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==TIMEPERIOD_SECONDS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==TIMEPERIOD_SECOND) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==TIMEPERIOD_SEC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==NOT_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==IN_SET) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==BETWEEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==LIKE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==REGEXP) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_291==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else {
+                            if (state.backtracking>0) {state.failed=true; return retval;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("", 248, 291, input);
+                            throw nvae;
+                        }
+                    }
+                    else if ( (LA248_50==MAX) ) {
+                        int LA248_292 = input.LA(4);
+                        if ( (LA248_292==LPAREN) ) {
+                            int LA248_808 = input.LA(5);
+                            if ( (synpred5_EsperEPL2Grammar()) ) {
+                                alt248=1;
+                            }
+                            else if ( (true) ) {
+                                alt248=2;
+                            }
+                            else {
+                                if (state.backtracking>0) {state.failed=true; return retval;}
+                                NoViableAltException nvae =
+                                    new NoViableAltException("", 248, 808, input);
+                                throw nvae;
+                            }
+                        }
+                        else if ( (LA248_292==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==LBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==QUESTION) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==STAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==DIV) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==MOD) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==PLUS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==MINUS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==LOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==LT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==GT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==LE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==GE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==EQUALS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==IS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==SQL_NE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==NOT_EQUAL) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==BAND) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==BOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==BXOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==AND_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==OR_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==GROUP) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==HAVING) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==OUTPUT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==ORDER) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==ROW_LIMIT_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==FOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==EOF) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==WHEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==THEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==INSERT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==RPAREN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==RCURLY) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==COMMA) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==WHERE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==AS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==FROM) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==MEASURES) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==ALL) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==AFTER) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==PATTERN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==ASC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==DESC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==ELSE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==END) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==COLON) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==RBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==FOLLOWMAX_END) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==TIMEPERIOD_SECONDS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==TIMEPERIOD_SECOND) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==TIMEPERIOD_SEC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==NOT_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==IN_SET) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==BETWEEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==LIKE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==REGEXP) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_292==DOT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else {
+                            if (state.backtracking>0) {state.failed=true; return retval;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("", 248, 292, input);
+                            throw nvae;
+                        }
+                    }
+                    else if ( (LA248_50==MIN) ) {
+                        int LA248_293 = input.LA(4);
+                        if ( (LA248_293==LPAREN) ) {
+                            int LA248_868 = input.LA(5);
+                            if ( (synpred5_EsperEPL2Grammar()) ) {
+                                alt248=1;
+                            }
+                            else if ( (true) ) {
+                                alt248=2;
+                            }
+                            else {
+                                if (state.backtracking>0) {state.failed=true; return retval;}
+                                NoViableAltException nvae =
+                                    new NoViableAltException("", 248, 868, input);
+                                throw nvae;
+                            }
+                        }
+                        else if ( (LA248_293==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==LBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==QUESTION) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==STAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==DIV) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==MOD) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==PLUS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==MINUS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==LOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==LT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==GT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==LE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==GE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==EQUALS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==IS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==SQL_NE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==NOT_EQUAL) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==BAND) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==BOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==BXOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==AND_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==OR_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==GROUP) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==HAVING) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==OUTPUT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==ORDER) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==ROW_LIMIT_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==FOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==EOF) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==WHEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==THEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==INSERT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==RPAREN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==RCURLY) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==COMMA) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==WHERE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==AS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==FROM) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==MEASURES) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==ALL) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==AFTER) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==PATTERN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==ASC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==DESC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==ELSE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==END) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==COLON) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==RBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==FOLLOWMAX_END) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==TIMEPERIOD_SECONDS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==TIMEPERIOD_SECOND) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==TIMEPERIOD_SEC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==NOT_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==IN_SET) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==BETWEEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==LIKE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==REGEXP) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_293==DOT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else {
+                            if (state.backtracking>0) {state.failed=true; return retval;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("", 248, 293, input);
+                            throw nvae;
+                        }
+                    }
+                    else if ( (LA248_50==WHERE||LA248_50==SET) ) {
+                        alt248=2;
+                    }
+                    else if ( (LA248_50==AT) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==COUNT) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==EVERY_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==SUM) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==AVG) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==COALESCE) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==MEDIAN) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==STDDEV) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==AVEDEV) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==EVENTS) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==FIRST) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==LAST) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==WHILE) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==MERGE) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==MATCHED) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==UNIDIRECTIONAL) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==RETAINUNION) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==RETAININTERSECTION) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==UNTIL) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==PATTERN) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==SQL) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==METADATASQL) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==PREVIOUS) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==PREVIOUSTAIL) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==PRIOR) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==WEEKDAY) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==LW) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==INSTANCEOF) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==TYPEOF) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==CAST) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==SNAPSHOT) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==VARIABLE) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==INDEX) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==WINDOW) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==LEFT) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==RIGHT) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==OUTER) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==FULL) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==JOIN) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==DEFINE) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==PARTITION) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else if ( (LA248_50==MATCHES) && (synpred5_EsperEPL2Grammar())) {
+                        alt248=1;
+                    }
+                    else {
+                        if (state.backtracking>0) {state.failed=true; return retval;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("", 248, 50, input);
+                        throw nvae;
+                    }
                 }
                 else if ( (LA248_1==LPAREN) ) {
                     switch ( input.LA(3) ) {
@@ -16149,12 +17112,12 @@ public class EsperEPL2GrammarParser extends Parser {
                         break;
                     case STRING_LITERAL:
                         {
-                        int LA248_304 = input.LA(4);
-                        if ( ((LA248_304>=IN_SET && LA248_304<=REGEXP)||(LA248_304>=OR_EXPR && LA248_304<=NOT_EXPR)||LA248_304==IS||(LA248_304>=ASC && LA248_304<=DESC)||(LA248_304>=TIMEPERIOD_SEC && LA248_304<=TIMEPERIOD_SECONDS)||(LA248_304>=COMMA && LA248_304<=EQUALS)||(LA248_304>=STAR && LA248_304<=PLUS)||(LA248_304>=BAND && LA248_304<=MOD)) ) {
+                        int LA248_352 = input.LA(4);
+                        if ( ((LA248_352>=IN_SET && LA248_352<=REGEXP)||(LA248_352>=OR_EXPR && LA248_352<=NOT_EXPR)||LA248_352==IS||(LA248_352>=ASC && LA248_352<=DESC)||(LA248_352>=TIMEPERIOD_SEC && LA248_352<=TIMEPERIOD_SECONDS)||(LA248_352>=COMMA && LA248_352<=EQUALS)||(LA248_352>=STAR && LA248_352<=PLUS)||(LA248_352>=BAND && LA248_352<=MOD)) ) {
                             alt248=2;
                         }
-                        else if ( (LA248_304==RPAREN) ) {
-                            int LA248_713 = input.LA(5);
+                        else if ( (LA248_352==RPAREN) ) {
+                            int LA248_953 = input.LA(5);
                             if ( (synpred5_EsperEPL2Grammar()) ) {
                                 alt248=1;
                             }
@@ -16164,23 +17127,26 @@ public class EsperEPL2GrammarParser extends Parser {
                             else {
                                 if (state.backtracking>0) {state.failed=true; return retval;}
                                 NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 713, input);
+                                    new NoViableAltException("", 248, 953, input);
                                 throw nvae;
                             }
                         }
                         else {
                             if (state.backtracking>0) {state.failed=true; return retval;}
                             NoViableAltException nvae =
-                                new NoViableAltException("", 248, 304, input);
+                                new NoViableAltException("", 248, 352, input);
                             throw nvae;
                         }
                         }
                         break;
                     case QUOTED_STRING_LITERAL:
                         {
-                        int LA248_305 = input.LA(4);
-                        if ( (LA248_305==RPAREN) ) {
-                            int LA248_719 = input.LA(5);
+                        int LA248_353 = input.LA(4);
+                        if ( ((LA248_353>=IN_SET && LA248_353<=REGEXP)||(LA248_353>=OR_EXPR && LA248_353<=NOT_EXPR)||LA248_353==IS||(LA248_353>=ASC && LA248_353<=DESC)||(LA248_353>=TIMEPERIOD_SEC && LA248_353<=TIMEPERIOD_SECONDS)||(LA248_353>=COMMA && LA248_353<=EQUALS)||(LA248_353>=STAR && LA248_353<=PLUS)||(LA248_353>=BAND && LA248_353<=MOD)) ) {
+                            alt248=2;
+                        }
+                        else if ( (LA248_353==RPAREN) ) {
+                            int LA248_984 = input.LA(5);
                             if ( (synpred5_EsperEPL2Grammar()) ) {
                                 alt248=1;
                             }
@@ -16190,17 +17156,14 @@ public class EsperEPL2GrammarParser extends Parser {
                             else {
                                 if (state.backtracking>0) {state.failed=true; return retval;}
                                 NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 719, input);
+                                    new NoViableAltException("", 248, 984, input);
                                 throw nvae;
                             }
-                        }
-                        else if ( ((LA248_305>=IN_SET && LA248_305<=REGEXP)||(LA248_305>=OR_EXPR && LA248_305<=NOT_EXPR)||LA248_305==IS||(LA248_305>=ASC && LA248_305<=DESC)||(LA248_305>=TIMEPERIOD_SEC && LA248_305<=TIMEPERIOD_SECONDS)||(LA248_305>=COMMA && LA248_305<=EQUALS)||(LA248_305>=STAR && LA248_305<=PLUS)||(LA248_305>=BAND && LA248_305<=MOD)) ) {
-                            alt248=2;
                         }
                         else {
                             if (state.backtracking>0) {state.failed=true; return retval;}
                             NoViableAltException nvae =
-                                new NoViableAltException("", 248, 305, input);
+                                new NoViableAltException("", 248, 353, input);
                             throw nvae;
                         }
                         }
@@ -16208,981 +17171,18 @@ public class EsperEPL2GrammarParser extends Parser {
                     default:
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 248, 52, input);
+                            new NoViableAltException("", 248, 51, input);
                         throw nvae;
                     }
+                }
+                else if ( (LA248_1==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
+                    alt248=1;
+                }
+                else if ( (LA248_1==LBRACK) && (synpred5_EsperEPL2Grammar())) {
+                    alt248=1;
                 }
                 else if ( (LA248_1==QUESTION) && (synpred5_EsperEPL2Grammar())) {
                     alt248=1;
-                }
-                else if ( (LA248_1==DOT) ) {
-                    int LA248_54 = input.LA(3);
-                    if ( (LA248_54==IDENT) ) {
-                        int LA248_365 = input.LA(4);
-                        if ( (LA248_365==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==LBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==LPAREN) ) {
-                            int LA248_752 = input.LA(5);
-                            if ( (synpred5_EsperEPL2Grammar()) ) {
-                                alt248=1;
-                            }
-                            else if ( (true) ) {
-                                alt248=2;
-                            }
-                            else {
-                                if (state.backtracking>0) {state.failed=true; return retval;}
-                                NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 752, input);
-                                throw nvae;
-                            }
-                        }
-                        else if ( (LA248_365==QUESTION) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==STAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==DIV) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==MOD) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==PLUS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==MINUS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==LOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==LT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==GT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==LE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==GE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==EQUALS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==IS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==SQL_NE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==NOT_EQUAL) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==BAND) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==BOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==BXOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==AND_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==OR_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==GROUP) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==HAVING) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==OUTPUT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==ORDER) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==ROW_LIMIT_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==FOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==EOF) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==WHEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==THEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==INSERT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==RPAREN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==RCURLY) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==COMMA) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==WHERE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==AS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==FROM) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==MEASURES) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==ALL) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==AFTER) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==PATTERN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==ASC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==DESC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==ELSE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==END) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==COLON) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==RBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==FOLLOWMAX_END) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==TIMEPERIOD_SECONDS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==TIMEPERIOD_SECOND) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==TIMEPERIOD_SEC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==NOT_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==IN_SET) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==BETWEEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==LIKE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==REGEXP) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_365==DOT) ) {
-                            int LA248_809 = input.LA(5);
-                            if ( (synpred5_EsperEPL2Grammar()) ) {
-                                alt248=1;
-                            }
-                            else if ( (true) ) {
-                                alt248=2;
-                            }
-                            else {
-                                if (state.backtracking>0) {state.failed=true; return retval;}
-                                NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 809, input);
-                                throw nvae;
-                            }
-                        }
-                        else {
-                            if (state.backtracking>0) {state.failed=true; return retval;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("", 248, 365, input);
-                            throw nvae;
-                        }
-                    }
-                    else if ( (LA248_54==TICKED_STRING_LITERAL) ) {
-                        int LA248_366 = input.LA(4);
-                        if ( (LA248_366==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==LBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==LPAREN) ) {
-                            int LA248_812 = input.LA(5);
-                            if ( (synpred5_EsperEPL2Grammar()) ) {
-                                alt248=1;
-                            }
-                            else if ( (true) ) {
-                                alt248=2;
-                            }
-                            else {
-                                if (state.backtracking>0) {state.failed=true; return retval;}
-                                NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 812, input);
-                                throw nvae;
-                            }
-                        }
-                        else if ( (LA248_366==QUESTION) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==STAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==DIV) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==MOD) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==PLUS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==MINUS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==LOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==LT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==GT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==LE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==GE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==EQUALS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==IS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==SQL_NE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==NOT_EQUAL) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==BAND) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==BOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==BXOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==AND_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==OR_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==GROUP) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==HAVING) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==OUTPUT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==ORDER) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==ROW_LIMIT_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==FOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==EOF) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==WHEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==THEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==INSERT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==RPAREN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==RCURLY) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==COMMA) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==WHERE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==AS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==FROM) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==MEASURES) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==ALL) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==AFTER) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==PATTERN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==ASC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==DESC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==ELSE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==END) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==COLON) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==RBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==FOLLOWMAX_END) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==TIMEPERIOD_SECONDS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==TIMEPERIOD_SECOND) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==TIMEPERIOD_SEC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==NOT_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==IN_SET) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==BETWEEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==LIKE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==REGEXP) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_366==DOT) ) {
-                            int LA248_869 = input.LA(5);
-                            if ( (synpred5_EsperEPL2Grammar()) ) {
-                                alt248=1;
-                            }
-                            else if ( (true) ) {
-                                alt248=2;
-                            }
-                            else {
-                                if (state.backtracking>0) {state.failed=true; return retval;}
-                                NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 869, input);
-                                throw nvae;
-                            }
-                        }
-                        else {
-                            if (state.backtracking>0) {state.failed=true; return retval;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("", 248, 366, input);
-                            throw nvae;
-                        }
-                    }
-                    else if ( (LA248_54==AT) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==COUNT) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==EVERY_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==SUM) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==AVG) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==MAX) ) {
-                        int LA248_373 = input.LA(4);
-                        if ( (LA248_373==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==LBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==LPAREN) ) {
-                            int LA248_872 = input.LA(5);
-                            if ( (synpred5_EsperEPL2Grammar()) ) {
-                                alt248=1;
-                            }
-                            else if ( (true) ) {
-                                alt248=2;
-                            }
-                            else {
-                                if (state.backtracking>0) {state.failed=true; return retval;}
-                                NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 872, input);
-                                throw nvae;
-                            }
-                        }
-                        else if ( (LA248_373==QUESTION) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==STAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==DIV) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==MOD) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==PLUS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==MINUS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==LOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==LT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==GT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==LE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==GE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==EQUALS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==IS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==SQL_NE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==NOT_EQUAL) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==BAND) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==BOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==BXOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==AND_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==OR_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==GROUP) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==HAVING) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==OUTPUT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==ORDER) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==ROW_LIMIT_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==FOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==EOF) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==WHEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==THEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==INSERT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==RPAREN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==RCURLY) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==COMMA) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==WHERE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==AS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==FROM) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==MEASURES) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==ALL) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==AFTER) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==PATTERN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==ASC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==DESC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==ELSE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==END) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==COLON) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==RBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==FOLLOWMAX_END) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==TIMEPERIOD_SECONDS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==TIMEPERIOD_SECOND) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==TIMEPERIOD_SEC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==NOT_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==IN_SET) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==BETWEEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==LIKE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==REGEXP) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_373==DOT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else {
-                            if (state.backtracking>0) {state.failed=true; return retval;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("", 248, 373, input);
-                            throw nvae;
-                        }
-                    }
-                    else if ( (LA248_54==MIN) ) {
-                        int LA248_374 = input.LA(4);
-                        if ( (LA248_374==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==LBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==LPAREN) ) {
-                            int LA248_932 = input.LA(5);
-                            if ( (synpred5_EsperEPL2Grammar()) ) {
-                                alt248=1;
-                            }
-                            else if ( (true) ) {
-                                alt248=2;
-                            }
-                            else {
-                                if (state.backtracking>0) {state.failed=true; return retval;}
-                                NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 932, input);
-                                throw nvae;
-                            }
-                        }
-                        else if ( (LA248_374==QUESTION) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==STAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==DIV) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==MOD) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==PLUS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==MINUS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==LOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==LT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==GT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==LE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==GE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==EQUALS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==IS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==SQL_NE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==NOT_EQUAL) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==BAND) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==BOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==BXOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==AND_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==OR_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==GROUP) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==HAVING) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==OUTPUT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==ORDER) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==ROW_LIMIT_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==FOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==EOF) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==WHEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==THEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==INSERT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==RPAREN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==RCURLY) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==COMMA) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==WHERE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==AS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==FROM) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==MEASURES) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==ALL) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==AFTER) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==PATTERN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==ASC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==DESC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==ELSE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==END) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==COLON) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==RBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==FOLLOWMAX_END) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==TIMEPERIOD_SECONDS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==TIMEPERIOD_SECOND) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==TIMEPERIOD_SEC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==NOT_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==IN_SET) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==BETWEEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==LIKE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==REGEXP) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_374==DOT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else {
-                            if (state.backtracking>0) {state.failed=true; return retval;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("", 248, 374, input);
-                            throw nvae;
-                        }
-                    }
-                    else if ( (LA248_54==COALESCE) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==MEDIAN) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==STDDEV) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==AVEDEV) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==EVENTS) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==FIRST) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==LAST) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==WHILE) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==MERGE) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==MATCHED) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==UNIDIRECTIONAL) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==RETAINUNION) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==RETAININTERSECTION) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==UNTIL) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==PATTERN) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==SQL) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==METADATASQL) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==PREVIOUS) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==PREVIOUSTAIL) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==PRIOR) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==WEEKDAY) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==LW) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==INSTANCEOF) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==TYPEOF) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==CAST) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==SNAPSHOT) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==VARIABLE) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==INDEX) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==WINDOW) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==LEFT) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==RIGHT) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==OUTER) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==FULL) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==JOIN) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==DEFINE) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==PARTITION) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==MATCHES) && (synpred5_EsperEPL2Grammar())) {
-                        alt248=1;
-                    }
-                    else if ( (LA248_54==WHERE||LA248_54==SET) ) {
-                        alt248=2;
-                    }
-                    else {
-                        if (state.backtracking>0) {state.failed=true; return retval;}
-                        NoViableAltException nvae =
-                            new NoViableAltException("", 248, 54, input);
-                        throw nvae;
-                    }
                 }
                 else if ( (LA248_1==STAR) && (synpred5_EsperEPL2Grammar())) {
                     alt248=1;
@@ -17439,11 +17439,11 @@ public class EsperEPL2GrammarParser extends Parser {
                         break;
                     case STRING_LITERAL:
                         {
-                        int LA248_428 = input.LA(4);
-                        if ( ((LA248_428>=IN_SET && LA248_428<=REGEXP)||(LA248_428>=OR_EXPR && LA248_428<=NOT_EXPR)||LA248_428==IS||(LA248_428>=ASC && LA248_428<=DESC)||(LA248_428>=TIMEPERIOD_SEC && LA248_428<=TIMEPERIOD_SECONDS)||(LA248_428>=COMMA && LA248_428<=EQUALS)||(LA248_428>=STAR && LA248_428<=PLUS)||(LA248_428>=BAND && LA248_428<=MOD)) ) {
+                        int LA248_427 = input.LA(4);
+                        if ( ((LA248_427>=IN_SET && LA248_427<=REGEXP)||(LA248_427>=OR_EXPR && LA248_427<=NOT_EXPR)||LA248_427==IS||(LA248_427>=ASC && LA248_427<=DESC)||(LA248_427>=TIMEPERIOD_SEC && LA248_427<=TIMEPERIOD_SECONDS)||(LA248_427>=COMMA && LA248_427<=EQUALS)||(LA248_427>=STAR && LA248_427<=PLUS)||(LA248_427>=BAND && LA248_427<=MOD)) ) {
                             alt248=2;
                         }
-                        else if ( (LA248_428==RPAREN) ) {
+                        else if ( (LA248_427==RPAREN) ) {
                             int LA248_1015 = input.LA(5);
                             if ( (synpred5_EsperEPL2Grammar()) ) {
                                 alt248=1;
@@ -17461,16 +17461,19 @@ public class EsperEPL2GrammarParser extends Parser {
                         else {
                             if (state.backtracking>0) {state.failed=true; return retval;}
                             NoViableAltException nvae =
-                                new NoViableAltException("", 248, 428, input);
+                                new NoViableAltException("", 248, 427, input);
                             throw nvae;
                         }
                         }
                         break;
                     case QUOTED_STRING_LITERAL:
                         {
-                        int LA248_429 = input.LA(4);
-                        if ( (LA248_429==RPAREN) ) {
-                            int LA248_1021 = input.LA(5);
+                        int LA248_428 = input.LA(4);
+                        if ( ((LA248_428>=IN_SET && LA248_428<=REGEXP)||(LA248_428>=OR_EXPR && LA248_428<=NOT_EXPR)||LA248_428==IS||(LA248_428>=ASC && LA248_428<=DESC)||(LA248_428>=TIMEPERIOD_SEC && LA248_428<=TIMEPERIOD_SECONDS)||(LA248_428>=COMMA && LA248_428<=EQUALS)||(LA248_428>=STAR && LA248_428<=PLUS)||(LA248_428>=BAND && LA248_428<=MOD)) ) {
+                            alt248=2;
+                        }
+                        else if ( (LA248_428==RPAREN) ) {
+                            int LA248_1046 = input.LA(5);
                             if ( (synpred5_EsperEPL2Grammar()) ) {
                                 alt248=1;
                             }
@@ -17480,17 +17483,14 @@ public class EsperEPL2GrammarParser extends Parser {
                             else {
                                 if (state.backtracking>0) {state.failed=true; return retval;}
                                 NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 1021, input);
+                                    new NoViableAltException("", 248, 1046, input);
                                 throw nvae;
                             }
-                        }
-                        else if ( ((LA248_429>=IN_SET && LA248_429<=REGEXP)||(LA248_429>=OR_EXPR && LA248_429<=NOT_EXPR)||LA248_429==IS||(LA248_429>=ASC && LA248_429<=DESC)||(LA248_429>=TIMEPERIOD_SEC && LA248_429<=TIMEPERIOD_SECONDS)||(LA248_429>=COMMA && LA248_429<=EQUALS)||(LA248_429>=STAR && LA248_429<=PLUS)||(LA248_429>=BAND && LA248_429<=MOD)) ) {
-                            alt248=2;
                         }
                         else {
                             if (state.backtracking>0) {state.failed=true; return retval;}
                             NoViableAltException nvae =
-                                new NoViableAltException("", 248, 429, input);
+                                new NoViableAltException("", 248, 428, input);
                             throw nvae;
                         }
                         }
@@ -17515,14 +17515,8 @@ public class EsperEPL2GrammarParser extends Parser {
                     int LA248_114 = input.LA(3);
                     if ( (LA248_114==IDENT) ) {
                         int LA248_489 = input.LA(4);
-                        if ( (LA248_489==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_489==LBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_489==LPAREN) ) {
-                            int LA248_1054 = input.LA(5);
+                        if ( (LA248_489==LPAREN) ) {
+                            int LA248_1052 = input.LA(5);
                             if ( (synpred5_EsperEPL2Grammar()) ) {
                                 alt248=1;
                             }
@@ -17532,9 +17526,30 @@ public class EsperEPL2GrammarParser extends Parser {
                             else {
                                 if (state.backtracking>0) {state.failed=true; return retval;}
                                 NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 1054, input);
+                                    new NoViableAltException("", 248, 1052, input);
                                 throw nvae;
                             }
+                        }
+                        else if ( (LA248_489==DOT) ) {
+                            int LA248_1053 = input.LA(5);
+                            if ( (synpred5_EsperEPL2Grammar()) ) {
+                                alt248=1;
+                            }
+                            else if ( (true) ) {
+                                alt248=2;
+                            }
+                            else {
+                                if (state.backtracking>0) {state.failed=true; return retval;}
+                                NoViableAltException nvae =
+                                    new NoViableAltException("", 248, 1053, input);
+                                throw nvae;
+                            }
+                        }
+                        else if ( (LA248_489==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_489==LBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
                         }
                         else if ( (LA248_489==QUESTION) && (synpred5_EsperEPL2Grammar())) {
                             alt248=1;
@@ -17704,21 +17719,6 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (LA248_489==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
                             alt248=1;
                         }
-                        else if ( (LA248_489==DOT) ) {
-                            int LA248_1111 = input.LA(5);
-                            if ( (synpred5_EsperEPL2Grammar()) ) {
-                                alt248=1;
-                            }
-                            else if ( (true) ) {
-                                alt248=2;
-                            }
-                            else {
-                                if (state.backtracking>0) {state.failed=true; return retval;}
-                                NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 1111, input);
-                                throw nvae;
-                            }
-                        }
                         else {
                             if (state.backtracking>0) {state.failed=true; return retval;}
                             NoViableAltException nvae =
@@ -17728,14 +17728,8 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     else if ( (LA248_114==TICKED_STRING_LITERAL) ) {
                         int LA248_490 = input.LA(4);
-                        if ( (LA248_490==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_490==LBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_490==LPAREN) ) {
-                            int LA248_1114 = input.LA(5);
+                        if ( (LA248_490==DOT) ) {
+                            int LA248_1112 = input.LA(5);
                             if ( (synpred5_EsperEPL2Grammar()) ) {
                                 alt248=1;
                             }
@@ -17745,9 +17739,30 @@ public class EsperEPL2GrammarParser extends Parser {
                             else {
                                 if (state.backtracking>0) {state.failed=true; return retval;}
                                 NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 1114, input);
+                                    new NoViableAltException("", 248, 1112, input);
                                 throw nvae;
                             }
+                        }
+                        else if ( (LA248_490==LPAREN) ) {
+                            int LA248_1113 = input.LA(5);
+                            if ( (synpred5_EsperEPL2Grammar()) ) {
+                                alt248=1;
+                            }
+                            else if ( (true) ) {
+                                alt248=2;
+                            }
+                            else {
+                                if (state.backtracking>0) {state.failed=true; return retval;}
+                                NoViableAltException nvae =
+                                    new NoViableAltException("", 248, 1113, input);
+                                throw nvae;
+                            }
+                        }
+                        else if ( (LA248_490==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_490==LBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
                         }
                         else if ( (LA248_490==QUESTION) && (synpred5_EsperEPL2Grammar())) {
                             alt248=1;
@@ -17917,8 +17932,17 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (LA248_490==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
                             alt248=1;
                         }
-                        else if ( (LA248_490==DOT) ) {
-                            int LA248_1171 = input.LA(5);
+                        else {
+                            if (state.backtracking>0) {state.failed=true; return retval;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("", 248, 490, input);
+                            throw nvae;
+                        }
+                    }
+                    else if ( (LA248_114==MAX) ) {
+                        int LA248_491 = input.LA(4);
+                        if ( (LA248_491==LPAREN) ) {
+                            int LA248_1172 = input.LA(5);
                             if ( (synpred5_EsperEPL2Grammar()) ) {
                                 alt248=1;
                             }
@@ -17928,16 +17952,397 @@ public class EsperEPL2GrammarParser extends Parser {
                             else {
                                 if (state.backtracking>0) {state.failed=true; return retval;}
                                 NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 1171, input);
+                                    new NoViableAltException("", 248, 1172, input);
                                 throw nvae;
                             }
+                        }
+                        else if ( (LA248_491==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==LBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==QUESTION) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==STAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==DIV) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==MOD) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==PLUS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==MINUS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==LOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==LT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==GT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==LE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==GE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==EQUALS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==IS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==SQL_NE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==NOT_EQUAL) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==BAND) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==BOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==BXOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==AND_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==OR_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==GROUP) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==HAVING) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==OUTPUT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==ORDER) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==ROW_LIMIT_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==FOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==EOF) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==WHEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==THEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==INSERT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==RPAREN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==RCURLY) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==COMMA) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==WHERE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==AS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==FROM) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==MEASURES) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==ALL) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==AFTER) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==PATTERN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==ASC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==DESC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==ELSE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==END) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==COLON) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==RBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==FOLLOWMAX_END) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==TIMEPERIOD_SECONDS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==TIMEPERIOD_SECOND) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==TIMEPERIOD_SEC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==NOT_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==IN_SET) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==BETWEEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==LIKE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==REGEXP) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_491==DOT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
                         }
                         else {
                             if (state.backtracking>0) {state.failed=true; return retval;}
                             NoViableAltException nvae =
-                                new NoViableAltException("", 248, 490, input);
+                                new NoViableAltException("", 248, 491, input);
                             throw nvae;
                         }
+                    }
+                    else if ( (LA248_114==MIN) ) {
+                        int LA248_492 = input.LA(4);
+                        if ( (LA248_492==LPAREN) ) {
+                            int LA248_1232 = input.LA(5);
+                            if ( (synpred5_EsperEPL2Grammar()) ) {
+                                alt248=1;
+                            }
+                            else if ( (true) ) {
+                                alt248=2;
+                            }
+                            else {
+                                if (state.backtracking>0) {state.failed=true; return retval;}
+                                NoViableAltException nvae =
+                                    new NoViableAltException("", 248, 1232, input);
+                                throw nvae;
+                            }
+                        }
+                        else if ( (LA248_492==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==LBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==QUESTION) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==STAR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==DIV) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==MOD) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==PLUS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==MINUS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==LOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==LT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==GT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==LE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==GE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==EQUALS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==IS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==SQL_NE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==NOT_EQUAL) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==BAND) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==BOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==BXOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==AND_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==OR_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==GROUP) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==HAVING) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==OUTPUT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==ORDER) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==ROW_LIMIT_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==FOR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==EOF) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==WHEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==THEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==INSERT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==RPAREN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==RCURLY) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==COMMA) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==WHERE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==AS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==FROM) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==MEASURES) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==ALL) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==AFTER) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==PATTERN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==ASC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==DESC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==ELSE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==END) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==COLON) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==RBRACK) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==FOLLOWMAX_END) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==TIMEPERIOD_SECONDS) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==TIMEPERIOD_SECOND) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==TIMEPERIOD_SEC) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==NOT_EXPR) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==IN_SET) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==BETWEEN) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==LIKE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==REGEXP) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else if ( (LA248_492==DOT) && (synpred5_EsperEPL2Grammar())) {
+                            alt248=1;
+                        }
+                        else {
+                            if (state.backtracking>0) {state.failed=true; return retval;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("", 248, 492, input);
+                            throw nvae;
+                        }
+                    }
+                    else if ( (LA248_114==WHERE||LA248_114==SET) ) {
+                        alt248=2;
                     }
                     else if ( (LA248_114==AT) && (synpred5_EsperEPL2Grammar())) {
                         alt248=1;
@@ -17956,408 +18361,6 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     else if ( (LA248_114==AVG) && (synpred5_EsperEPL2Grammar())) {
                         alt248=1;
-                    }
-                    else if ( (LA248_114==MAX) ) {
-                        int LA248_497 = input.LA(4);
-                        if ( (LA248_497==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==LBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==LPAREN) ) {
-                            int LA248_1174 = input.LA(5);
-                            if ( (synpred5_EsperEPL2Grammar()) ) {
-                                alt248=1;
-                            }
-                            else if ( (true) ) {
-                                alt248=2;
-                            }
-                            else {
-                                if (state.backtracking>0) {state.failed=true; return retval;}
-                                NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 1174, input);
-                                throw nvae;
-                            }
-                        }
-                        else if ( (LA248_497==QUESTION) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==STAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==DIV) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==MOD) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==PLUS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==MINUS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==LOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==LT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==GT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==LE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==GE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==EQUALS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==IS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==SQL_NE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==NOT_EQUAL) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==BAND) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==BOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==BXOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==AND_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==OR_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==GROUP) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==HAVING) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==OUTPUT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==ORDER) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==ROW_LIMIT_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==FOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==EOF) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==WHEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==THEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==INSERT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==RPAREN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==RCURLY) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==COMMA) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==WHERE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==AS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==FROM) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==MEASURES) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==ALL) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==AFTER) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==PATTERN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==ASC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==DESC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==ELSE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==END) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==COLON) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==RBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==FOLLOWMAX_END) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==TIMEPERIOD_SECONDS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==TIMEPERIOD_SECOND) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==TIMEPERIOD_SEC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==NOT_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==IN_SET) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==BETWEEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==LIKE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==REGEXP) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_497==DOT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else {
-                            if (state.backtracking>0) {state.failed=true; return retval;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("", 248, 497, input);
-                            throw nvae;
-                        }
-                    }
-                    else if ( (LA248_114==MIN) ) {
-                        int LA248_498 = input.LA(4);
-                        if ( (LA248_498==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==LBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==LPAREN) ) {
-                            int LA248_1234 = input.LA(5);
-                            if ( (synpred5_EsperEPL2Grammar()) ) {
-                                alt248=1;
-                            }
-                            else if ( (true) ) {
-                                alt248=2;
-                            }
-                            else {
-                                if (state.backtracking>0) {state.failed=true; return retval;}
-                                NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 1234, input);
-                                throw nvae;
-                            }
-                        }
-                        else if ( (LA248_498==QUESTION) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==STAR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==DIV) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==MOD) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==PLUS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==MINUS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==LOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==LT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==GT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==LE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==GE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==EQUALS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==IS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==SQL_NE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==NOT_EQUAL) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==BAND) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==BOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==BXOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==AND_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==OR_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==GROUP) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==HAVING) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==OUTPUT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==ORDER) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==ROW_LIMIT_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==FOR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==EOF) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==WHEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==THEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==INSERT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==RPAREN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==RCURLY) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==COMMA) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==WHERE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==AS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==FROM) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==MEASURES) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==ALL) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==AFTER) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==PATTERN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==ASC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==DESC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==ELSE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==END) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==COLON) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==RBRACK) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==FOLLOWMAX_END) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==TIMEPERIOD_SECONDS) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==TIMEPERIOD_SECOND) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==TIMEPERIOD_SEC) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==NOT_EXPR) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==IN_SET) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==BETWEEN) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==LIKE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==REGEXP) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==ESCAPE) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else if ( (LA248_498==DOT) && (synpred5_EsperEPL2Grammar())) {
-                            alt248=1;
-                        }
-                        else {
-                            if (state.backtracking>0) {state.failed=true; return retval;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("", 248, 498, input);
-                            throw nvae;
-                        }
                     }
                     else if ( (LA248_114==COALESCE) && (synpred5_EsperEPL2Grammar())) {
                         alt248=1;
@@ -18469,9 +18472,6 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     else if ( (LA248_114==MATCHES) && (synpred5_EsperEPL2Grammar())) {
                         alt248=1;
-                    }
-                    else if ( (LA248_114==WHERE||LA248_114==SET) ) {
-                        alt248=2;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
@@ -18672,13 +18672,7 @@ public class EsperEPL2GrammarParser extends Parser {
             }
             else if ( (LA248_0==MAX) ) {
                 int LA248_9 = input.LA(2);
-                if ( (LA248_9==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
-                    alt248=1;
-                }
-                else if ( (LA248_9==LBRACK) && (synpred5_EsperEPL2Grammar())) {
-                    alt248=1;
-                }
-                else if ( (LA248_9==LPAREN) ) {
+                if ( (LA248_9==LPAREN) ) {
                     switch ( input.LA(3) ) {
                     case WINDOW:
                     case ESCAPE:
@@ -18759,11 +18753,11 @@ public class EsperEPL2GrammarParser extends Parser {
                         break;
                     case STRING_LITERAL:
                         {
-                        int LA248_552 = input.LA(4);
-                        if ( ((LA248_552>=IN_SET && LA248_552<=REGEXP)||(LA248_552>=OR_EXPR && LA248_552<=NOT_EXPR)||LA248_552==IS||(LA248_552>=ASC && LA248_552<=DESC)||(LA248_552>=TIMEPERIOD_SEC && LA248_552<=TIMEPERIOD_SECONDS)||(LA248_552>=COMMA && LA248_552<=EQUALS)||(LA248_552>=STAR && LA248_552<=PLUS)||(LA248_552>=BAND && LA248_552<=MOD)) ) {
+                        int LA248_551 = input.LA(4);
+                        if ( ((LA248_551>=IN_SET && LA248_551<=REGEXP)||(LA248_551>=OR_EXPR && LA248_551<=NOT_EXPR)||LA248_551==IS||(LA248_551>=ASC && LA248_551<=DESC)||(LA248_551>=TIMEPERIOD_SEC && LA248_551<=TIMEPERIOD_SECONDS)||(LA248_551>=COMMA && LA248_551<=EQUALS)||(LA248_551>=STAR && LA248_551<=PLUS)||(LA248_551>=BAND && LA248_551<=MOD)) ) {
                             alt248=2;
                         }
-                        else if ( (LA248_552==RPAREN) ) {
+                        else if ( (LA248_551==RPAREN) ) {
                             int LA248_1317 = input.LA(5);
                             if ( (synpred5_EsperEPL2Grammar()) ) {
                                 alt248=1;
@@ -18781,16 +18775,19 @@ public class EsperEPL2GrammarParser extends Parser {
                         else {
                             if (state.backtracking>0) {state.failed=true; return retval;}
                             NoViableAltException nvae =
-                                new NoViableAltException("", 248, 552, input);
+                                new NoViableAltException("", 248, 551, input);
                             throw nvae;
                         }
                         }
                         break;
                     case QUOTED_STRING_LITERAL:
                         {
-                        int LA248_553 = input.LA(4);
-                        if ( (LA248_553==RPAREN) ) {
-                            int LA248_1323 = input.LA(5);
+                        int LA248_552 = input.LA(4);
+                        if ( ((LA248_552>=IN_SET && LA248_552<=REGEXP)||(LA248_552>=OR_EXPR && LA248_552<=NOT_EXPR)||LA248_552==IS||(LA248_552>=ASC && LA248_552<=DESC)||(LA248_552>=TIMEPERIOD_SEC && LA248_552<=TIMEPERIOD_SECONDS)||(LA248_552>=COMMA && LA248_552<=EQUALS)||(LA248_552>=STAR && LA248_552<=PLUS)||(LA248_552>=BAND && LA248_552<=MOD)) ) {
+                            alt248=2;
+                        }
+                        else if ( (LA248_552==RPAREN) ) {
+                            int LA248_1348 = input.LA(5);
                             if ( (synpred5_EsperEPL2Grammar()) ) {
                                 alt248=1;
                             }
@@ -18800,17 +18797,14 @@ public class EsperEPL2GrammarParser extends Parser {
                             else {
                                 if (state.backtracking>0) {state.failed=true; return retval;}
                                 NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 1323, input);
+                                    new NoViableAltException("", 248, 1348, input);
                                 throw nvae;
                             }
-                        }
-                        else if ( ((LA248_553>=IN_SET && LA248_553<=REGEXP)||(LA248_553>=OR_EXPR && LA248_553<=NOT_EXPR)||LA248_553==IS||(LA248_553>=ASC && LA248_553<=DESC)||(LA248_553>=TIMEPERIOD_SEC && LA248_553<=TIMEPERIOD_SECONDS)||(LA248_553>=COMMA && LA248_553<=EQUALS)||(LA248_553>=STAR && LA248_553<=PLUS)||(LA248_553>=BAND && LA248_553<=MOD)) ) {
-                            alt248=2;
                         }
                         else {
                             if (state.backtracking>0) {state.failed=true; return retval;}
                             NoViableAltException nvae =
-                                new NoViableAltException("", 248, 553, input);
+                                new NoViableAltException("", 248, 552, input);
                             throw nvae;
                         }
                         }
@@ -18818,9 +18812,15 @@ public class EsperEPL2GrammarParser extends Parser {
                     default:
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 248, 172, input);
+                            new NoViableAltException("", 248, 170, input);
                         throw nvae;
                     }
+                }
+                else if ( (LA248_9==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
+                    alt248=1;
+                }
+                else if ( (LA248_9==LBRACK) && (synpred5_EsperEPL2Grammar())) {
+                    alt248=1;
                 }
                 else if ( (LA248_9==QUESTION) && (synpred5_EsperEPL2Grammar())) {
                     alt248=1;
@@ -19002,13 +19002,7 @@ public class EsperEPL2GrammarParser extends Parser {
             }
             else if ( (LA248_0==MIN) ) {
                 int LA248_10 = input.LA(2);
-                if ( (LA248_10==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
-                    alt248=1;
-                }
-                else if ( (LA248_10==LBRACK) && (synpred5_EsperEPL2Grammar())) {
-                    alt248=1;
-                }
-                else if ( (LA248_10==LPAREN) ) {
+                if ( (LA248_10==LPAREN) ) {
                     switch ( input.LA(3) ) {
                     case WINDOW:
                     case ESCAPE:
@@ -19089,11 +19083,11 @@ public class EsperEPL2GrammarParser extends Parser {
                         break;
                     case STRING_LITERAL:
                         {
-                        int LA248_627 = input.LA(4);
-                        if ( ((LA248_627>=IN_SET && LA248_627<=REGEXP)||(LA248_627>=OR_EXPR && LA248_627<=NOT_EXPR)||LA248_627==IS||(LA248_627>=ASC && LA248_627<=DESC)||(LA248_627>=TIMEPERIOD_SEC && LA248_627<=TIMEPERIOD_SECONDS)||(LA248_627>=COMMA && LA248_627<=EQUALS)||(LA248_627>=STAR && LA248_627<=PLUS)||(LA248_627>=BAND && LA248_627<=MOD)) ) {
+                        int LA248_626 = input.LA(4);
+                        if ( ((LA248_626>=IN_SET && LA248_626<=REGEXP)||(LA248_626>=OR_EXPR && LA248_626<=NOT_EXPR)||LA248_626==IS||(LA248_626>=ASC && LA248_626<=DESC)||(LA248_626>=TIMEPERIOD_SEC && LA248_626<=TIMEPERIOD_SECONDS)||(LA248_626>=COMMA && LA248_626<=EQUALS)||(LA248_626>=STAR && LA248_626<=PLUS)||(LA248_626>=BAND && LA248_626<=MOD)) ) {
                             alt248=2;
                         }
-                        else if ( (LA248_627==RPAREN) ) {
+                        else if ( (LA248_626==RPAREN) ) {
                             int LA248_1379 = input.LA(5);
                             if ( (synpred5_EsperEPL2Grammar()) ) {
                                 alt248=1;
@@ -19111,16 +19105,19 @@ public class EsperEPL2GrammarParser extends Parser {
                         else {
                             if (state.backtracking>0) {state.failed=true; return retval;}
                             NoViableAltException nvae =
-                                new NoViableAltException("", 248, 627, input);
+                                new NoViableAltException("", 248, 626, input);
                             throw nvae;
                         }
                         }
                         break;
                     case QUOTED_STRING_LITERAL:
                         {
-                        int LA248_628 = input.LA(4);
-                        if ( (LA248_628==RPAREN) ) {
-                            int LA248_1385 = input.LA(5);
+                        int LA248_627 = input.LA(4);
+                        if ( ((LA248_627>=IN_SET && LA248_627<=REGEXP)||(LA248_627>=OR_EXPR && LA248_627<=NOT_EXPR)||LA248_627==IS||(LA248_627>=ASC && LA248_627<=DESC)||(LA248_627>=TIMEPERIOD_SEC && LA248_627<=TIMEPERIOD_SECONDS)||(LA248_627>=COMMA && LA248_627<=EQUALS)||(LA248_627>=STAR && LA248_627<=PLUS)||(LA248_627>=BAND && LA248_627<=MOD)) ) {
+                            alt248=2;
+                        }
+                        else if ( (LA248_627==RPAREN) ) {
+                            int LA248_1410 = input.LA(5);
                             if ( (synpred5_EsperEPL2Grammar()) ) {
                                 alt248=1;
                             }
@@ -19130,17 +19127,14 @@ public class EsperEPL2GrammarParser extends Parser {
                             else {
                                 if (state.backtracking>0) {state.failed=true; return retval;}
                                 NoViableAltException nvae =
-                                    new NoViableAltException("", 248, 1385, input);
+                                    new NoViableAltException("", 248, 1410, input);
                                 throw nvae;
                             }
-                        }
-                        else if ( ((LA248_628>=IN_SET && LA248_628<=REGEXP)||(LA248_628>=OR_EXPR && LA248_628<=NOT_EXPR)||LA248_628==IS||(LA248_628>=ASC && LA248_628<=DESC)||(LA248_628>=TIMEPERIOD_SEC && LA248_628<=TIMEPERIOD_SECONDS)||(LA248_628>=COMMA && LA248_628<=EQUALS)||(LA248_628>=STAR && LA248_628<=PLUS)||(LA248_628>=BAND && LA248_628<=MOD)) ) {
-                            alt248=2;
                         }
                         else {
                             if (state.backtracking>0) {state.failed=true; return retval;}
                             NoViableAltException nvae =
-                                new NoViableAltException("", 248, 628, input);
+                                new NoViableAltException("", 248, 627, input);
                             throw nvae;
                         }
                         }
@@ -19148,9 +19142,15 @@ public class EsperEPL2GrammarParser extends Parser {
                     default:
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 248, 232, input);
+                            new NoViableAltException("", 248, 230, input);
                         throw nvae;
                     }
+                }
+                else if ( (LA248_10==ESCAPECHAR) && (synpred5_EsperEPL2Grammar())) {
+                    alt248=1;
+                }
+                else if ( (LA248_10==LBRACK) && (synpred5_EsperEPL2Grammar())) {
+                    alt248=1;
                 }
                 else if ( (LA248_10==QUESTION) && (synpred5_EsperEPL2Grammar())) {
                     alt248=1;
@@ -20015,15 +20015,15 @@ public class EsperEPL2GrammarParser extends Parser {
             else if ( (LA257_0==LPAREN) ) {
                 int LA257_2 = input.LA(2);
                 if ( (LA257_2==IDENT) ) {
-                    int LA257_144 = input.LA(3);
-                    if ( (LA257_144==RPAREN) ) {
-                        int LA257_224 = input.LA(4);
-                        if ( (LA257_224==GOES) ) {
+                    int LA257_130 = input.LA(3);
+                    if ( (LA257_130==COMMA) ) {
+                        alt257=1;
+                    }
+                    else if ( (LA257_130==RPAREN) ) {
+                        int LA257_203 = input.LA(4);
+                        if ( (LA257_203==GOES) ) {
                             alt257=1;
                         }
-                    }
-                    else if ( (LA257_144==COMMA) ) {
-                        alt257=1;
                     }
                 }
             }
@@ -22629,22 +22629,22 @@ public class EsperEPL2GrammarParser extends Parser {
                     case IDENT:
                         {
                         int LA296_4 = input.LA(3);
-                        if ( (LA296_4==IDENT||LA296_4==DOT||LA296_4==TICKED_STRING_LITERAL) ) {
-                            alt296=1;
-                        }
-                        else if ( (LA296_4==LPAREN) ) {
+                        if ( (LA296_4==LPAREN) ) {
                             alt296=2;
+                        }
+                        else if ( (LA296_4==IDENT||LA296_4==DOT||LA296_4==TICKED_STRING_LITERAL) ) {
+                            alt296=1;
                         }
                         }
                         break;
                     case TICKED_STRING_LITERAL:
                         {
                         int LA296_5 = input.LA(3);
-                        if ( (LA296_5==IDENT||LA296_5==DOT||LA296_5==TICKED_STRING_LITERAL) ) {
-                            alt296=1;
-                        }
-                        else if ( (LA296_5==LPAREN) ) {
+                        if ( (LA296_5==LPAREN) ) {
                             alt296=2;
+                        }
+                        else if ( (LA296_5==IDENT||LA296_5==DOT||LA296_5==TICKED_STRING_LITERAL) ) {
+                            alt296=1;
                         }
                         }
                         break;
@@ -22768,17 +22768,17 @@ public class EsperEPL2GrammarParser extends Parser {
         retval.start = input.LT(1);
         CommonTree root_0 = null;
         Token COMMA774=null;
-        EsperEPL2GrammarParser.expressionWithTime_return expressionWithTime773 = null;
-        EsperEPL2GrammarParser.expressionWithTime_return expressionWithTime775 = null;
+        EsperEPL2GrammarParser.expressionWithTimeInclLast_return expressionWithTimeInclLast773 = null;
+        EsperEPL2GrammarParser.expressionWithTimeInclLast_return expressionWithTimeInclLast775 = null;
         CommonTree COMMA774_tree=null;
         try {
             {
             root_0 = (CommonTree)adaptor.nil();
-            pushFollow(FOLLOW_expressionWithTime_in_expressionWithTimeList11325);
-            expressionWithTime773=expressionWithTime();
+            pushFollow(FOLLOW_expressionWithTimeInclLast_in_expressionWithTimeList11325);
+            expressionWithTimeInclLast773=expressionWithTimeInclLast();
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) adaptor.addChild(root_0, expressionWithTime773.getTree());
+            if ( state.backtracking==0 ) adaptor.addChild(root_0, expressionWithTimeInclLast773.getTree());
             loop298:
             do {
                 int alt298=2;
@@ -22790,11 +22790,11 @@ public class EsperEPL2GrammarParser extends Parser {
             	case 1 :
             	    {
             	    COMMA774=(Token)match(input,COMMA,FOLLOW_COMMA_in_expressionWithTimeList11328); if (state.failed) return retval;
-            	    pushFollow(FOLLOW_expressionWithTime_in_expressionWithTimeList11331);
-            	    expressionWithTime775=expressionWithTime();
+            	    pushFollow(FOLLOW_expressionWithTimeInclLast_in_expressionWithTimeList11331);
+            	    expressionWithTimeInclLast775=expressionWithTimeInclLast();
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) adaptor.addChild(root_0, expressionWithTime775.getTree());
+            	    if ( state.backtracking==0 ) adaptor.addChild(root_0, expressionWithTimeInclLast775.getTree());
             	    }
             	    break;
             	default :
@@ -22823,26 +22823,25 @@ public class EsperEPL2GrammarParser extends Parser {
         EsperEPL2GrammarParser.expressionWithTime_return retval = new EsperEPL2GrammarParser.expressionWithTime_return();
         retval.start = input.LT(1);
         CommonTree root_0 = null;
-        EsperEPL2GrammarParser.lastOperand_return lastOperand776 = null;
-        EsperEPL2GrammarParser.lastWeekdayOperand_return lastWeekdayOperand777 = null;
-        EsperEPL2GrammarParser.timePeriod_return timePeriod778 = null;
-        EsperEPL2GrammarParser.expressionQualifyable_return expressionQualifyable779 = null;
-        EsperEPL2GrammarParser.rangeOperand_return rangeOperand780 = null;
-        EsperEPL2GrammarParser.frequencyOperand_return frequencyOperand781 = null;
-        EsperEPL2GrammarParser.lastOperator_return lastOperator782 = null;
-        EsperEPL2GrammarParser.weekDayOperator_return weekDayOperator783 = null;
-        EsperEPL2GrammarParser.numericParameterList_return numericParameterList784 = null;
-        EsperEPL2GrammarParser.numberSetStar_return numberSetStar785 = null;
+        EsperEPL2GrammarParser.lastWeekdayOperand_return lastWeekdayOperand776 = null;
+        EsperEPL2GrammarParser.timePeriod_return timePeriod777 = null;
+        EsperEPL2GrammarParser.expressionQualifyable_return expressionQualifyable778 = null;
+        EsperEPL2GrammarParser.rangeOperand_return rangeOperand779 = null;
+        EsperEPL2GrammarParser.frequencyOperand_return frequencyOperand780 = null;
+        EsperEPL2GrammarParser.lastOperator_return lastOperator781 = null;
+        EsperEPL2GrammarParser.weekDayOperator_return weekDayOperator782 = null;
+        EsperEPL2GrammarParser.numericParameterList_return numericParameterList783 = null;
+        EsperEPL2GrammarParser.numberSetStar_return numberSetStar784 = null;
         try {
-            int alt299=10;
+            int alt299=9;
             int LA299_0 = input.LA(1);
-            if ( (LA299_0==LAST) ) {
+            if ( (LA299_0==LW) ) {
                 int LA299_1 = input.LA(2);
                 if ( (synpred7_EsperEPL2Grammar()) ) {
                     alt299=1;
                 }
-                else if ( (synpred10_EsperEPL2Grammar()) ) {
-                    alt299=4;
+                else if ( (synpred9_EsperEPL2Grammar()) ) {
+                    alt299=3;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
@@ -22851,13 +22850,193 @@ public class EsperEPL2GrammarParser extends Parser {
                     throw nvae;
                 }
             }
-            else if ( (LA299_0==LW) ) {
+            else if ( (LA299_0==NUM_INT) ) {
                 int LA299_2 = input.LA(2);
-                if ( (synpred8_EsperEPL2Grammar()) ) {
+                if ( (LA299_2==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {
                     alt299=2;
                 }
-                else if ( (synpred10_EsperEPL2Grammar()) ) {
+                else if ( (LA299_2==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==TIMEPERIOD_YEARS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==TIMEPERIOD_YEAR) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==COLON) && (synpred10_EsperEPL2Grammar())) {
                     alt299=4;
+                }
+                else if ( (LA299_2==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {
+                    alt299=7;
+                }
+                else if ( (LA299_2==STAR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==DIV) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==MOD) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==PLUS) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==MINUS) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==LOR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==LT) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==GT) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==LE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==GE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==EQUALS) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==IS) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==SQL_NE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==BAND) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==BOR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==BXOR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==ASC) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==DESC) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==TIMEPERIOD_SECONDS) ) {
+                    int LA299_139 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
+                    }
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
+                    }
+                    else {
+                        if (state.backtracking>0) {state.failed=true; return retval;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("", 299, 139, input);
+                        throw nvae;
+                    }
+                }
+                else if ( (LA299_2==TIMEPERIOD_SECOND) ) {
+                    int LA299_140 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
+                    }
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
+                    }
+                    else {
+                        if (state.backtracking>0) {state.failed=true; return retval;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("", 299, 140, input);
+                        throw nvae;
+                    }
+                }
+                else if ( (LA299_2==TIMEPERIOD_SEC) ) {
+                    int LA299_141 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
+                    }
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
+                    }
+                    else {
+                        if (state.backtracking>0) {state.failed=true; return retval;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("", 299, 141, input);
+                        throw nvae;
+                    }
+                }
+                else if ( (LA299_2==COMMA) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==RPAREN) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==IN_SET) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==BETWEEN) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==LIKE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==REGEXP) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_2==TIMEPERIOD_WEEKS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==TIMEPERIOD_WEEK) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==TIMEPERIOD_MONTHS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==TIMEPERIOD_MONTH) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==LAST) && (synpred12_EsperEPL2Grammar())) {
+                    alt299=6;
+                }
+                else if ( (LA299_2==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_2==MIN) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
@@ -22866,193 +23045,193 @@ public class EsperEPL2GrammarParser extends Parser {
                     throw nvae;
                 }
             }
-            else if ( (LA299_0==NUM_INT) ) {
+            else if ( (LA299_0==NUM_LONG) ) {
                 int LA299_3 = input.LA(2);
-                if ( (LA299_3==TIMEPERIOD_HOURS) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                if ( (LA299_3==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_3==TIMEPERIOD_HOUR) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                else if ( (LA299_3==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_3==TIMEPERIOD_YEARS) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                else if ( (LA299_3==TIMEPERIOD_YEARS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_3==TIMEPERIOD_YEAR) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                else if ( (LA299_3==TIMEPERIOD_YEAR) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_3==WEEKDAY) && (synpred14_EsperEPL2Grammar())) {
-                    alt299=8;
+                else if ( (LA299_3==COLON) && (synpred10_EsperEPL2Grammar())) {
+                    alt299=4;
                 }
-                else if ( (LA299_3==TIMEPERIOD_DAYS) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                else if ( (LA299_3==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_3==TIMEPERIOD_DAY) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                else if ( (LA299_3==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_3==LAST) && (synpred13_EsperEPL2Grammar())) {
-                    alt299=7;
+                else if ( (LA299_3==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_3==TIMEPERIOD_MILLISECONDS) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                else if ( (LA299_3==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_3==TIMEPERIOD_MILLISECOND) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                else if ( (LA299_3==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_3==TIMEPERIOD_MILLISEC) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                else if ( (LA299_3==TIMEPERIOD_WEEKS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_3==TIMEPERIOD_MONTHS) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                else if ( (LA299_3==TIMEPERIOD_WEEK) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_3==TIMEPERIOD_MONTH) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                else if ( (LA299_3==TIMEPERIOD_MONTHS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_3==TIMEPERIOD_MONTH) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
                 else if ( (LA299_3==TIMEPERIOD_SECONDS) ) {
-                    int LA299_160 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
+                    int LA299_174 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 299, 160, input);
+                            new NoViableAltException("", 299, 174, input);
                         throw nvae;
                     }
                 }
                 else if ( (LA299_3==TIMEPERIOD_SECOND) ) {
-                    int LA299_161 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
+                    int LA299_175 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 299, 161, input);
+                            new NoViableAltException("", 299, 175, input);
                         throw nvae;
                     }
                 }
                 else if ( (LA299_3==TIMEPERIOD_SEC) ) {
-                    int LA299_162 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
+                    int LA299_176 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 299, 162, input);
+                            new NoViableAltException("", 299, 176, input);
                         throw nvae;
                     }
                 }
-                else if ( (LA299_3==TIMEPERIOD_WEEKS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_3==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {
+                    alt299=7;
+                }
+                else if ( (LA299_3==LAST) && (synpred12_EsperEPL2Grammar())) {
+                    alt299=6;
+                }
+                else if ( (LA299_3==STAR) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_3==TIMEPERIOD_WEEK) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_3==DIV) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_3==COLON) && (synpred11_EsperEPL2Grammar())) {
-                    alt299=5;
-                }
-                else if ( (LA299_3==STAR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==DIV) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==MOD) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==PLUS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==MINUS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==LOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==LT) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==GT) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==LE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==GE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==EQUALS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==IS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==SQL_NE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==NOT_EQUAL) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==BAND) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==BOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==BXOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==AND_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==OR_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==ASC) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==DESC) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==COMMA) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==RPAREN) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==NOT_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==IN_SET) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==BETWEEN) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==LIKE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==REGEXP) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_3==TIMEPERIOD_MINUTES) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_3==MOD) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_3==TIMEPERIOD_MINUTE) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_3==PLUS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_3==MIN) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_3==MINUS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
+                }
+                else if ( (LA299_3==LOR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==LT) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==GT) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==LE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==GE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==EQUALS) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==IS) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==SQL_NE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==BAND) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==BOR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==BXOR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==ASC) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==DESC) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==COMMA) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==RPAREN) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==IN_SET) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==BETWEEN) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==LIKE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==REGEXP) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_3==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_3==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_3==MIN) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
@@ -23061,193 +23240,193 @@ public class EsperEPL2GrammarParser extends Parser {
                     throw nvae;
                 }
             }
-            else if ( (LA299_0==NUM_LONG) ) {
+            else if ( (LA299_0==NUM_FLOAT) ) {
                 int LA299_4 = input.LA(2);
-                if ( (LA299_4==WEEKDAY) && (synpred14_EsperEPL2Grammar())) {
-                    alt299=8;
+                if ( (LA299_4==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_4==STAR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_4==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_4==DIV) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_4==MIN) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_4==MOD) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_4==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {
+                    alt299=7;
                 }
-                else if ( (LA299_4==PLUS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_4==TIMEPERIOD_MONTHS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_4==MINUS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==LOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==LT) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==GT) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==LE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==GE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==EQUALS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==IS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==SQL_NE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==NOT_EQUAL) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==BAND) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==BOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==BXOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==AND_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==OR_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==ASC) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_4==DESC) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_4==TIMEPERIOD_MONTH) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
                 else if ( (LA299_4==TIMEPERIOD_SECONDS) ) {
-                    int LA299_219 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
+                    int LA299_216 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 299, 219, input);
+                            new NoViableAltException("", 299, 216, input);
                         throw nvae;
                     }
                 }
                 else if ( (LA299_4==TIMEPERIOD_SECOND) ) {
-                    int LA299_220 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
+                    int LA299_217 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 299, 220, input);
+                            new NoViableAltException("", 299, 217, input);
                         throw nvae;
                     }
                 }
                 else if ( (LA299_4==TIMEPERIOD_SEC) ) {
-                    int LA299_221 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
+                    int LA299_218 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 299, 221, input);
+                            new NoViableAltException("", 299, 218, input);
                         throw nvae;
                     }
                 }
-                else if ( (LA299_4==COMMA) && (synpred10_EsperEPL2Grammar())) {
+                else if ( (LA299_4==COLON) && (synpred10_EsperEPL2Grammar())) {
                     alt299=4;
                 }
-                else if ( (LA299_4==RPAREN) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_4==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_4==NOT_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_4==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_4==IN_SET) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_4==LAST) && (synpred12_EsperEPL2Grammar())) {
+                    alt299=6;
                 }
-                else if ( (LA299_4==BETWEEN) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_4==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_4==LIKE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_4==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_4==REGEXP) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_4==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_4==TIMEPERIOD_MINUTES) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==TIMEPERIOD_YEARS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_4==TIMEPERIOD_YEAR) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_4==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_4==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_4==STAR) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==TIMEPERIOD_MINUTE) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==DIV) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==MIN) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==MOD) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==TIMEPERIOD_MONTHS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==PLUS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==TIMEPERIOD_MONTH) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==MINUS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==LAST) && (synpred13_EsperEPL2Grammar())) {
-                    alt299=7;
-                }
-                else if ( (LA299_4==TIMEPERIOD_MILLISECONDS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==LOR) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==TIMEPERIOD_MILLISECOND) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==LT) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==TIMEPERIOD_MILLISEC) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==GT) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==TIMEPERIOD_DAYS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==LE) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==TIMEPERIOD_DAY) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==GE) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==TIMEPERIOD_WEEKS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==EQUALS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==TIMEPERIOD_WEEK) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==IS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==TIMEPERIOD_YEARS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==SQL_NE) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==TIMEPERIOD_YEAR) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==COLON) && (synpred11_EsperEPL2Grammar())) {
-                    alt299=5;
-                }
-                else if ( (LA299_4==TIMEPERIOD_HOURS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==BAND) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_4==TIMEPERIOD_HOUR) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_4==BOR) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
+                }
+                else if ( (LA299_4==BXOR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_4==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_4==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_4==ASC) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_4==DESC) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_4==COMMA) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_4==RPAREN) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_4==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_4==IN_SET) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_4==BETWEEN) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_4==LIKE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_4==REGEXP) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_4==TIMEPERIOD_WEEKS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_4==TIMEPERIOD_WEEK) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
@@ -23256,81 +23435,54 @@ public class EsperEPL2GrammarParser extends Parser {
                     throw nvae;
                 }
             }
-            else if ( (LA299_0==NUM_FLOAT) ) {
+            else if ( (LA299_0==NUM_DOUBLE) ) {
                 int LA299_5 = input.LA(2);
-                if ( (LA299_5==COLON) && (synpred11_EsperEPL2Grammar())) {
-                    alt299=5;
+                if ( (LA299_5==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_5==STAR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_5==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_5==DIV) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_5==MIN) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_5==MOD) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_5==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_5==PLUS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_5==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_5==MINUS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_5==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_5==LOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_5==TIMEPERIOD_MONTHS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_5==LT) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==GT) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==LE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==GE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==EQUALS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==IS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==SQL_NE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==NOT_EQUAL) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==BAND) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==BOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==BXOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==AND_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==OR_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==ASC) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==DESC) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_5==TIMEPERIOD_MONTH) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
                 else if ( (LA299_5==TIMEPERIOD_SECONDS) ) {
-                    int LA299_269 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
+                    int LA299_268 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
+                    }
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
                         alt299=3;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else {
+                        if (state.backtracking>0) {state.failed=true; return retval;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("", 299, 268, input);
+                        throw nvae;
+                    }
+                }
+                else if ( (LA299_5==TIMEPERIOD_SECOND) ) {
+                    int LA299_269 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
+                    }
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
@@ -23339,13 +23491,13 @@ public class EsperEPL2GrammarParser extends Parser {
                         throw nvae;
                     }
                 }
-                else if ( (LA299_5==TIMEPERIOD_SECOND) ) {
+                else if ( (LA299_5==TIMEPERIOD_SEC) ) {
                     int LA299_270 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
@@ -23354,95 +23506,122 @@ public class EsperEPL2GrammarParser extends Parser {
                         throw nvae;
                     }
                 }
-                else if ( (LA299_5==TIMEPERIOD_SEC) ) {
-                    int LA299_271 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
-                    }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
-                    }
-                    else {
-                        if (state.backtracking>0) {state.failed=true; return retval;}
-                        NoViableAltException nvae =
-                            new NoViableAltException("", 299, 271, input);
-                        throw nvae;
-                    }
-                }
-                else if ( (LA299_5==COMMA) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==RPAREN) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==NOT_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==IN_SET) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==BETWEEN) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==LIKE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==REGEXP) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_5==TIMEPERIOD_MINUTES) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_5==TIMEPERIOD_MINUTE) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_5==MIN) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_5==LAST) && (synpred13_EsperEPL2Grammar())) {
+                else if ( (LA299_5==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {
                     alt299=7;
                 }
-                else if ( (LA299_5==TIMEPERIOD_MILLISECONDS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_5==LAST) && (synpred12_EsperEPL2Grammar())) {
+                    alt299=6;
+                }
+                else if ( (LA299_5==STAR) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_5==TIMEPERIOD_MILLISECOND) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_5==DIV) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_5==TIMEPERIOD_MILLISEC) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_5==MOD) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_5==TIMEPERIOD_MONTHS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_5==PLUS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_5==TIMEPERIOD_MONTH) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_5==MINUS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_5==TIMEPERIOD_HOURS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_5==LOR) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_5==TIMEPERIOD_HOUR) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_5==LT) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_5==WEEKDAY) && (synpred14_EsperEPL2Grammar())) {
-                    alt299=8;
-                }
-                else if ( (LA299_5==TIMEPERIOD_DAYS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_5==GT) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_5==TIMEPERIOD_DAY) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_5==LE) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_5==TIMEPERIOD_WEEKS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_5==GE) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_5==TIMEPERIOD_WEEK) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_5==EQUALS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_5==TIMEPERIOD_YEARS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_5==IS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_5==TIMEPERIOD_YEAR) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_5==SQL_NE) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
+                }
+                else if ( (LA299_5==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==BAND) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==BOR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==BXOR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==ASC) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==DESC) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==COMMA) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==RPAREN) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==IN_SET) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==BETWEEN) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==LIKE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==REGEXP) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_5==COLON) && (synpred10_EsperEPL2Grammar())) {
+                    alt299=4;
+                }
+                else if ( (LA299_5==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_5==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_5==TIMEPERIOD_WEEKS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_5==TIMEPERIOD_WEEK) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_5==TIMEPERIOD_YEARS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_5==TIMEPERIOD_YEAR) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_5==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_5==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
@@ -23451,193 +23630,208 @@ public class EsperEPL2GrammarParser extends Parser {
                     throw nvae;
                 }
             }
-            else if ( (LA299_0==NUM_DOUBLE) ) {
+            else if ( (LA299_0==IDENT) ) {
                 int LA299_6 = input.LA(2);
-                if ( (LA299_6==TIMEPERIOD_MONTHS) && (synpred9_EsperEPL2Grammar())) {
+                if ( (LA299_6==LAST) && (synpred12_EsperEPL2Grammar())) {
+                    alt299=6;
+                }
+                else if ( (LA299_6==LPAREN) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_6==TIMEPERIOD_MONTH) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                else if ( (LA299_6==TIMEPERIOD_WEEKS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_6==LAST) && (synpred13_EsperEPL2Grammar())) {
-                    alt299=7;
+                else if ( (LA299_6==TIMEPERIOD_WEEK) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_6==TIMEPERIOD_WEEKS) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                else if ( (LA299_6==COLON) && (synpred10_EsperEPL2Grammar())) {
+                    alt299=4;
                 }
-                else if ( (LA299_6==TIMEPERIOD_WEEK) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
+                else if ( (LA299_6==TIMEPERIOD_YEARS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_6==COLON) && (synpred11_EsperEPL2Grammar())) {
-                    alt299=5;
+                else if ( (LA299_6==TIMEPERIOD_YEAR) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_6==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_6==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
                 else if ( (LA299_6==TIMEPERIOD_SECONDS) ) {
-                    int LA299_303 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
+                    int LA299_319 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 299, 303, input);
+                            new NoViableAltException("", 299, 319, input);
                         throw nvae;
                     }
                 }
                 else if ( (LA299_6==TIMEPERIOD_SECOND) ) {
-                    int LA299_304 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
+                    int LA299_320 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 299, 304, input);
+                            new NoViableAltException("", 299, 320, input);
                         throw nvae;
                     }
                 }
                 else if ( (LA299_6==TIMEPERIOD_SEC) ) {
-                    int LA299_305 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
+                    int LA299_321 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 299, 305, input);
+                            new NoViableAltException("", 299, 321, input);
                         throw nvae;
                     }
                 }
-                else if ( (LA299_6==STAR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_6==TIMEPERIOD_MONTHS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_6==DIV) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_6==TIMEPERIOD_MONTH) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_6==MOD) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_6==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_6==PLUS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_6==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_6==MINUS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_6==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_6==LOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_6==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_6==LT) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_6==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_6==GT) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
+                else if ( (LA299_6==MIN) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
-                else if ( (LA299_6==LE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==GE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==EQUALS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==IS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==SQL_NE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==NOT_EQUAL) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==BAND) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==BOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==BXOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==AND_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==OR_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==ASC) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==DESC) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==COMMA) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==RPAREN) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==NOT_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==IN_SET) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==BETWEEN) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==LIKE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==REGEXP) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_6==TIMEPERIOD_MINUTES) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_6==ESCAPECHAR) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_6==TIMEPERIOD_MINUTE) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_6==LBRACK) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_6==MIN) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_6==QUESTION) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_6==TIMEPERIOD_MILLISECONDS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_6==DOT) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_6==TIMEPERIOD_MILLISECOND) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_6==STAR) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_6==TIMEPERIOD_MILLISEC) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_6==DIV) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_6==TIMEPERIOD_DAYS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_6==MOD) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_6==TIMEPERIOD_DAY) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_6==PLUS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_6==TIMEPERIOD_YEARS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_6==MINUS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_6==TIMEPERIOD_YEAR) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_6==LOR) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_6==TIMEPERIOD_HOURS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_6==LT) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_6==TIMEPERIOD_HOUR) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_6==GT) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_6==WEEKDAY) && (synpred14_EsperEPL2Grammar())) {
-                    alt299=8;
+                else if ( (LA299_6==LE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==GE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==EQUALS) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==IS) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==SQL_NE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==BAND) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==BOR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==BXOR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==ASC) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==DESC) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==COMMA) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==RPAREN) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==IN_SET) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==BETWEEN) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==LIKE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==REGEXP) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_6==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {
+                    alt299=7;
+                }
+                else if ( (LA299_6==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_6==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
@@ -23646,208 +23840,193 @@ public class EsperEPL2GrammarParser extends Parser {
                     throw nvae;
                 }
             }
-            else if ( (LA299_0==IDENT) ) {
+            else if ( (LA299_0==QUESTION) ) {
                 int LA299_7 = input.LA(2);
-                if ( (LA299_7==TIMEPERIOD_MINUTES) && (synpred9_EsperEPL2Grammar())) {
+                if ( (LA299_7==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==TIMEPERIOD_YEARS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==TIMEPERIOD_YEAR) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==STAR) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==TIMEPERIOD_MINUTE) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==DIV) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==MIN) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==MOD) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==LAST) && (synpred13_EsperEPL2Grammar())) {
-                    alt299=7;
-                }
-                else if ( (LA299_7==TIMEPERIOD_WEEKS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==PLUS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==TIMEPERIOD_WEEK) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==MINUS) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==TIMEPERIOD_HOURS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==LOR) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==TIMEPERIOD_HOUR) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==LT) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==COLON) && (synpred11_EsperEPL2Grammar())) {
-                    alt299=5;
-                }
-                else if ( (LA299_7==LPAREN) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==TIMEPERIOD_DAYS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==GT) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==TIMEPERIOD_DAY) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==LE) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==DOT) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==TIMEPERIOD_YEARS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==GE) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==TIMEPERIOD_YEAR) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==EQUALS) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_7==IS) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_7==SQL_NE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_7==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_7==BAND) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_7==BOR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_7==BXOR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_7==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_7==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_7==ASC) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_7==DESC) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
                 else if ( (LA299_7==TIMEPERIOD_SECONDS) ) {
-                    int LA299_362 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
+                    int LA299_390 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 299, 362, input);
+                            new NoViableAltException("", 299, 390, input);
                         throw nvae;
                     }
                 }
                 else if ( (LA299_7==TIMEPERIOD_SECOND) ) {
-                    int LA299_363 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
+                    int LA299_391 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 299, 363, input);
+                            new NoViableAltException("", 299, 391, input);
                         throw nvae;
                     }
                 }
                 else if ( (LA299_7==TIMEPERIOD_SEC) ) {
-                    int LA299_364 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
+                    int LA299_392 = input.LA(3);
+                    if ( (synpred8_EsperEPL2Grammar()) ) {
+                        alt299=2;
                     }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
+                    else if ( (synpred9_EsperEPL2Grammar()) ) {
+                        alt299=3;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 299, 364, input);
+                            new NoViableAltException("", 299, 392, input);
                         throw nvae;
                     }
                 }
-                else if ( (LA299_7==WEEKDAY) && (synpred14_EsperEPL2Grammar())) {
-                    alt299=8;
-                }
-                else if ( (LA299_7==ESCAPECHAR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==LBRACK) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==QUESTION) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==STAR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==DIV) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==MOD) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==PLUS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==MINUS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==LOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==LT) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==GT) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==LE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==GE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==EQUALS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==IS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==SQL_NE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==NOT_EQUAL) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==BAND) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==BOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==BXOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==AND_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==OR_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==ASC) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==DESC) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==COMMA) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==RPAREN) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==NOT_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==IN_SET) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==BETWEEN) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==LIKE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==REGEXP) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_7==TIMEPERIOD_MONTHS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==COMMA) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==TIMEPERIOD_MONTH) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==RPAREN) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==TIMEPERIOD_MILLISECONDS) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==TIMEPERIOD_MILLISECOND) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==IN_SET) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
                 }
-                else if ( (LA299_7==TIMEPERIOD_MILLISEC) && (synpred9_EsperEPL2Grammar())) {
+                else if ( (LA299_7==BETWEEN) && (synpred9_EsperEPL2Grammar())) {
                     alt299=3;
+                }
+                else if ( (LA299_7==LIKE) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_7==REGEXP) && (synpred9_EsperEPL2Grammar())) {
+                    alt299=3;
+                }
+                else if ( (LA299_7==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==COLON) && (synpred10_EsperEPL2Grammar())) {
+                    alt299=4;
+                }
+                else if ( (LA299_7==TIMEPERIOD_MONTHS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==TIMEPERIOD_MONTH) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==TIMEPERIOD_WEEKS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==TIMEPERIOD_WEEK) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {
+                    alt299=7;
+                }
+                else if ( (LA299_7==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==MIN) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==LAST) && (synpred12_EsperEPL2Grammar())) {
+                    alt299=6;
+                }
+                else if ( (LA299_7==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
+                }
+                else if ( (LA299_7==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {
+                    alt299=2;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
@@ -23856,394 +24035,202 @@ public class EsperEPL2GrammarParser extends Parser {
                     throw nvae;
                 }
             }
-            else if ( (LA299_0==QUESTION) ) {
-                int LA299_8 = input.LA(2);
-                if ( (LA299_8==STAR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==DIV) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==MOD) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==PLUS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==MINUS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==LOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==LT) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==GT) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==LE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==GE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==EQUALS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==IS) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==SQL_NE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==NOT_EQUAL) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==BAND) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==BOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==BXOR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==AND_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==OR_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==ASC) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==DESC) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==TIMEPERIOD_SECONDS) ) {
-                    int LA299_423 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
-                    }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
-                    }
-                    else {
-                        if (state.backtracking>0) {state.failed=true; return retval;}
-                        NoViableAltException nvae =
-                            new NoViableAltException("", 299, 423, input);
-                        throw nvae;
-                    }
-                }
-                else if ( (LA299_8==TIMEPERIOD_SECOND) ) {
-                    int LA299_424 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
-                    }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
-                    }
-                    else {
-                        if (state.backtracking>0) {state.failed=true; return retval;}
-                        NoViableAltException nvae =
-                            new NoViableAltException("", 299, 424, input);
-                        throw nvae;
-                    }
-                }
-                else if ( (LA299_8==TIMEPERIOD_SEC) ) {
-                    int LA299_425 = input.LA(3);
-                    if ( (synpred9_EsperEPL2Grammar()) ) {
-                        alt299=3;
-                    }
-                    else if ( (synpred10_EsperEPL2Grammar()) ) {
-                        alt299=4;
-                    }
-                    else {
-                        if (state.backtracking>0) {state.failed=true; return retval;}
-                        NoViableAltException nvae =
-                            new NoViableAltException("", 299, 425, input);
-                        throw nvae;
-                    }
-                }
-                else if ( (LA299_8==COMMA) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==RPAREN) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==NOT_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==IN_SET) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==BETWEEN) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==LIKE) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==REGEXP) && (synpred10_EsperEPL2Grammar())) {
-                    alt299=4;
-                }
-                else if ( (LA299_8==WEEKDAY) && (synpred14_EsperEPL2Grammar())) {
-                    alt299=8;
-                }
-                else if ( (LA299_8==TIMEPERIOD_MINUTES) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==TIMEPERIOD_MINUTE) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==MIN) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==LAST) && (synpred13_EsperEPL2Grammar())) {
-                    alt299=7;
-                }
-                else if ( (LA299_8==TIMEPERIOD_MONTHS) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==TIMEPERIOD_MONTH) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==TIMEPERIOD_HOURS) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==TIMEPERIOD_HOUR) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==TIMEPERIOD_MILLISECONDS) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==TIMEPERIOD_MILLISECOND) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==TIMEPERIOD_MILLISEC) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==TIMEPERIOD_YEARS) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==TIMEPERIOD_YEAR) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==TIMEPERIOD_DAYS) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==TIMEPERIOD_DAY) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==TIMEPERIOD_WEEKS) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==TIMEPERIOD_WEEK) && (synpred9_EsperEPL2Grammar())) {
-                    alt299=3;
-                }
-                else if ( (LA299_8==COLON) && (synpred11_EsperEPL2Grammar())) {
-                    alt299=5;
-                }
-                else {
-                    if (state.backtracking>0) {state.failed=true; return retval;}
-                    NoViableAltException nvae =
-                        new NoViableAltException("", 299, 8, input);
-                    throw nvae;
-                }
+            else if ( (LA299_0==CASE) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==CASE) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==MINUS) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==MINUS) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==PLUS) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==PLUS) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==STRING_LITERAL) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==STRING_LITERAL) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==QUOTED_STRING_LITERAL) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==QUOTED_STRING_LITERAL) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==BOOLEAN_TRUE) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==BOOLEAN_TRUE) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==BOOLEAN_FALSE) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==BOOLEAN_FALSE) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==VALUE_NULL) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==VALUE_NULL) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==LPAREN) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==LPAREN) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==TICKED_STRING_LITERAL) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==TICKED_STRING_LITERAL) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==AT) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==AT) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==COUNT) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==COUNT) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==ESCAPE) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==ESCAPE) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==EVERY_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==EVERY_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==SUM) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==SUM) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==AVG) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==AVG) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==MAX) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==MAX) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==MIN) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==MIN) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==COALESCE) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==COALESCE) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==MEDIAN) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==MEDIAN) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==STDDEV) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==STDDEV) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==AVEDEV) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==AVEDEV) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==EVENTS) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==EVENTS) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==FIRST) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==FIRST) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==LAST) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==WHILE) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==WHILE) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==MERGE) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==MERGE) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==MATCHED) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==MATCHED) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==UNIDIRECTIONAL) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==UNIDIRECTIONAL) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==RETAINUNION) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==RETAINUNION) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==RETAININTERSECTION) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==RETAININTERSECTION) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==UNTIL) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==UNTIL) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==PATTERN) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==PATTERN) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==SQL) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==SQL) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==METADATASQL) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==METADATASQL) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==PREVIOUS) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==PREVIOUS) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==PREVIOUSTAIL) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==PREVIOUSTAIL) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==PRIOR) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==PRIOR) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==WEEKDAY) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==WEEKDAY) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==INSTANCEOF) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==INSTANCEOF) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==TYPEOF) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==TYPEOF) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==CAST) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==CAST) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==SNAPSHOT) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==SNAPSHOT) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==VARIABLE) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==VARIABLE) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==INDEX) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==INDEX) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==WINDOW) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==WINDOW) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==LEFT) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==LEFT) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==RIGHT) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==RIGHT) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==OUTER) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==OUTER) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==FULL) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==FULL) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==JOIN) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==JOIN) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==DEFINE) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==DEFINE) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==PARTITION) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==PARTITION) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==MATCHES) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==MATCHES) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==WHERE) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==WHERE) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==SET) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==SET) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==PREVIOUSCOUNT) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==PREVIOUSCOUNT) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==PREVIOUSWINDOW) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==PREVIOUSWINDOW) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==EXISTS) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==EXISTS) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==CURRENT_TIMESTAMP) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==CURRENT_TIMESTAMP) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==LCURLY) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==LCURLY) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==NEWKW) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==NEWKW) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
-            else if ( (LA299_0==NOT_EXPR) && (synpred10_EsperEPL2Grammar())) {
-                alt299=4;
+            else if ( (LA299_0==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {
+                alt299=3;
             }
             else if ( (LA299_0==STAR) ) {
                 int LA299_71 = input.LA(2);
-                if ( (LA299_71==DIV) && (synpred12_EsperEPL2Grammar())) {
-                    alt299=6;
+                if ( (LA299_71==DIV) && (synpred11_EsperEPL2Grammar())) {
+                    alt299=5;
                 }
                 else if ( (LA299_71==RPAREN||LA299_71==COMMA) ) {
-                    alt299=10;
+                    alt299=9;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
@@ -24252,8 +24239,8 @@ public class EsperEPL2GrammarParser extends Parser {
                     throw nvae;
                 }
             }
-            else if ( (LA299_0==LBRACK) && (synpred15_EsperEPL2Grammar())) {
-                alt299=9;
+            else if ( (LA299_0==LBRACK) && (synpred14_EsperEPL2Grammar())) {
+                alt299=8;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
@@ -24265,101 +24252,163 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_lastOperand_in_expressionWithTime11357);
-                    lastOperand776=lastOperand();
+                    pushFollow(FOLLOW_lastWeekdayOperand_in_expressionWithTime11360);
+                    lastWeekdayOperand776=lastWeekdayOperand();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, lastOperand776.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, lastWeekdayOperand776.getTree());
                     }
                     break;
                 case 2 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_lastWeekdayOperand_in_expressionWithTime11368);
-                    lastWeekdayOperand777=lastWeekdayOperand();
+                    pushFollow(FOLLOW_timePeriod_in_expressionWithTime11371);
+                    timePeriod777=timePeriod();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, lastWeekdayOperand777.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, timePeriod777.getTree());
                     }
                     break;
                 case 3 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_timePeriod_in_expressionWithTime11379);
-                    timePeriod778=timePeriod();
+                    pushFollow(FOLLOW_expressionQualifyable_in_expressionWithTime11382);
+                    expressionQualifyable778=expressionQualifyable();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, timePeriod778.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, expressionQualifyable778.getTree());
                     }
                     break;
                 case 4 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_expressionQualifyable_in_expressionWithTime11390);
-                    expressionQualifyable779=expressionQualifyable();
+                    pushFollow(FOLLOW_rangeOperand_in_expressionWithTime11393);
+                    rangeOperand779=rangeOperand();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, expressionQualifyable779.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, rangeOperand779.getTree());
                     }
                     break;
                 case 5 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_rangeOperand_in_expressionWithTime11401);
-                    rangeOperand780=rangeOperand();
+                    pushFollow(FOLLOW_frequencyOperand_in_expressionWithTime11405);
+                    frequencyOperand780=frequencyOperand();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, rangeOperand780.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, frequencyOperand780.getTree());
                     }
                     break;
                 case 6 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_frequencyOperand_in_expressionWithTime11413);
-                    frequencyOperand781=frequencyOperand();
+                    pushFollow(FOLLOW_lastOperator_in_expressionWithTime11416);
+                    lastOperator781=lastOperator();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, frequencyOperand781.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, lastOperator781.getTree());
                     }
                     break;
                 case 7 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_lastOperator_in_expressionWithTime11424);
-                    lastOperator782=lastOperator();
+                    pushFollow(FOLLOW_weekDayOperator_in_expressionWithTime11428);
+                    weekDayOperator782=weekDayOperator();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, lastOperator782.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, weekDayOperator782.getTree());
                     }
                     break;
                 case 8 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_weekDayOperator_in_expressionWithTime11436);
-                    weekDayOperator783=weekDayOperator();
+                    pushFollow(FOLLOW_numericParameterList_in_expressionWithTime11440);
+                    numericParameterList783=numericParameterList();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, weekDayOperator783.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, numericParameterList783.getTree());
                     }
                     break;
                 case 9 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_numericParameterList_in_expressionWithTime11448);
-                    numericParameterList784=numericParameterList();
+                    pushFollow(FOLLOW_numberSetStar_in_expressionWithTime11445);
+                    numberSetStar784=numberSetStar();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, numericParameterList784.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, numberSetStar784.getTree());
                     }
                     break;
-                case 10 :
+            }
+            retval.stop = input.LT(-1);
+            if ( state.backtracking==0 ) {
+            retval.tree = (CommonTree)adaptor.rulePostProcessing(root_0);
+            adaptor.setTokenBoundaries(retval.tree, retval.start, retval.stop);
+            }
+        }
+          catch (RecognitionException rex) {
+            throw rex;
+          }
+        finally {
+        }
+        return retval;
+    }
+    public static class expressionWithTimeInclLast_return extends ParserRuleReturnScope {
+        CommonTree tree;
+        public Object getTree() { return tree; }
+    };
+    public final EsperEPL2GrammarParser.expressionWithTimeInclLast_return expressionWithTimeInclLast() throws RecognitionException {
+        EsperEPL2GrammarParser.expressionWithTimeInclLast_return retval = new EsperEPL2GrammarParser.expressionWithTimeInclLast_return();
+        retval.start = input.LT(1);
+        CommonTree root_0 = null;
+        EsperEPL2GrammarParser.lastOperand_return lastOperand785 = null;
+        EsperEPL2GrammarParser.expressionWithTime_return expressionWithTime786 = null;
+        try {
+            int alt300=2;
+            int LA300_0 = input.LA(1);
+            if ( (LA300_0==LAST) ) {
+                int LA300_1 = input.LA(2);
+                if ( (synpred15_EsperEPL2Grammar()) ) {
+                    alt300=1;
+                }
+                else if ( (true) ) {
+                    alt300=2;
+                }
+                else {
+                    if (state.backtracking>0) {state.failed=true; return retval;}
+                    NoViableAltException nvae =
+                        new NoViableAltException("", 300, 1, input);
+                    throw nvae;
+                }
+            }
+            else if ( (LA300_0==WINDOW||LA300_0==ESCAPE||(LA300_0>=NOT_EXPR && LA300_0<=EVERY_EXPR)||LA300_0==WHERE||(LA300_0>=SUM && LA300_0<=COUNT)||LA300_0==CASE||LA300_0==OUTER||(LA300_0>=JOIN && LA300_0<=FULL)||(LA300_0>=EVENTS && LA300_0<=FIRST)||(LA300_0>=UNIDIRECTIONAL && LA300_0<=CURRENT_TIMESTAMP)||(LA300_0>=SNAPSHOT && LA300_0<=INDEX)||(LA300_0>=BOOLEAN_TRUE && LA300_0<=VALUE_NULL)||(LA300_0>=DEFINE && LA300_0<=MATCHES)||LA300_0==WHILE||(LA300_0>=MERGE && LA300_0<=MATCHED)||LA300_0==NEWKW||LA300_0==NUM_DOUBLE||(LA300_0>=IDENT && LA300_0<=LCURLY)||LA300_0==LPAREN||LA300_0==LBRACK||LA300_0==STAR||(LA300_0>=PLUS && LA300_0<=QUESTION)||(LA300_0>=STRING_LITERAL && LA300_0<=QUOTED_STRING_LITERAL)||LA300_0==MINUS||LA300_0==NUM_INT||(LA300_0>=TICKED_STRING_LITERAL && LA300_0<=NUM_FLOAT)) ) {
+                alt300=2;
+            }
+            else {
+                if (state.backtracking>0) {state.failed=true; return retval;}
+                NoViableAltException nvae =
+                    new NoViableAltException("", 300, 0, input);
+                throw nvae;
+            }
+            switch (alt300) {
+                case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_numberSetStar_in_expressionWithTime11453);
-                    numberSetStar785=numberSetStar();
+                    pushFollow(FOLLOW_lastOperand_in_expressionWithTimeInclLast11465);
+                    lastOperand785=lastOperand();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, numberSetStar785.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, lastOperand785.getTree());
+                    }
+                    break;
+                case 2 :
+                    {
+                    root_0 = (CommonTree)adaptor.nil();
+                    pushFollow(FOLLOW_expressionWithTime_in_expressionWithTimeInclLast11470);
+                    expressionWithTime786=expressionWithTime();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, expressionWithTime786.getTree());
                     }
                     break;
             }
@@ -24387,7 +24436,7 @@ public class EsperEPL2GrammarParser extends Parser {
         Token a=null;
         Token d=null;
         Token s=null;
-        EsperEPL2GrammarParser.expression_return expression786 = null;
+        EsperEPL2GrammarParser.expression_return expression787 = null;
         CommonTree a_tree=null;
         CommonTree d_tree=null;
         CommonTree s_tree=null;
@@ -24399,67 +24448,67 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
         try {
             {
-            pushFollow(FOLLOW_expression_in_expressionQualifyable11464);
-            expression786=expression();
+            pushFollow(FOLLOW_expression_in_expressionQualifyable11481);
+            expression787=expression();
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_expression.add(expression786.getTree());
-            int alt300=6;
+            if ( state.backtracking==0 ) stream_expression.add(expression787.getTree());
+            int alt301=6;
             switch ( input.LA(1) ) {
                 case ASC:
                     {
-                    alt300=1;
+                    alt301=1;
                     }
                     break;
                 case DESC:
                     {
-                    alt300=2;
+                    alt301=2;
                     }
                     break;
                 case TIMEPERIOD_SECONDS:
                     {
-                    alt300=3;
+                    alt301=3;
                     }
                     break;
                 case TIMEPERIOD_SECOND:
                     {
-                    alt300=4;
+                    alt301=4;
                     }
                     break;
                 case TIMEPERIOD_SEC:
                     {
-                    alt300=5;
+                    alt301=5;
                     }
                     break;
             }
-            switch (alt300) {
+            switch (alt301) {
                 case 1 :
                     {
-                    a=(Token)match(input,ASC,FOLLOW_ASC_in_expressionQualifyable11469); if (state.failed) return retval; 
+                    a=(Token)match(input,ASC,FOLLOW_ASC_in_expressionQualifyable11486); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_ASC.add(a);
                     }
                     break;
                 case 2 :
                     {
-                    d=(Token)match(input,DESC,FOLLOW_DESC_in_expressionQualifyable11473); if (state.failed) return retval; 
+                    d=(Token)match(input,DESC,FOLLOW_DESC_in_expressionQualifyable11490); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_DESC.add(d);
                     }
                     break;
                 case 3 :
                     {
-                    s=(Token)match(input,TIMEPERIOD_SECONDS,FOLLOW_TIMEPERIOD_SECONDS_in_expressionQualifyable11477); if (state.failed) return retval; 
+                    s=(Token)match(input,TIMEPERIOD_SECONDS,FOLLOW_TIMEPERIOD_SECONDS_in_expressionQualifyable11494); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SECONDS.add(s);
                     }
                     break;
                 case 4 :
                     {
-                    s=(Token)match(input,TIMEPERIOD_SECOND,FOLLOW_TIMEPERIOD_SECOND_in_expressionQualifyable11481); if (state.failed) return retval; 
+                    s=(Token)match(input,TIMEPERIOD_SECOND,FOLLOW_TIMEPERIOD_SECOND_in_expressionQualifyable11498); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SECOND.add(s);
                     }
                     break;
                 case 5 :
                     {
-                    s=(Token)match(input,TIMEPERIOD_SEC,FOLLOW_TIMEPERIOD_SEC_in_expressionQualifyable11485); if (state.failed) return retval; 
+                    s=(Token)match(input,TIMEPERIOD_SEC,FOLLOW_TIMEPERIOD_SEC_in_expressionQualifyable11502); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SEC.add(s);
                     }
                     break;
@@ -24527,13 +24576,13 @@ public class EsperEPL2GrammarParser extends Parser {
         EsperEPL2GrammarParser.numberSetStar_return retval = new EsperEPL2GrammarParser.numberSetStar_return();
         retval.start = input.LT(1);
         CommonTree root_0 = null;
-        Token STAR787=null;
-        CommonTree STAR787_tree=null;
+        Token STAR788=null;
+        CommonTree STAR788_tree=null;
         RewriteRuleTokenStream stream_STAR=new RewriteRuleTokenStream(adaptor,"token STAR");
         try {
             {
-            STAR787=(Token)match(input,STAR,FOLLOW_STAR_in_numberSetStar11542); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_STAR.add(STAR787);
+            STAR788=(Token)match(input,STAR,FOLLOW_STAR_in_numberSetStar11559); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_STAR.add(STAR788);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
@@ -24568,15 +24617,15 @@ public class EsperEPL2GrammarParser extends Parser {
         EsperEPL2GrammarParser.lastWeekdayOperand_return retval = new EsperEPL2GrammarParser.lastWeekdayOperand_return();
         retval.start = input.LT(1);
         CommonTree root_0 = null;
-        Token LW788=null;
-        CommonTree LW788_tree=null;
+        Token LW789=null;
+        CommonTree LW789_tree=null;
         try {
             {
             root_0 = (CommonTree)adaptor.nil();
-            LW788=(Token)match(input,LW,FOLLOW_LW_in_lastWeekdayOperand11562); if (state.failed) return retval;
+            LW789=(Token)match(input,LW,FOLLOW_LW_in_lastWeekdayOperand11579); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            LW788_tree = (CommonTree)adaptor.create(LW788);
-            root_0 = (CommonTree)adaptor.becomeRoot(LW788_tree, root_0);
+            LW789_tree = (CommonTree)adaptor.create(LW789);
+            root_0 = (CommonTree)adaptor.becomeRoot(LW789_tree, root_0);
             }
             }
             retval.stop = input.LT(-1);
@@ -24600,15 +24649,15 @@ public class EsperEPL2GrammarParser extends Parser {
         EsperEPL2GrammarParser.lastOperand_return retval = new EsperEPL2GrammarParser.lastOperand_return();
         retval.start = input.LT(1);
         CommonTree root_0 = null;
-        Token LAST789=null;
-        CommonTree LAST789_tree=null;
+        Token LAST790=null;
+        CommonTree LAST790_tree=null;
         try {
             {
             root_0 = (CommonTree)adaptor.nil();
-            LAST789=(Token)match(input,LAST,FOLLOW_LAST_in_lastOperand11575); if (state.failed) return retval;
+            LAST790=(Token)match(input,LAST,FOLLOW_LAST_in_lastOperand11592); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            LAST789_tree = (CommonTree)adaptor.create(LAST789);
-            root_0 = (CommonTree)adaptor.becomeRoot(LAST789_tree, root_0);
+            LAST790_tree = (CommonTree)adaptor.create(LAST790);
+            root_0 = (CommonTree)adaptor.becomeRoot(LAST790_tree, root_0);
             }
             }
             retval.stop = input.LT(-1);
@@ -24633,13 +24682,13 @@ public class EsperEPL2GrammarParser extends Parser {
         retval.start = input.LT(1);
         CommonTree root_0 = null;
         Token i=null;
-        Token STAR790=null;
-        Token DIV791=null;
-        EsperEPL2GrammarParser.number_return number792 = null;
-        EsperEPL2GrammarParser.substitution_return substitution793 = null;
+        Token STAR791=null;
+        Token DIV792=null;
+        EsperEPL2GrammarParser.number_return number793 = null;
+        EsperEPL2GrammarParser.substitution_return substitution794 = null;
         CommonTree i_tree=null;
-        CommonTree STAR790_tree=null;
-        CommonTree DIV791_tree=null;
+        CommonTree STAR791_tree=null;
+        CommonTree DIV792_tree=null;
         RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_STAR=new RewriteRuleTokenStream(adaptor,"token STAR");
         RewriteRuleTokenStream stream_DIV=new RewriteRuleTokenStream(adaptor,"token DIV");
@@ -24647,59 +24696,59 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
             {
-            STAR790=(Token)match(input,STAR,FOLLOW_STAR_in_frequencyOperand11587); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_STAR.add(STAR790);
-            DIV791=(Token)match(input,DIV,FOLLOW_DIV_in_frequencyOperand11589); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_DIV.add(DIV791);
-            int alt301=3;
+            STAR791=(Token)match(input,STAR,FOLLOW_STAR_in_frequencyOperand11604); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_STAR.add(STAR791);
+            DIV792=(Token)match(input,DIV,FOLLOW_DIV_in_frequencyOperand11606); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_DIV.add(DIV792);
+            int alt302=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt301=1;
+                alt302=1;
                 }
                 break;
             case IDENT:
                 {
-                alt301=2;
+                alt302=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt301=3;
+                alt302=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 301, 0, input);
+                    new NoViableAltException("", 302, 0, input);
                 throw nvae;
             }
-            switch (alt301) {
+            switch (alt302) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_frequencyOperand11592);
-                    number792=number();
+                    pushFollow(FOLLOW_number_in_frequencyOperand11609);
+                    number793=number();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_number.add(number792.getTree());
+                    if ( state.backtracking==0 ) stream_number.add(number793.getTree());
                     }
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_frequencyOperand11596); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_frequencyOperand11613); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_frequencyOperand11598);
-                    substitution793=substitution();
+                    pushFollow(FOLLOW_substitution_in_frequencyOperand11615);
+                    substitution794=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_substitution.add(substitution793.getTree());
+                    if ( state.backtracking==0 ) stream_substitution.add(substitution794.getTree());
                     }
                     break;
             }
@@ -24767,74 +24816,20 @@ public class EsperEPL2GrammarParser extends Parser {
         CommonTree root_0 = null;
         Token i1=null;
         Token i2=null;
-        Token COLON796=null;
-        EsperEPL2GrammarParser.number_return number794 = null;
-        EsperEPL2GrammarParser.substitution_return substitution795 = null;
-        EsperEPL2GrammarParser.number_return number797 = null;
-        EsperEPL2GrammarParser.substitution_return substitution798 = null;
+        Token COLON797=null;
+        EsperEPL2GrammarParser.number_return number795 = null;
+        EsperEPL2GrammarParser.substitution_return substitution796 = null;
+        EsperEPL2GrammarParser.number_return number798 = null;
+        EsperEPL2GrammarParser.substitution_return substitution799 = null;
         CommonTree i1_tree=null;
         CommonTree i2_tree=null;
-        CommonTree COLON796_tree=null;
+        CommonTree COLON797_tree=null;
         RewriteRuleTokenStream stream_COLON=new RewriteRuleTokenStream(adaptor,"token COLON");
         RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
             {
-            int alt302=3;
-            switch ( input.LA(1) ) {
-            case NUM_DOUBLE:
-            case NUM_INT:
-            case NUM_LONG:
-            case NUM_FLOAT:
-                {
-                alt302=1;
-                }
-                break;
-            case IDENT:
-                {
-                alt302=2;
-                }
-                break;
-            case QUESTION:
-                {
-                alt302=3;
-                }
-                break;
-            default:
-                if (state.backtracking>0) {state.failed=true; return retval;}
-                NoViableAltException nvae =
-                    new NoViableAltException("", 302, 0, input);
-                throw nvae;
-            }
-            switch (alt302) {
-                case 1 :
-                    {
-                    pushFollow(FOLLOW_number_in_rangeOperand11647);
-                    number794=number();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_number.add(number794.getTree());
-                    }
-                    break;
-                case 2 :
-                    {
-                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_rangeOperand11651); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_IDENT.add(i1);
-                    }
-                    break;
-                case 3 :
-                    {
-                    pushFollow(FOLLOW_substitution_in_rangeOperand11653);
-                    substitution795=substitution();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_substitution.add(substitution795.getTree());
-                    }
-                    break;
-            }
-            COLON796=(Token)match(input,COLON,FOLLOW_COLON_in_rangeOperand11656); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_COLON.add(COLON796);
             int alt303=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
@@ -24864,26 +24859,80 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt303) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_rangeOperand11659);
-                    number797=number();
+                    pushFollow(FOLLOW_number_in_rangeOperand11664);
+                    number795=number();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_number.add(number797.getTree());
+                    if ( state.backtracking==0 ) stream_number.add(number795.getTree());
                     }
                     break;
                 case 2 :
                     {
-                    i2=(Token)match(input,IDENT,FOLLOW_IDENT_in_rangeOperand11663); if (state.failed) return retval; 
+                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_rangeOperand11668); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_IDENT.add(i1);
+                    }
+                    break;
+                case 3 :
+                    {
+                    pushFollow(FOLLOW_substitution_in_rangeOperand11670);
+                    substitution796=substitution();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_substitution.add(substitution796.getTree());
+                    }
+                    break;
+            }
+            COLON797=(Token)match(input,COLON,FOLLOW_COLON_in_rangeOperand11673); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_COLON.add(COLON797);
+            int alt304=3;
+            switch ( input.LA(1) ) {
+            case NUM_DOUBLE:
+            case NUM_INT:
+            case NUM_LONG:
+            case NUM_FLOAT:
+                {
+                alt304=1;
+                }
+                break;
+            case IDENT:
+                {
+                alt304=2;
+                }
+                break;
+            case QUESTION:
+                {
+                alt304=3;
+                }
+                break;
+            default:
+                if (state.backtracking>0) {state.failed=true; return retval;}
+                NoViableAltException nvae =
+                    new NoViableAltException("", 304, 0, input);
+                throw nvae;
+            }
+            switch (alt304) {
+                case 1 :
+                    {
+                    pushFollow(FOLLOW_number_in_rangeOperand11676);
+                    number798=number();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_number.add(number798.getTree());
+                    }
+                    break;
+                case 2 :
+                    {
+                    i2=(Token)match(input,IDENT,FOLLOW_IDENT_in_rangeOperand11680); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i2);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_rangeOperand11665);
-                    substitution798=substitution();
+                    pushFollow(FOLLOW_substitution_in_rangeOperand11682);
+                    substitution799=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_substitution.add(substitution798.getTree());
+                    if ( state.backtracking==0 ) stream_substitution.add(substitution799.getTree());
                     }
                     break;
             }
@@ -25016,71 +25065,71 @@ public class EsperEPL2GrammarParser extends Parser {
         retval.start = input.LT(1);
         CommonTree root_0 = null;
         Token i=null;
-        Token LAST801=null;
-        EsperEPL2GrammarParser.number_return number799 = null;
-        EsperEPL2GrammarParser.substitution_return substitution800 = null;
+        Token LAST802=null;
+        EsperEPL2GrammarParser.number_return number800 = null;
+        EsperEPL2GrammarParser.substitution_return substitution801 = null;
         CommonTree i_tree=null;
-        CommonTree LAST801_tree=null;
+        CommonTree LAST802_tree=null;
         RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_LAST=new RewriteRuleTokenStream(adaptor,"token LAST");
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
             {
-            int alt304=3;
+            int alt305=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt304=1;
+                alt305=1;
                 }
                 break;
             case IDENT:
                 {
-                alt304=2;
+                alt305=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt304=3;
+                alt305=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 304, 0, input);
+                    new NoViableAltException("", 305, 0, input);
                 throw nvae;
             }
-            switch (alt304) {
+            switch (alt305) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_lastOperator11779);
-                    number799=number();
+                    pushFollow(FOLLOW_number_in_lastOperator11796);
+                    number800=number();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_number.add(number799.getTree());
+                    if ( state.backtracking==0 ) stream_number.add(number800.getTree());
                     }
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_lastOperator11783); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_lastOperator11800); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_lastOperator11785);
-                    substitution800=substitution();
+                    pushFollow(FOLLOW_substitution_in_lastOperator11802);
+                    substitution801=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_substitution.add(substitution800.getTree());
+                    if ( state.backtracking==0 ) stream_substitution.add(substitution801.getTree());
                     }
                     break;
             }
-            LAST801=(Token)match(input,LAST,FOLLOW_LAST_in_lastOperator11788); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_LAST.add(LAST801);
+            LAST802=(Token)match(input,LAST,FOLLOW_LAST_in_lastOperator11805); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_LAST.add(LAST802);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleTokenStream stream_i=new RewriteRuleTokenStream(adaptor,"token i",i);
@@ -25144,71 +25193,71 @@ public class EsperEPL2GrammarParser extends Parser {
         retval.start = input.LT(1);
         CommonTree root_0 = null;
         Token i=null;
-        Token WEEKDAY804=null;
-        EsperEPL2GrammarParser.number_return number802 = null;
-        EsperEPL2GrammarParser.substitution_return substitution803 = null;
+        Token WEEKDAY805=null;
+        EsperEPL2GrammarParser.number_return number803 = null;
+        EsperEPL2GrammarParser.substitution_return substitution804 = null;
         CommonTree i_tree=null;
-        CommonTree WEEKDAY804_tree=null;
+        CommonTree WEEKDAY805_tree=null;
         RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_WEEKDAY=new RewriteRuleTokenStream(adaptor,"token WEEKDAY");
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
             {
-            int alt305=3;
+            int alt306=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt305=1;
+                alt306=1;
                 }
                 break;
             case IDENT:
                 {
-                alt305=2;
+                alt306=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt305=3;
+                alt306=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 305, 0, input);
+                    new NoViableAltException("", 306, 0, input);
                 throw nvae;
             }
-            switch (alt305) {
+            switch (alt306) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_weekDayOperator11836);
-                    number802=number();
+                    pushFollow(FOLLOW_number_in_weekDayOperator11853);
+                    number803=number();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_number.add(number802.getTree());
+                    if ( state.backtracking==0 ) stream_number.add(number803.getTree());
                     }
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_weekDayOperator11840); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_weekDayOperator11857); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_weekDayOperator11842);
-                    substitution803=substitution();
+                    pushFollow(FOLLOW_substitution_in_weekDayOperator11859);
+                    substitution804=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_substitution.add(substitution803.getTree());
+                    if ( state.backtracking==0 ) stream_substitution.add(substitution804.getTree());
                     }
                     break;
             }
-            WEEKDAY804=(Token)match(input,WEEKDAY,FOLLOW_WEEKDAY_in_weekDayOperator11845); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_WEEKDAY.add(WEEKDAY804);
+            WEEKDAY805=(Token)match(input,WEEKDAY,FOLLOW_WEEKDAY_in_weekDayOperator11862); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_WEEKDAY.add(WEEKDAY805);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleTokenStream stream_i=new RewriteRuleTokenStream(adaptor,"token i",i);
@@ -25271,52 +25320,52 @@ public class EsperEPL2GrammarParser extends Parser {
         EsperEPL2GrammarParser.numericParameterList_return retval = new EsperEPL2GrammarParser.numericParameterList_return();
         retval.start = input.LT(1);
         CommonTree root_0 = null;
-        Token LBRACK805=null;
-        Token COMMA807=null;
-        Token RBRACK809=null;
-        EsperEPL2GrammarParser.numericListParameter_return numericListParameter806 = null;
-        EsperEPL2GrammarParser.numericListParameter_return numericListParameter808 = null;
-        CommonTree LBRACK805_tree=null;
-        CommonTree COMMA807_tree=null;
-        CommonTree RBRACK809_tree=null;
+        Token LBRACK806=null;
+        Token COMMA808=null;
+        Token RBRACK810=null;
+        EsperEPL2GrammarParser.numericListParameter_return numericListParameter807 = null;
+        EsperEPL2GrammarParser.numericListParameter_return numericListParameter809 = null;
+        CommonTree LBRACK806_tree=null;
+        CommonTree COMMA808_tree=null;
+        CommonTree RBRACK810_tree=null;
         RewriteRuleTokenStream stream_RBRACK=new RewriteRuleTokenStream(adaptor,"token RBRACK");
         RewriteRuleTokenStream stream_LBRACK=new RewriteRuleTokenStream(adaptor,"token LBRACK");
         RewriteRuleTokenStream stream_COMMA=new RewriteRuleTokenStream(adaptor,"token COMMA");
         RewriteRuleSubtreeStream stream_numericListParameter=new RewriteRuleSubtreeStream(adaptor,"rule numericListParameter");
         try {
             {
-            LBRACK805=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_numericParameterList11892); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_LBRACK.add(LBRACK805);
-            pushFollow(FOLLOW_numericListParameter_in_numericParameterList11894);
-            numericListParameter806=numericListParameter();
+            LBRACK806=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_numericParameterList11909); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_LBRACK.add(LBRACK806);
+            pushFollow(FOLLOW_numericListParameter_in_numericParameterList11911);
+            numericListParameter807=numericListParameter();
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_numericListParameter.add(numericListParameter806.getTree());
-            loop306:
+            if ( state.backtracking==0 ) stream_numericListParameter.add(numericListParameter807.getTree());
+            loop307:
             do {
-                int alt306=2;
-                int LA306_0 = input.LA(1);
-                if ( (LA306_0==COMMA) ) {
-                    alt306=1;
+                int alt307=2;
+                int LA307_0 = input.LA(1);
+                if ( (LA307_0==COMMA) ) {
+                    alt307=1;
                 }
-                switch (alt306) {
+                switch (alt307) {
             	case 1 :
             	    {
-            	    COMMA807=(Token)match(input,COMMA,FOLLOW_COMMA_in_numericParameterList11897); if (state.failed) return retval; 
-            	    if ( state.backtracking==0 ) stream_COMMA.add(COMMA807);
-            	    pushFollow(FOLLOW_numericListParameter_in_numericParameterList11899);
-            	    numericListParameter808=numericListParameter();
+            	    COMMA808=(Token)match(input,COMMA,FOLLOW_COMMA_in_numericParameterList11914); if (state.failed) return retval; 
+            	    if ( state.backtracking==0 ) stream_COMMA.add(COMMA808);
+            	    pushFollow(FOLLOW_numericListParameter_in_numericParameterList11916);
+            	    numericListParameter809=numericListParameter();
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) stream_numericListParameter.add(numericListParameter808.getTree());
+            	    if ( state.backtracking==0 ) stream_numericListParameter.add(numericListParameter809.getTree());
             	    }
             	    break;
             	default :
-            	    break loop306;
+            	    break loop307;
                 }
             } while (true);
-            RBRACK809=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_numericParameterList11903); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_RBRACK.add(RBRACK809);
+            RBRACK810=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_numericParameterList11920); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_RBRACK.add(RBRACK810);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
@@ -25358,76 +25407,76 @@ public class EsperEPL2GrammarParser extends Parser {
         EsperEPL2GrammarParser.numericListParameter_return retval = new EsperEPL2GrammarParser.numericListParameter_return();
         retval.start = input.LT(1);
         CommonTree root_0 = null;
-        EsperEPL2GrammarParser.rangeOperand_return rangeOperand810 = null;
-        EsperEPL2GrammarParser.frequencyOperand_return frequencyOperand811 = null;
-        EsperEPL2GrammarParser.numberconstant_return numberconstant812 = null;
+        EsperEPL2GrammarParser.rangeOperand_return rangeOperand811 = null;
+        EsperEPL2GrammarParser.frequencyOperand_return frequencyOperand812 = null;
+        EsperEPL2GrammarParser.numberconstant_return numberconstant813 = null;
         try {
-            int alt307=3;
+            int alt308=3;
             switch ( input.LA(1) ) {
             case NUM_INT:
                 {
-                int LA307_1 = input.LA(2);
-                if ( (LA307_1==COMMA||LA307_1==RBRACK) ) {
-                    alt307=3;
+                int LA308_1 = input.LA(2);
+                if ( (LA308_1==COMMA||LA308_1==RBRACK) ) {
+                    alt308=3;
                 }
-                else if ( (LA307_1==COLON) ) {
-                    alt307=1;
+                else if ( (LA308_1==COLON) ) {
+                    alt308=1;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 307, 1, input);
+                        new NoViableAltException("", 308, 1, input);
                     throw nvae;
                 }
                 }
                 break;
             case NUM_LONG:
                 {
-                int LA307_2 = input.LA(2);
-                if ( (LA307_2==COMMA||LA307_2==RBRACK) ) {
-                    alt307=3;
+                int LA308_2 = input.LA(2);
+                if ( (LA308_2==COMMA||LA308_2==RBRACK) ) {
+                    alt308=3;
                 }
-                else if ( (LA307_2==COLON) ) {
-                    alt307=1;
+                else if ( (LA308_2==COLON) ) {
+                    alt308=1;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 307, 2, input);
+                        new NoViableAltException("", 308, 2, input);
                     throw nvae;
                 }
                 }
                 break;
             case NUM_FLOAT:
                 {
-                int LA307_3 = input.LA(2);
-                if ( (LA307_3==COMMA||LA307_3==RBRACK) ) {
-                    alt307=3;
+                int LA308_3 = input.LA(2);
+                if ( (LA308_3==COMMA||LA308_3==RBRACK) ) {
+                    alt308=3;
                 }
-                else if ( (LA307_3==COLON) ) {
-                    alt307=1;
+                else if ( (LA308_3==COLON) ) {
+                    alt308=1;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 307, 3, input);
+                        new NoViableAltException("", 308, 3, input);
                     throw nvae;
                 }
                 }
                 break;
             case NUM_DOUBLE:
                 {
-                int LA307_4 = input.LA(2);
-                if ( (LA307_4==COLON) ) {
-                    alt307=1;
+                int LA308_4 = input.LA(2);
+                if ( (LA308_4==COLON) ) {
+                    alt308=1;
                 }
-                else if ( (LA307_4==COMMA||LA307_4==RBRACK) ) {
-                    alt307=3;
+                else if ( (LA308_4==COMMA||LA308_4==RBRACK) ) {
+                    alt308=3;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 307, 4, input);
+                        new NoViableAltException("", 308, 4, input);
                     throw nvae;
                 }
                 }
@@ -25435,55 +25484,55 @@ public class EsperEPL2GrammarParser extends Parser {
             case IDENT:
             case QUESTION:
                 {
-                alt307=1;
+                alt308=1;
                 }
                 break;
             case STAR:
                 {
-                alt307=2;
+                alt308=2;
                 }
                 break;
             case PLUS:
             case MINUS:
                 {
-                alt307=3;
+                alt308=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 307, 0, input);
+                    new NoViableAltException("", 308, 0, input);
                 throw nvae;
             }
-            switch (alt307) {
+            switch (alt308) {
                 case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_rangeOperand_in_numericListParameter11925);
-                    rangeOperand810=rangeOperand();
+                    pushFollow(FOLLOW_rangeOperand_in_numericListParameter11942);
+                    rangeOperand811=rangeOperand();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, rangeOperand810.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, rangeOperand811.getTree());
                     }
                     break;
                 case 2 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_frequencyOperand_in_numericListParameter11931);
-                    frequencyOperand811=frequencyOperand();
+                    pushFollow(FOLLOW_frequencyOperand_in_numericListParameter11948);
+                    frequencyOperand812=frequencyOperand();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, frequencyOperand811.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, frequencyOperand812.getTree());
                     }
                     break;
                 case 3 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_numberconstant_in_numericListParameter11936);
-                    numberconstant812=numberconstant();
+                    pushFollow(FOLLOW_numberconstant_in_numericListParameter11953);
+                    numberconstant813=numberconstant();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, numberconstant812.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, numberconstant813.getTree());
                     }
                     break;
             }
@@ -25508,40 +25557,40 @@ public class EsperEPL2GrammarParser extends Parser {
         EsperEPL2GrammarParser.eventProperty_return retval = new EsperEPL2GrammarParser.eventProperty_return();
         retval.start = input.LT(1);
         CommonTree root_0 = null;
-        Token DOT814=null;
-        EsperEPL2GrammarParser.eventPropertyAtomic_return eventPropertyAtomic813 = null;
-        EsperEPL2GrammarParser.eventPropertyAtomic_return eventPropertyAtomic815 = null;
-        CommonTree DOT814_tree=null;
+        Token DOT815=null;
+        EsperEPL2GrammarParser.eventPropertyAtomic_return eventPropertyAtomic814 = null;
+        EsperEPL2GrammarParser.eventPropertyAtomic_return eventPropertyAtomic816 = null;
+        CommonTree DOT815_tree=null;
         RewriteRuleTokenStream stream_DOT=new RewriteRuleTokenStream(adaptor,"token DOT");
         RewriteRuleSubtreeStream stream_eventPropertyAtomic=new RewriteRuleSubtreeStream(adaptor,"rule eventPropertyAtomic");
         try {
             {
-            pushFollow(FOLLOW_eventPropertyAtomic_in_eventProperty11952);
-            eventPropertyAtomic813=eventPropertyAtomic();
+            pushFollow(FOLLOW_eventPropertyAtomic_in_eventProperty11969);
+            eventPropertyAtomic814=eventPropertyAtomic();
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_eventPropertyAtomic.add(eventPropertyAtomic813.getTree());
-            loop308:
+            if ( state.backtracking==0 ) stream_eventPropertyAtomic.add(eventPropertyAtomic814.getTree());
+            loop309:
             do {
-                int alt308=2;
-                int LA308_0 = input.LA(1);
-                if ( (LA308_0==DOT) ) {
-                    alt308=1;
+                int alt309=2;
+                int LA309_0 = input.LA(1);
+                if ( (LA309_0==DOT) ) {
+                    alt309=1;
                 }
-                switch (alt308) {
+                switch (alt309) {
             	case 1 :
             	    {
-            	    DOT814=(Token)match(input,DOT,FOLLOW_DOT_in_eventProperty11955); if (state.failed) return retval; 
-            	    if ( state.backtracking==0 ) stream_DOT.add(DOT814);
-            	    pushFollow(FOLLOW_eventPropertyAtomic_in_eventProperty11957);
-            	    eventPropertyAtomic815=eventPropertyAtomic();
+            	    DOT815=(Token)match(input,DOT,FOLLOW_DOT_in_eventProperty11972); if (state.failed) return retval; 
+            	    if ( state.backtracking==0 ) stream_DOT.add(DOT815);
+            	    pushFollow(FOLLOW_eventPropertyAtomic_in_eventProperty11974);
+            	    eventPropertyAtomic816=eventPropertyAtomic();
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) stream_eventPropertyAtomic.add(eventPropertyAtomic815.getTree());
+            	    if ( state.backtracking==0 ) stream_eventPropertyAtomic.add(eventPropertyAtomic816.getTree());
             	    }
             	    break;
             	default :
-            	    break loop308;
+            	    break loop309;
                 }
             } while (true);
             if ( state.backtracking==0 ) {
@@ -25591,17 +25640,17 @@ public class EsperEPL2GrammarParser extends Parser {
         Token lp=null;
         Token s=null;
         Token q1=null;
-        Token RBRACK817=null;
-        Token RPAREN818=null;
-        EsperEPL2GrammarParser.eventPropertyIdent_return eventPropertyIdent816 = null;
+        Token RBRACK818=null;
+        Token RPAREN819=null;
+        EsperEPL2GrammarParser.eventPropertyIdent_return eventPropertyIdent817 = null;
         CommonTree lb_tree=null;
         CommonTree ni_tree=null;
         CommonTree q_tree=null;
         CommonTree lp_tree=null;
         CommonTree s_tree=null;
         CommonTree q1_tree=null;
-        CommonTree RBRACK817_tree=null;
-        CommonTree RPAREN818_tree=null;
+        CommonTree RBRACK818_tree=null;
+        CommonTree RPAREN819_tree=null;
         RewriteRuleTokenStream stream_RBRACK=new RewriteRuleTokenStream(adaptor,"token RBRACK");
         RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
         RewriteRuleTokenStream stream_LBRACK=new RewriteRuleTokenStream(adaptor,"token LBRACK");
@@ -25613,47 +25662,47 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_eventPropertyIdent=new RewriteRuleSubtreeStream(adaptor,"rule eventPropertyIdent");
         try {
             {
-            pushFollow(FOLLOW_eventPropertyIdent_in_eventPropertyAtomic11983);
-            eventPropertyIdent816=eventPropertyIdent();
+            pushFollow(FOLLOW_eventPropertyIdent_in_eventPropertyAtomic12000);
+            eventPropertyIdent817=eventPropertyIdent();
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_eventPropertyIdent.add(eventPropertyIdent816.getTree());
-            int alt312=4;
+            if ( state.backtracking==0 ) stream_eventPropertyIdent.add(eventPropertyIdent817.getTree());
+            int alt313=4;
             switch ( input.LA(1) ) {
                 case LBRACK:
                     {
-                    alt312=1;
+                    alt313=1;
                     }
                     break;
                 case LPAREN:
                     {
-                    alt312=2;
+                    alt313=2;
                     }
                     break;
                 case QUESTION:
                     {
-                    alt312=3;
+                    alt313=3;
                     }
                     break;
             }
-            switch (alt312) {
+            switch (alt313) {
                 case 1 :
                     {
-                    lb=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_eventPropertyAtomic11992); if (state.failed) return retval; 
+                    lb=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_eventPropertyAtomic12009); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LBRACK.add(lb);
-                    ni=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_eventPropertyAtomic11996); if (state.failed) return retval; 
+                    ni=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_eventPropertyAtomic12013); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_INT.add(ni);
-                    RBRACK817=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_eventPropertyAtomic11998); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_RBRACK.add(RBRACK817);
-                    int alt309=2;
-                    int LA309_0 = input.LA(1);
-                    if ( (LA309_0==QUESTION) ) {
-                        alt309=1;
+                    RBRACK818=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_eventPropertyAtomic12015); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_RBRACK.add(RBRACK818);
+                    int alt310=2;
+                    int LA310_0 = input.LA(1);
+                    if ( (LA310_0==QUESTION) ) {
+                        alt310=1;
                     }
-                    switch (alt309) {
+                    switch (alt310) {
                         case 1 :
                             {
-                            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic12003); if (state.failed) return retval; 
+                            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic12020); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_QUESTION.add(q);
                             }
                             break;
@@ -25662,47 +25711,47 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    lp=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_eventPropertyAtomic12017); if (state.failed) return retval; 
+                    lp=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_eventPropertyAtomic12034); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LPAREN.add(lp);
-                    int alt310=2;
-                    int LA310_0 = input.LA(1);
-                    if ( (LA310_0==STRING_LITERAL) ) {
-                        alt310=1;
+                    int alt311=2;
+                    int LA311_0 = input.LA(1);
+                    if ( (LA311_0==STRING_LITERAL) ) {
+                        alt311=1;
                     }
-                    else if ( (LA310_0==QUOTED_STRING_LITERAL) ) {
-                        alt310=2;
+                    else if ( (LA311_0==QUOTED_STRING_LITERAL) ) {
+                        alt311=2;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 310, 0, input);
+                            new NoViableAltException("", 311, 0, input);
                         throw nvae;
                     }
-                    switch (alt310) {
+                    switch (alt311) {
                         case 1 :
                             {
-                            s=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_eventPropertyAtomic12022); if (state.failed) return retval; 
+                            s=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_eventPropertyAtomic12039); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_STRING_LITERAL.add(s);
                             }
                             break;
                         case 2 :
                             {
-                            s=(Token)match(input,QUOTED_STRING_LITERAL,FOLLOW_QUOTED_STRING_LITERAL_in_eventPropertyAtomic12028); if (state.failed) return retval; 
+                            s=(Token)match(input,QUOTED_STRING_LITERAL,FOLLOW_QUOTED_STRING_LITERAL_in_eventPropertyAtomic12045); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_QUOTED_STRING_LITERAL.add(s);
                             }
                             break;
                     }
-                    RPAREN818=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_eventPropertyAtomic12031); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_RPAREN.add(RPAREN818);
-                    int alt311=2;
-                    int LA311_0 = input.LA(1);
-                    if ( (LA311_0==QUESTION) ) {
-                        alt311=1;
+                    RPAREN819=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_eventPropertyAtomic12048); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_RPAREN.add(RPAREN819);
+                    int alt312=2;
+                    int LA312_0 = input.LA(1);
+                    if ( (LA312_0==QUESTION) ) {
+                        alt312=1;
                     }
-                    switch (alt311) {
+                    switch (alt312) {
                         case 1 :
                             {
-                            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic12036); if (state.failed) return retval; 
+                            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic12053); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_QUESTION.add(q);
                             }
                             break;
@@ -25711,7 +25760,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 3 :
                     {
-                    q1=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic12050); if (state.failed) return retval; 
+                    q1=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic12067); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_QUESTION.add(q1);
                     }
                     break;
@@ -25802,19 +25851,19 @@ public class EsperEPL2GrammarParser extends Parser {
         EsperEPL2GrammarParser.eventPropertyIdent_return retval = new EsperEPL2GrammarParser.eventPropertyIdent_return();
         retval.start = input.LT(1);
         CommonTree root_0 = null;
-        Token ESCAPECHAR819=null;
-        Token DOT820=null;
+        Token ESCAPECHAR820=null;
+        Token DOT821=null;
         EsperEPL2GrammarParser.keywordAllowedIdent_return ipi = null;
         EsperEPL2GrammarParser.keywordAllowedIdent_return ipi2 = null;
-        CommonTree ESCAPECHAR819_tree=null;
-        CommonTree DOT820_tree=null;
+        CommonTree ESCAPECHAR820_tree=null;
+        CommonTree DOT821_tree=null;
         RewriteRuleTokenStream stream_DOT=new RewriteRuleTokenStream(adaptor,"token DOT");
         RewriteRuleTokenStream stream_ESCAPECHAR=new RewriteRuleTokenStream(adaptor,"token ESCAPECHAR");
         RewriteRuleSubtreeStream stream_keywordAllowedIdent=new RewriteRuleSubtreeStream(adaptor,"rule keywordAllowedIdent");
          String identifier = ""; 
         try {
             {
-            pushFollow(FOLLOW_keywordAllowedIdent_in_eventPropertyIdent12173);
+            pushFollow(FOLLOW_keywordAllowedIdent_in_eventPropertyIdent12190);
             ipi=keywordAllowedIdent();
             state._fsp--;
             if (state.failed) return retval;
@@ -25822,21 +25871,21 @@ public class EsperEPL2GrammarParser extends Parser {
             if ( state.backtracking==0 ) {
                identifier = ipi.result; 
             }
-            loop314:
+            loop315:
             do {
-                int alt314=2;
-                int LA314_0 = input.LA(1);
-                if ( (LA314_0==ESCAPECHAR) ) {
-                    alt314=1;
+                int alt315=2;
+                int LA315_0 = input.LA(1);
+                if ( (LA315_0==ESCAPECHAR) ) {
+                    alt315=1;
                 }
-                switch (alt314) {
+                switch (alt315) {
             	case 1 :
             	    {
-            	    ESCAPECHAR819=(Token)match(input,ESCAPECHAR,FOLLOW_ESCAPECHAR_in_eventPropertyIdent12185); if (state.failed) return retval; 
-            	    if ( state.backtracking==0 ) stream_ESCAPECHAR.add(ESCAPECHAR819);
-            	    DOT820=(Token)match(input,DOT,FOLLOW_DOT_in_eventPropertyIdent12187); if (state.failed) return retval; 
-            	    if ( state.backtracking==0 ) stream_DOT.add(DOT820);
-            	    int alt313=2;
+            	    ESCAPECHAR820=(Token)match(input,ESCAPECHAR,FOLLOW_ESCAPECHAR_in_eventPropertyIdent12202); if (state.failed) return retval; 
+            	    if ( state.backtracking==0 ) stream_ESCAPECHAR.add(ESCAPECHAR820);
+            	    DOT821=(Token)match(input,DOT,FOLLOW_DOT_in_eventPropertyIdent12204); if (state.failed) return retval; 
+            	    if ( state.backtracking==0 ) stream_DOT.add(DOT821);
+            	    int alt314=2;
             	    switch ( input.LA(1) ) {
             	        case WINDOW:
             	        case EVERY_EXPR:
@@ -25880,74 +25929,74 @@ public class EsperEPL2GrammarParser extends Parser {
             	        case IDENT:
             	        case TICKED_STRING_LITERAL:
             	            {
-            	            alt313=1;
+            	            alt314=1;
             	            }
             	            break;
             	        case ESCAPE:
             	            {
-            	            int LA313_5 = input.LA(2);
-            	            if ( (LA313_5==EOF||(LA313_5>=IN_SET && LA313_5<=NOT_EXPR)||(LA313_5>=WHERE && LA313_5<=AS)||(LA313_5>=ELSE && LA313_5<=FROM)||(LA313_5>=INNER && LA313_5<=FULL)||LA313_5==IS||(LA313_5>=GROUP && LA313_5<=HAVING)||LA313_5==ALL||LA313_5==OUTPUT||LA313_5==INSERT||(LA313_5>=ORDER && LA313_5<=DESC)||LA313_5==PATTERN||(LA313_5>=TIMEPERIOD_SEC && LA313_5<=TIMEPERIOD_SECONDS)||LA313_5==ROW_LIMIT_EXPR||(LA313_5>=MATCH_RECOGNIZE && LA313_5<=MEASURES)||(LA313_5>=AFTER && LA313_5<=FOR)||(LA313_5>=RCURLY && LA313_5<=RPAREN)||(LA313_5>=COMMA && LA313_5<=COLON)||(LA313_5>=BAND && LA313_5<=MOD)||LA313_5==FOLLOWMAX_END||LA313_5==ESCAPECHAR) ) {
-            	                alt313=1;
+            	            int LA314_5 = input.LA(2);
+            	            if ( (LA314_5==EOF||(LA314_5>=IN_SET && LA314_5<=NOT_EXPR)||(LA314_5>=WHERE && LA314_5<=AS)||(LA314_5>=ELSE && LA314_5<=FROM)||(LA314_5>=INNER && LA314_5<=FULL)||LA314_5==IS||(LA314_5>=GROUP && LA314_5<=HAVING)||LA314_5==ALL||LA314_5==OUTPUT||LA314_5==INSERT||(LA314_5>=ORDER && LA314_5<=DESC)||LA314_5==PATTERN||(LA314_5>=TIMEPERIOD_SEC && LA314_5<=TIMEPERIOD_SECONDS)||LA314_5==ROW_LIMIT_EXPR||(LA314_5>=MATCH_RECOGNIZE && LA314_5<=MEASURES)||(LA314_5>=AFTER && LA314_5<=FOR)||(LA314_5>=RCURLY && LA314_5<=RPAREN)||(LA314_5>=COMMA && LA314_5<=COLON)||(LA314_5>=BAND && LA314_5<=MOD)||LA314_5==FOLLOWMAX_END||LA314_5==ESCAPECHAR) ) {
+            	                alt314=1;
             	            }
             	            }
             	            break;
             	        case PATTERN:
             	            {
-            	            int LA313_25 = input.LA(2);
-            	            if ( (LA313_25==LPAREN) ) {
-            	                int LA313_176 = input.LA(3);
-            	                if ( ((LA313_176>=STRING_LITERAL && LA313_176<=QUOTED_STRING_LITERAL)) ) {
-            	                    alt313=1;
+            	            int LA314_25 = input.LA(2);
+            	            if ( (LA314_25==LPAREN) ) {
+            	                int LA314_176 = input.LA(3);
+            	                if ( ((LA314_176>=STRING_LITERAL && LA314_176<=QUOTED_STRING_LITERAL)) ) {
+            	                    alt314=1;
             	                }
             	            }
-            	            else if ( (LA313_25==EOF||(LA313_25>=IN_SET && LA313_25<=NOT_EXPR)||(LA313_25>=WHERE && LA313_25<=AS)||(LA313_25>=ELSE && LA313_25<=FROM)||(LA313_25>=INNER && LA313_25<=FULL)||LA313_25==IS||(LA313_25>=GROUP && LA313_25<=HAVING)||LA313_25==ALL||LA313_25==OUTPUT||LA313_25==INSERT||(LA313_25>=ORDER && LA313_25<=DESC)||LA313_25==PATTERN||(LA313_25>=TIMEPERIOD_SEC && LA313_25<=TIMEPERIOD_SECONDS)||LA313_25==ROW_LIMIT_EXPR||(LA313_25>=MATCH_RECOGNIZE && LA313_25<=MEASURES)||(LA313_25>=AFTER && LA313_25<=FOR)||LA313_25==RCURLY||LA313_25==RPAREN||(LA313_25>=COMMA && LA313_25<=COLON)||(LA313_25>=BAND && LA313_25<=MOD)||LA313_25==FOLLOWMAX_END||LA313_25==ESCAPECHAR) ) {
-            	                alt313=1;
+            	            else if ( (LA314_25==EOF||(LA314_25>=IN_SET && LA314_25<=NOT_EXPR)||(LA314_25>=WHERE && LA314_25<=AS)||(LA314_25>=ELSE && LA314_25<=FROM)||(LA314_25>=INNER && LA314_25<=FULL)||LA314_25==IS||(LA314_25>=GROUP && LA314_25<=HAVING)||LA314_25==ALL||LA314_25==OUTPUT||LA314_25==INSERT||(LA314_25>=ORDER && LA314_25<=DESC)||LA314_25==PATTERN||(LA314_25>=TIMEPERIOD_SEC && LA314_25<=TIMEPERIOD_SECONDS)||LA314_25==ROW_LIMIT_EXPR||(LA314_25>=MATCH_RECOGNIZE && LA314_25<=MEASURES)||(LA314_25>=AFTER && LA314_25<=FOR)||LA314_25==RCURLY||LA314_25==RPAREN||(LA314_25>=COMMA && LA314_25<=COLON)||(LA314_25>=BAND && LA314_25<=MOD)||LA314_25==FOLLOWMAX_END||LA314_25==ESCAPECHAR) ) {
+            	                alt314=1;
             	            }
             	            }
             	            break;
             	        case LEFT:
             	            {
-            	            int LA313_40 = input.LA(2);
-            	            if ( (LA313_40==EOF||(LA313_40>=IN_SET && LA313_40<=NOT_EXPR)||(LA313_40>=WHERE && LA313_40<=AS)||(LA313_40>=ELSE && LA313_40<=FROM)||(LA313_40>=INNER && LA313_40<=FULL)||LA313_40==IS||(LA313_40>=GROUP && LA313_40<=HAVING)||LA313_40==ALL||LA313_40==OUTPUT||LA313_40==INSERT||(LA313_40>=ORDER && LA313_40<=DESC)||LA313_40==PATTERN||(LA313_40>=TIMEPERIOD_SEC && LA313_40<=TIMEPERIOD_SECONDS)||LA313_40==ROW_LIMIT_EXPR||(LA313_40>=MATCH_RECOGNIZE && LA313_40<=MEASURES)||(LA313_40>=AFTER && LA313_40<=FOR)||(LA313_40>=RCURLY && LA313_40<=RPAREN)||(LA313_40>=COMMA && LA313_40<=COLON)||(LA313_40>=BAND && LA313_40<=MOD)||LA313_40==FOLLOWMAX_END||LA313_40==ESCAPECHAR) ) {
-            	                alt313=1;
+            	            int LA314_40 = input.LA(2);
+            	            if ( (LA314_40==EOF||(LA314_40>=IN_SET && LA314_40<=NOT_EXPR)||(LA314_40>=WHERE && LA314_40<=AS)||(LA314_40>=ELSE && LA314_40<=FROM)||(LA314_40>=INNER && LA314_40<=FULL)||LA314_40==IS||(LA314_40>=GROUP && LA314_40<=HAVING)||LA314_40==ALL||LA314_40==OUTPUT||LA314_40==INSERT||(LA314_40>=ORDER && LA314_40<=DESC)||LA314_40==PATTERN||(LA314_40>=TIMEPERIOD_SEC && LA314_40<=TIMEPERIOD_SECONDS)||LA314_40==ROW_LIMIT_EXPR||(LA314_40>=MATCH_RECOGNIZE && LA314_40<=MEASURES)||(LA314_40>=AFTER && LA314_40<=FOR)||(LA314_40>=RCURLY && LA314_40<=RPAREN)||(LA314_40>=COMMA && LA314_40<=COLON)||(LA314_40>=BAND && LA314_40<=MOD)||LA314_40==FOLLOWMAX_END||LA314_40==ESCAPECHAR) ) {
+            	                alt314=1;
             	            }
             	            }
             	            break;
             	        case RIGHT:
             	            {
-            	            int LA313_41 = input.LA(2);
-            	            if ( (LA313_41==EOF||(LA313_41>=IN_SET && LA313_41<=NOT_EXPR)||(LA313_41>=WHERE && LA313_41<=AS)||(LA313_41>=ELSE && LA313_41<=FROM)||(LA313_41>=INNER && LA313_41<=FULL)||LA313_41==IS||(LA313_41>=GROUP && LA313_41<=HAVING)||LA313_41==ALL||LA313_41==OUTPUT||LA313_41==INSERT||(LA313_41>=ORDER && LA313_41<=DESC)||LA313_41==PATTERN||(LA313_41>=TIMEPERIOD_SEC && LA313_41<=TIMEPERIOD_SECONDS)||LA313_41==ROW_LIMIT_EXPR||(LA313_41>=MATCH_RECOGNIZE && LA313_41<=MEASURES)||(LA313_41>=AFTER && LA313_41<=FOR)||(LA313_41>=RCURLY && LA313_41<=RPAREN)||(LA313_41>=COMMA && LA313_41<=COLON)||(LA313_41>=BAND && LA313_41<=MOD)||LA313_41==FOLLOWMAX_END||LA313_41==ESCAPECHAR) ) {
-            	                alt313=1;
+            	            int LA314_41 = input.LA(2);
+            	            if ( (LA314_41==EOF||(LA314_41>=IN_SET && LA314_41<=NOT_EXPR)||(LA314_41>=WHERE && LA314_41<=AS)||(LA314_41>=ELSE && LA314_41<=FROM)||(LA314_41>=INNER && LA314_41<=FULL)||LA314_41==IS||(LA314_41>=GROUP && LA314_41<=HAVING)||LA314_41==ALL||LA314_41==OUTPUT||LA314_41==INSERT||(LA314_41>=ORDER && LA314_41<=DESC)||LA314_41==PATTERN||(LA314_41>=TIMEPERIOD_SEC && LA314_41<=TIMEPERIOD_SECONDS)||LA314_41==ROW_LIMIT_EXPR||(LA314_41>=MATCH_RECOGNIZE && LA314_41<=MEASURES)||(LA314_41>=AFTER && LA314_41<=FOR)||(LA314_41>=RCURLY && LA314_41<=RPAREN)||(LA314_41>=COMMA && LA314_41<=COLON)||(LA314_41>=BAND && LA314_41<=MOD)||LA314_41==FOLLOWMAX_END||LA314_41==ESCAPECHAR) ) {
+            	                alt314=1;
             	            }
             	            }
             	            break;
             	        case FULL:
             	            {
-            	            int LA313_43 = input.LA(2);
-            	            if ( (LA313_43==EOF||(LA313_43>=IN_SET && LA313_43<=NOT_EXPR)||(LA313_43>=WHERE && LA313_43<=AS)||(LA313_43>=ELSE && LA313_43<=FROM)||(LA313_43>=INNER && LA313_43<=FULL)||LA313_43==IS||(LA313_43>=GROUP && LA313_43<=HAVING)||LA313_43==ALL||LA313_43==OUTPUT||LA313_43==INSERT||(LA313_43>=ORDER && LA313_43<=DESC)||LA313_43==PATTERN||(LA313_43>=TIMEPERIOD_SEC && LA313_43<=TIMEPERIOD_SECONDS)||LA313_43==ROW_LIMIT_EXPR||(LA313_43>=MATCH_RECOGNIZE && LA313_43<=MEASURES)||(LA313_43>=AFTER && LA313_43<=FOR)||(LA313_43>=RCURLY && LA313_43<=RPAREN)||(LA313_43>=COMMA && LA313_43<=COLON)||(LA313_43>=BAND && LA313_43<=MOD)||LA313_43==FOLLOWMAX_END||LA313_43==ESCAPECHAR) ) {
-            	                alt313=1;
+            	            int LA314_43 = input.LA(2);
+            	            if ( (LA314_43==EOF||(LA314_43>=IN_SET && LA314_43<=NOT_EXPR)||(LA314_43>=WHERE && LA314_43<=AS)||(LA314_43>=ELSE && LA314_43<=FROM)||(LA314_43>=INNER && LA314_43<=FULL)||LA314_43==IS||(LA314_43>=GROUP && LA314_43<=HAVING)||LA314_43==ALL||LA314_43==OUTPUT||LA314_43==INSERT||(LA314_43>=ORDER && LA314_43<=DESC)||LA314_43==PATTERN||(LA314_43>=TIMEPERIOD_SEC && LA314_43<=TIMEPERIOD_SECONDS)||LA314_43==ROW_LIMIT_EXPR||(LA314_43>=MATCH_RECOGNIZE && LA314_43<=MEASURES)||(LA314_43>=AFTER && LA314_43<=FOR)||(LA314_43>=RCURLY && LA314_43<=RPAREN)||(LA314_43>=COMMA && LA314_43<=COLON)||(LA314_43>=BAND && LA314_43<=MOD)||LA314_43==FOLLOWMAX_END||LA314_43==ESCAPECHAR) ) {
+            	                alt314=1;
             	            }
             	            }
             	            break;
             	        case JOIN:
             	            {
-            	            int LA313_44 = input.LA(2);
-            	            if ( (LA313_44==EOF||(LA313_44>=IN_SET && LA313_44<=NOT_EXPR)||(LA313_44>=WHERE && LA313_44<=AS)||(LA313_44>=ELSE && LA313_44<=FROM)||(LA313_44>=INNER && LA313_44<=FULL)||LA313_44==IS||(LA313_44>=GROUP && LA313_44<=HAVING)||LA313_44==ALL||LA313_44==OUTPUT||LA313_44==INSERT||(LA313_44>=ORDER && LA313_44<=DESC)||(LA313_44>=TIMEPERIOD_SEC && LA313_44<=TIMEPERIOD_SECONDS)||LA313_44==ROW_LIMIT_EXPR||(LA313_44>=MATCH_RECOGNIZE && LA313_44<=MEASURES)||(LA313_44>=AFTER && LA313_44<=FOR)||(LA313_44>=RCURLY && LA313_44<=RPAREN)||(LA313_44>=COMMA && LA313_44<=COLON)||(LA313_44>=BAND && LA313_44<=MOD)||LA313_44==FOLLOWMAX_END||LA313_44==ESCAPECHAR) ) {
-            	                alt313=1;
-            	            }
-            	            else if ( (LA313_44==PATTERN) ) {
-            	                int LA313_491 = input.LA(3);
-            	                if ( (LA313_491==LPAREN) ) {
-            	                    alt313=1;
+            	            int LA314_44 = input.LA(2);
+            	            if ( (LA314_44==PATTERN) ) {
+            	                int LA314_445 = input.LA(3);
+            	                if ( (LA314_445==LPAREN) ) {
+            	                    alt314=1;
             	                }
+            	            }
+            	            else if ( (LA314_44==EOF||(LA314_44>=IN_SET && LA314_44<=NOT_EXPR)||(LA314_44>=WHERE && LA314_44<=AS)||(LA314_44>=ELSE && LA314_44<=FROM)||(LA314_44>=INNER && LA314_44<=FULL)||LA314_44==IS||(LA314_44>=GROUP && LA314_44<=HAVING)||LA314_44==ALL||LA314_44==OUTPUT||LA314_44==INSERT||(LA314_44>=ORDER && LA314_44<=DESC)||(LA314_44>=TIMEPERIOD_SEC && LA314_44<=TIMEPERIOD_SECONDS)||LA314_44==ROW_LIMIT_EXPR||(LA314_44>=MATCH_RECOGNIZE && LA314_44<=MEASURES)||(LA314_44>=AFTER && LA314_44<=FOR)||(LA314_44>=RCURLY && LA314_44<=RPAREN)||(LA314_44>=COMMA && LA314_44<=COLON)||(LA314_44>=BAND && LA314_44<=MOD)||LA314_44==FOLLOWMAX_END||LA314_44==ESCAPECHAR) ) {
+            	                alt314=1;
             	            }
             	            }
             	            break;
             	    }
-            	    switch (alt313) {
+            	    switch (alt314) {
             	        case 1 :
             	            {
-            	            pushFollow(FOLLOW_keywordAllowedIdent_in_eventPropertyIdent12191);
+            	            pushFollow(FOLLOW_keywordAllowedIdent_in_eventPropertyIdent12208);
             	            ipi2=keywordAllowedIdent();
             	            state._fsp--;
             	            if (state.failed) return retval;
@@ -25961,7 +26010,7 @@ public class EsperEPL2GrammarParser extends Parser {
             	    }
             	    break;
             	default :
-            	    break loop314;
+            	    break loop315;
                 }
             } while (true);
             if ( state.backtracking==0 ) {
@@ -26001,347 +26050,347 @@ public class EsperEPL2GrammarParser extends Parser {
         CommonTree root_0 = null;
         Token i1=null;
         Token i2=null;
-        Token AT821=null;
-        Token COUNT822=null;
-        Token ESCAPE823=null;
-        Token EVERY_EXPR824=null;
-        Token SUM825=null;
-        Token AVG826=null;
-        Token MAX827=null;
-        Token MIN828=null;
-        Token COALESCE829=null;
-        Token MEDIAN830=null;
-        Token STDDEV831=null;
-        Token AVEDEV832=null;
-        Token EVENTS833=null;
-        Token FIRST834=null;
-        Token LAST835=null;
-        Token WHILE836=null;
-        Token MERGE837=null;
-        Token MATCHED838=null;
-        Token UNIDIRECTIONAL839=null;
-        Token RETAINUNION840=null;
-        Token RETAININTERSECTION841=null;
-        Token UNTIL842=null;
-        Token PATTERN843=null;
-        Token SQL844=null;
-        Token METADATASQL845=null;
-        Token PREVIOUS846=null;
-        Token PREVIOUSTAIL847=null;
-        Token PRIOR848=null;
-        Token WEEKDAY849=null;
-        Token LW850=null;
-        Token INSTANCEOF851=null;
-        Token TYPEOF852=null;
-        Token CAST853=null;
-        Token SNAPSHOT854=null;
-        Token VARIABLE855=null;
-        Token INDEX856=null;
-        Token WINDOW857=null;
-        Token LEFT858=null;
-        Token RIGHT859=null;
-        Token OUTER860=null;
-        Token FULL861=null;
-        Token JOIN862=null;
-        Token DEFINE863=null;
-        Token PARTITION864=null;
-        Token MATCHES865=null;
+        Token AT822=null;
+        Token COUNT823=null;
+        Token ESCAPE824=null;
+        Token EVERY_EXPR825=null;
+        Token SUM826=null;
+        Token AVG827=null;
+        Token MAX828=null;
+        Token MIN829=null;
+        Token COALESCE830=null;
+        Token MEDIAN831=null;
+        Token STDDEV832=null;
+        Token AVEDEV833=null;
+        Token EVENTS834=null;
+        Token FIRST835=null;
+        Token LAST836=null;
+        Token WHILE837=null;
+        Token MERGE838=null;
+        Token MATCHED839=null;
+        Token UNIDIRECTIONAL840=null;
+        Token RETAINUNION841=null;
+        Token RETAININTERSECTION842=null;
+        Token UNTIL843=null;
+        Token PATTERN844=null;
+        Token SQL845=null;
+        Token METADATASQL846=null;
+        Token PREVIOUS847=null;
+        Token PREVIOUSTAIL848=null;
+        Token PRIOR849=null;
+        Token WEEKDAY850=null;
+        Token LW851=null;
+        Token INSTANCEOF852=null;
+        Token TYPEOF853=null;
+        Token CAST854=null;
+        Token SNAPSHOT855=null;
+        Token VARIABLE856=null;
+        Token INDEX857=null;
+        Token WINDOW858=null;
+        Token LEFT859=null;
+        Token RIGHT860=null;
+        Token OUTER861=null;
+        Token FULL862=null;
+        Token JOIN863=null;
+        Token DEFINE864=null;
+        Token PARTITION865=null;
+        Token MATCHES866=null;
         CommonTree i1_tree=null;
         CommonTree i2_tree=null;
-        CommonTree AT821_tree=null;
-        CommonTree COUNT822_tree=null;
-        CommonTree ESCAPE823_tree=null;
-        CommonTree EVERY_EXPR824_tree=null;
-        CommonTree SUM825_tree=null;
-        CommonTree AVG826_tree=null;
-        CommonTree MAX827_tree=null;
-        CommonTree MIN828_tree=null;
-        CommonTree COALESCE829_tree=null;
-        CommonTree MEDIAN830_tree=null;
-        CommonTree STDDEV831_tree=null;
-        CommonTree AVEDEV832_tree=null;
-        CommonTree EVENTS833_tree=null;
-        CommonTree FIRST834_tree=null;
-        CommonTree LAST835_tree=null;
-        CommonTree WHILE836_tree=null;
-        CommonTree MERGE837_tree=null;
-        CommonTree MATCHED838_tree=null;
-        CommonTree UNIDIRECTIONAL839_tree=null;
-        CommonTree RETAINUNION840_tree=null;
-        CommonTree RETAININTERSECTION841_tree=null;
-        CommonTree UNTIL842_tree=null;
-        CommonTree PATTERN843_tree=null;
-        CommonTree SQL844_tree=null;
-        CommonTree METADATASQL845_tree=null;
-        CommonTree PREVIOUS846_tree=null;
-        CommonTree PREVIOUSTAIL847_tree=null;
-        CommonTree PRIOR848_tree=null;
-        CommonTree WEEKDAY849_tree=null;
-        CommonTree LW850_tree=null;
-        CommonTree INSTANCEOF851_tree=null;
-        CommonTree TYPEOF852_tree=null;
-        CommonTree CAST853_tree=null;
-        CommonTree SNAPSHOT854_tree=null;
-        CommonTree VARIABLE855_tree=null;
-        CommonTree INDEX856_tree=null;
-        CommonTree WINDOW857_tree=null;
-        CommonTree LEFT858_tree=null;
-        CommonTree RIGHT859_tree=null;
-        CommonTree OUTER860_tree=null;
-        CommonTree FULL861_tree=null;
-        CommonTree JOIN862_tree=null;
-        CommonTree DEFINE863_tree=null;
-        CommonTree PARTITION864_tree=null;
-        CommonTree MATCHES865_tree=null;
+        CommonTree AT822_tree=null;
+        CommonTree COUNT823_tree=null;
+        CommonTree ESCAPE824_tree=null;
+        CommonTree EVERY_EXPR825_tree=null;
+        CommonTree SUM826_tree=null;
+        CommonTree AVG827_tree=null;
+        CommonTree MAX828_tree=null;
+        CommonTree MIN829_tree=null;
+        CommonTree COALESCE830_tree=null;
+        CommonTree MEDIAN831_tree=null;
+        CommonTree STDDEV832_tree=null;
+        CommonTree AVEDEV833_tree=null;
+        CommonTree EVENTS834_tree=null;
+        CommonTree FIRST835_tree=null;
+        CommonTree LAST836_tree=null;
+        CommonTree WHILE837_tree=null;
+        CommonTree MERGE838_tree=null;
+        CommonTree MATCHED839_tree=null;
+        CommonTree UNIDIRECTIONAL840_tree=null;
+        CommonTree RETAINUNION841_tree=null;
+        CommonTree RETAININTERSECTION842_tree=null;
+        CommonTree UNTIL843_tree=null;
+        CommonTree PATTERN844_tree=null;
+        CommonTree SQL845_tree=null;
+        CommonTree METADATASQL846_tree=null;
+        CommonTree PREVIOUS847_tree=null;
+        CommonTree PREVIOUSTAIL848_tree=null;
+        CommonTree PRIOR849_tree=null;
+        CommonTree WEEKDAY850_tree=null;
+        CommonTree LW851_tree=null;
+        CommonTree INSTANCEOF852_tree=null;
+        CommonTree TYPEOF853_tree=null;
+        CommonTree CAST854_tree=null;
+        CommonTree SNAPSHOT855_tree=null;
+        CommonTree VARIABLE856_tree=null;
+        CommonTree INDEX857_tree=null;
+        CommonTree WINDOW858_tree=null;
+        CommonTree LEFT859_tree=null;
+        CommonTree RIGHT860_tree=null;
+        CommonTree OUTER861_tree=null;
+        CommonTree FULL862_tree=null;
+        CommonTree JOIN863_tree=null;
+        CommonTree DEFINE864_tree=null;
+        CommonTree PARTITION865_tree=null;
+        CommonTree MATCHES866_tree=null;
         try {
-            int alt315=47;
+            int alt316=47;
             switch ( input.LA(1) ) {
             case IDENT:
                 {
-                alt315=1;
+                alt316=1;
                 }
                 break;
             case TICKED_STRING_LITERAL:
                 {
-                alt315=2;
+                alt316=2;
                 }
                 break;
             case AT:
                 {
-                alt315=3;
+                alt316=3;
                 }
                 break;
             case COUNT:
                 {
-                alt315=4;
+                alt316=4;
                 }
                 break;
             case ESCAPE:
                 {
-                alt315=5;
+                alt316=5;
                 }
                 break;
             case EVERY_EXPR:
                 {
-                alt315=6;
+                alt316=6;
                 }
                 break;
             case SUM:
                 {
-                alt315=7;
+                alt316=7;
                 }
                 break;
             case AVG:
                 {
-                alt315=8;
+                alt316=8;
                 }
                 break;
             case MAX:
                 {
-                alt315=9;
+                alt316=9;
                 }
                 break;
             case MIN:
                 {
-                alt315=10;
+                alt316=10;
                 }
                 break;
             case COALESCE:
                 {
-                alt315=11;
+                alt316=11;
                 }
                 break;
             case MEDIAN:
                 {
-                alt315=12;
+                alt316=12;
                 }
                 break;
             case STDDEV:
                 {
-                alt315=13;
+                alt316=13;
                 }
                 break;
             case AVEDEV:
                 {
-                alt315=14;
+                alt316=14;
                 }
                 break;
             case EVENTS:
                 {
-                alt315=15;
+                alt316=15;
                 }
                 break;
             case FIRST:
                 {
-                alt315=16;
+                alt316=16;
                 }
                 break;
             case LAST:
                 {
-                alt315=17;
+                alt316=17;
                 }
                 break;
             case WHILE:
                 {
-                alt315=18;
+                alt316=18;
                 }
                 break;
             case MERGE:
                 {
-                alt315=19;
+                alt316=19;
                 }
                 break;
             case MATCHED:
                 {
-                alt315=20;
+                alt316=20;
                 }
                 break;
             case UNIDIRECTIONAL:
                 {
-                alt315=21;
+                alt316=21;
                 }
                 break;
             case RETAINUNION:
                 {
-                alt315=22;
+                alt316=22;
                 }
                 break;
             case RETAININTERSECTION:
                 {
-                alt315=23;
+                alt316=23;
                 }
                 break;
             case UNTIL:
                 {
-                alt315=24;
+                alt316=24;
                 }
                 break;
             case PATTERN:
                 {
-                alt315=25;
+                alt316=25;
                 }
                 break;
             case SQL:
                 {
-                alt315=26;
+                alt316=26;
                 }
                 break;
             case METADATASQL:
                 {
-                alt315=27;
+                alt316=27;
                 }
                 break;
             case PREVIOUS:
                 {
-                alt315=28;
+                alt316=28;
                 }
                 break;
             case PREVIOUSTAIL:
                 {
-                alt315=29;
+                alt316=29;
                 }
                 break;
             case PRIOR:
                 {
-                alt315=30;
+                alt316=30;
                 }
                 break;
             case WEEKDAY:
                 {
-                alt315=31;
+                alt316=31;
                 }
                 break;
             case LW:
                 {
-                alt315=32;
+                alt316=32;
                 }
                 break;
             case INSTANCEOF:
                 {
-                alt315=33;
+                alt316=33;
                 }
                 break;
             case TYPEOF:
                 {
-                alt315=34;
+                alt316=34;
                 }
                 break;
             case CAST:
                 {
-                alt315=35;
+                alt316=35;
                 }
                 break;
             case SNAPSHOT:
                 {
-                alt315=36;
+                alt316=36;
                 }
                 break;
             case VARIABLE:
                 {
-                alt315=37;
+                alt316=37;
                 }
                 break;
             case INDEX:
                 {
-                alt315=38;
+                alt316=38;
                 }
                 break;
             case WINDOW:
                 {
-                alt315=39;
+                alt316=39;
                 }
                 break;
             case LEFT:
                 {
-                alt315=40;
+                alt316=40;
                 }
                 break;
             case RIGHT:
                 {
-                alt315=41;
+                alt316=41;
                 }
                 break;
             case OUTER:
                 {
-                alt315=42;
+                alt316=42;
                 }
                 break;
             case FULL:
                 {
-                alt315=43;
+                alt316=43;
                 }
                 break;
             case JOIN:
                 {
-                alt315=44;
+                alt316=44;
                 }
                 break;
             case DEFINE:
                 {
-                alt315=45;
+                alt316=45;
                 }
                 break;
             case PARTITION:
                 {
-                alt315=46;
+                alt316=46;
                 }
                 break;
             case MATCHES:
                 {
-                alt315=47;
+                alt316=47;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 315, 0, input);
+                    new NoViableAltException("", 316, 0, input);
                 throw nvae;
             }
-            switch (alt315) {
+            switch (alt316) {
                 case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_keywordAllowedIdent12230); if (state.failed) return retval;
+                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_keywordAllowedIdent12247); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     i1_tree = (CommonTree)adaptor.create(i1);
                     adaptor.addChild(root_0, i1_tree);
@@ -26354,7 +26403,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 2 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    i2=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_keywordAllowedIdent12239); if (state.failed) return retval;
+                    i2=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_keywordAllowedIdent12256); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     i2_tree = (CommonTree)adaptor.create(i2);
                     adaptor.addChild(root_0, i2_tree);
@@ -26367,10 +26416,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 3 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    AT821=(Token)match(input,AT,FOLLOW_AT_in_keywordAllowedIdent12246); if (state.failed) return retval;
+                    AT822=(Token)match(input,AT,FOLLOW_AT_in_keywordAllowedIdent12263); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    AT821_tree = (CommonTree)adaptor.create(AT821);
-                    adaptor.addChild(root_0, AT821_tree);
+                    AT822_tree = (CommonTree)adaptor.create(AT822);
+                    adaptor.addChild(root_0, AT822_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "at"; 
@@ -26380,10 +26429,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 4 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    COUNT822=(Token)match(input,COUNT,FOLLOW_COUNT_in_keywordAllowedIdent12253); if (state.failed) return retval;
+                    COUNT823=(Token)match(input,COUNT,FOLLOW_COUNT_in_keywordAllowedIdent12270); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    COUNT822_tree = (CommonTree)adaptor.create(COUNT822);
-                    adaptor.addChild(root_0, COUNT822_tree);
+                    COUNT823_tree = (CommonTree)adaptor.create(COUNT823);
+                    adaptor.addChild(root_0, COUNT823_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "count"; 
@@ -26393,10 +26442,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 5 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    ESCAPE823=(Token)match(input,ESCAPE,FOLLOW_ESCAPE_in_keywordAllowedIdent12260); if (state.failed) return retval;
+                    ESCAPE824=(Token)match(input,ESCAPE,FOLLOW_ESCAPE_in_keywordAllowedIdent12277); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    ESCAPE823_tree = (CommonTree)adaptor.create(ESCAPE823);
-                    adaptor.addChild(root_0, ESCAPE823_tree);
+                    ESCAPE824_tree = (CommonTree)adaptor.create(ESCAPE824);
+                    adaptor.addChild(root_0, ESCAPE824_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "escape"; 
@@ -26406,10 +26455,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 6 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    EVERY_EXPR824=(Token)match(input,EVERY_EXPR,FOLLOW_EVERY_EXPR_in_keywordAllowedIdent12271); if (state.failed) return retval;
+                    EVERY_EXPR825=(Token)match(input,EVERY_EXPR,FOLLOW_EVERY_EXPR_in_keywordAllowedIdent12288); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    EVERY_EXPR824_tree = (CommonTree)adaptor.create(EVERY_EXPR824);
-                    adaptor.addChild(root_0, EVERY_EXPR824_tree);
+                    EVERY_EXPR825_tree = (CommonTree)adaptor.create(EVERY_EXPR825);
+                    adaptor.addChild(root_0, EVERY_EXPR825_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "every"; 
@@ -26419,10 +26468,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 7 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    SUM825=(Token)match(input,SUM,FOLLOW_SUM_in_keywordAllowedIdent12278); if (state.failed) return retval;
+                    SUM826=(Token)match(input,SUM,FOLLOW_SUM_in_keywordAllowedIdent12295); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    SUM825_tree = (CommonTree)adaptor.create(SUM825);
-                    adaptor.addChild(root_0, SUM825_tree);
+                    SUM826_tree = (CommonTree)adaptor.create(SUM826);
+                    adaptor.addChild(root_0, SUM826_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "sum"; 
@@ -26432,10 +26481,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 8 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    AVG826=(Token)match(input,AVG,FOLLOW_AVG_in_keywordAllowedIdent12285); if (state.failed) return retval;
+                    AVG827=(Token)match(input,AVG,FOLLOW_AVG_in_keywordAllowedIdent12302); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    AVG826_tree = (CommonTree)adaptor.create(AVG826);
-                    adaptor.addChild(root_0, AVG826_tree);
+                    AVG827_tree = (CommonTree)adaptor.create(AVG827);
+                    adaptor.addChild(root_0, AVG827_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "avg"; 
@@ -26445,10 +26494,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 9 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    MAX827=(Token)match(input,MAX,FOLLOW_MAX_in_keywordAllowedIdent12292); if (state.failed) return retval;
+                    MAX828=(Token)match(input,MAX,FOLLOW_MAX_in_keywordAllowedIdent12309); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    MAX827_tree = (CommonTree)adaptor.create(MAX827);
-                    adaptor.addChild(root_0, MAX827_tree);
+                    MAX828_tree = (CommonTree)adaptor.create(MAX828);
+                    adaptor.addChild(root_0, MAX828_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "max"; 
@@ -26458,10 +26507,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 10 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    MIN828=(Token)match(input,MIN,FOLLOW_MIN_in_keywordAllowedIdent12299); if (state.failed) return retval;
+                    MIN829=(Token)match(input,MIN,FOLLOW_MIN_in_keywordAllowedIdent12316); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    MIN828_tree = (CommonTree)adaptor.create(MIN828);
-                    adaptor.addChild(root_0, MIN828_tree);
+                    MIN829_tree = (CommonTree)adaptor.create(MIN829);
+                    adaptor.addChild(root_0, MIN829_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "min"; 
@@ -26471,10 +26520,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 11 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    COALESCE829=(Token)match(input,COALESCE,FOLLOW_COALESCE_in_keywordAllowedIdent12306); if (state.failed) return retval;
+                    COALESCE830=(Token)match(input,COALESCE,FOLLOW_COALESCE_in_keywordAllowedIdent12323); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    COALESCE829_tree = (CommonTree)adaptor.create(COALESCE829);
-                    adaptor.addChild(root_0, COALESCE829_tree);
+                    COALESCE830_tree = (CommonTree)adaptor.create(COALESCE830);
+                    adaptor.addChild(root_0, COALESCE830_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "coalesce"; 
@@ -26484,10 +26533,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 12 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    MEDIAN830=(Token)match(input,MEDIAN,FOLLOW_MEDIAN_in_keywordAllowedIdent12313); if (state.failed) return retval;
+                    MEDIAN831=(Token)match(input,MEDIAN,FOLLOW_MEDIAN_in_keywordAllowedIdent12330); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    MEDIAN830_tree = (CommonTree)adaptor.create(MEDIAN830);
-                    adaptor.addChild(root_0, MEDIAN830_tree);
+                    MEDIAN831_tree = (CommonTree)adaptor.create(MEDIAN831);
+                    adaptor.addChild(root_0, MEDIAN831_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "median"; 
@@ -26497,10 +26546,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 13 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    STDDEV831=(Token)match(input,STDDEV,FOLLOW_STDDEV_in_keywordAllowedIdent12320); if (state.failed) return retval;
+                    STDDEV832=(Token)match(input,STDDEV,FOLLOW_STDDEV_in_keywordAllowedIdent12337); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    STDDEV831_tree = (CommonTree)adaptor.create(STDDEV831);
-                    adaptor.addChild(root_0, STDDEV831_tree);
+                    STDDEV832_tree = (CommonTree)adaptor.create(STDDEV832);
+                    adaptor.addChild(root_0, STDDEV832_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "stddev"; 
@@ -26510,10 +26559,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 14 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    AVEDEV832=(Token)match(input,AVEDEV,FOLLOW_AVEDEV_in_keywordAllowedIdent12327); if (state.failed) return retval;
+                    AVEDEV833=(Token)match(input,AVEDEV,FOLLOW_AVEDEV_in_keywordAllowedIdent12344); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    AVEDEV832_tree = (CommonTree)adaptor.create(AVEDEV832);
-                    adaptor.addChild(root_0, AVEDEV832_tree);
+                    AVEDEV833_tree = (CommonTree)adaptor.create(AVEDEV833);
+                    adaptor.addChild(root_0, AVEDEV833_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "avedev"; 
@@ -26523,10 +26572,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 15 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    EVENTS833=(Token)match(input,EVENTS,FOLLOW_EVENTS_in_keywordAllowedIdent12334); if (state.failed) return retval;
+                    EVENTS834=(Token)match(input,EVENTS,FOLLOW_EVENTS_in_keywordAllowedIdent12351); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    EVENTS833_tree = (CommonTree)adaptor.create(EVENTS833);
-                    adaptor.addChild(root_0, EVENTS833_tree);
+                    EVENTS834_tree = (CommonTree)adaptor.create(EVENTS834);
+                    adaptor.addChild(root_0, EVENTS834_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "events"; 
@@ -26536,10 +26585,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 16 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    FIRST834=(Token)match(input,FIRST,FOLLOW_FIRST_in_keywordAllowedIdent12341); if (state.failed) return retval;
+                    FIRST835=(Token)match(input,FIRST,FOLLOW_FIRST_in_keywordAllowedIdent12358); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    FIRST834_tree = (CommonTree)adaptor.create(FIRST834);
-                    adaptor.addChild(root_0, FIRST834_tree);
+                    FIRST835_tree = (CommonTree)adaptor.create(FIRST835);
+                    adaptor.addChild(root_0, FIRST835_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "first"; 
@@ -26549,10 +26598,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 17 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    LAST835=(Token)match(input,LAST,FOLLOW_LAST_in_keywordAllowedIdent12348); if (state.failed) return retval;
+                    LAST836=(Token)match(input,LAST,FOLLOW_LAST_in_keywordAllowedIdent12365); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    LAST835_tree = (CommonTree)adaptor.create(LAST835);
-                    adaptor.addChild(root_0, LAST835_tree);
+                    LAST836_tree = (CommonTree)adaptor.create(LAST836);
+                    adaptor.addChild(root_0, LAST836_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "last"; 
@@ -26562,10 +26611,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 18 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    WHILE836=(Token)match(input,WHILE,FOLLOW_WHILE_in_keywordAllowedIdent12355); if (state.failed) return retval;
+                    WHILE837=(Token)match(input,WHILE,FOLLOW_WHILE_in_keywordAllowedIdent12372); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    WHILE836_tree = (CommonTree)adaptor.create(WHILE836);
-                    adaptor.addChild(root_0, WHILE836_tree);
+                    WHILE837_tree = (CommonTree)adaptor.create(WHILE837);
+                    adaptor.addChild(root_0, WHILE837_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "while"; 
@@ -26575,10 +26624,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 19 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    MERGE837=(Token)match(input,MERGE,FOLLOW_MERGE_in_keywordAllowedIdent12362); if (state.failed) return retval;
+                    MERGE838=(Token)match(input,MERGE,FOLLOW_MERGE_in_keywordAllowedIdent12379); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    MERGE837_tree = (CommonTree)adaptor.create(MERGE837);
-                    adaptor.addChild(root_0, MERGE837_tree);
+                    MERGE838_tree = (CommonTree)adaptor.create(MERGE838);
+                    adaptor.addChild(root_0, MERGE838_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "merge"; 
@@ -26588,10 +26637,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 20 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    MATCHED838=(Token)match(input,MATCHED,FOLLOW_MATCHED_in_keywordAllowedIdent12369); if (state.failed) return retval;
+                    MATCHED839=(Token)match(input,MATCHED,FOLLOW_MATCHED_in_keywordAllowedIdent12386); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    MATCHED838_tree = (CommonTree)adaptor.create(MATCHED838);
-                    adaptor.addChild(root_0, MATCHED838_tree);
+                    MATCHED839_tree = (CommonTree)adaptor.create(MATCHED839);
+                    adaptor.addChild(root_0, MATCHED839_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "matched"; 
@@ -26601,10 +26650,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 21 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    UNIDIRECTIONAL839=(Token)match(input,UNIDIRECTIONAL,FOLLOW_UNIDIRECTIONAL_in_keywordAllowedIdent12376); if (state.failed) return retval;
+                    UNIDIRECTIONAL840=(Token)match(input,UNIDIRECTIONAL,FOLLOW_UNIDIRECTIONAL_in_keywordAllowedIdent12393); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    UNIDIRECTIONAL839_tree = (CommonTree)adaptor.create(UNIDIRECTIONAL839);
-                    adaptor.addChild(root_0, UNIDIRECTIONAL839_tree);
+                    UNIDIRECTIONAL840_tree = (CommonTree)adaptor.create(UNIDIRECTIONAL840);
+                    adaptor.addChild(root_0, UNIDIRECTIONAL840_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "unidirectional"; 
@@ -26614,10 +26663,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 22 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    RETAINUNION840=(Token)match(input,RETAINUNION,FOLLOW_RETAINUNION_in_keywordAllowedIdent12383); if (state.failed) return retval;
+                    RETAINUNION841=(Token)match(input,RETAINUNION,FOLLOW_RETAINUNION_in_keywordAllowedIdent12400); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    RETAINUNION840_tree = (CommonTree)adaptor.create(RETAINUNION840);
-                    adaptor.addChild(root_0, RETAINUNION840_tree);
+                    RETAINUNION841_tree = (CommonTree)adaptor.create(RETAINUNION841);
+                    adaptor.addChild(root_0, RETAINUNION841_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "retain-union"; 
@@ -26627,10 +26676,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 23 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    RETAININTERSECTION841=(Token)match(input,RETAININTERSECTION,FOLLOW_RETAININTERSECTION_in_keywordAllowedIdent12390); if (state.failed) return retval;
+                    RETAININTERSECTION842=(Token)match(input,RETAININTERSECTION,FOLLOW_RETAININTERSECTION_in_keywordAllowedIdent12407); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    RETAININTERSECTION841_tree = (CommonTree)adaptor.create(RETAININTERSECTION841);
-                    adaptor.addChild(root_0, RETAININTERSECTION841_tree);
+                    RETAININTERSECTION842_tree = (CommonTree)adaptor.create(RETAININTERSECTION842);
+                    adaptor.addChild(root_0, RETAININTERSECTION842_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "retain-intersection"; 
@@ -26640,10 +26689,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 24 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    UNTIL842=(Token)match(input,UNTIL,FOLLOW_UNTIL_in_keywordAllowedIdent12397); if (state.failed) return retval;
+                    UNTIL843=(Token)match(input,UNTIL,FOLLOW_UNTIL_in_keywordAllowedIdent12414); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    UNTIL842_tree = (CommonTree)adaptor.create(UNTIL842);
-                    adaptor.addChild(root_0, UNTIL842_tree);
+                    UNTIL843_tree = (CommonTree)adaptor.create(UNTIL843);
+                    adaptor.addChild(root_0, UNTIL843_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "until"; 
@@ -26653,10 +26702,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 25 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    PATTERN843=(Token)match(input,PATTERN,FOLLOW_PATTERN_in_keywordAllowedIdent12404); if (state.failed) return retval;
+                    PATTERN844=(Token)match(input,PATTERN,FOLLOW_PATTERN_in_keywordAllowedIdent12421); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    PATTERN843_tree = (CommonTree)adaptor.create(PATTERN843);
-                    adaptor.addChild(root_0, PATTERN843_tree);
+                    PATTERN844_tree = (CommonTree)adaptor.create(PATTERN844);
+                    adaptor.addChild(root_0, PATTERN844_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "pattern"; 
@@ -26666,10 +26715,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 26 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    SQL844=(Token)match(input,SQL,FOLLOW_SQL_in_keywordAllowedIdent12411); if (state.failed) return retval;
+                    SQL845=(Token)match(input,SQL,FOLLOW_SQL_in_keywordAllowedIdent12428); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    SQL844_tree = (CommonTree)adaptor.create(SQL844);
-                    adaptor.addChild(root_0, SQL844_tree);
+                    SQL845_tree = (CommonTree)adaptor.create(SQL845);
+                    adaptor.addChild(root_0, SQL845_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "sql"; 
@@ -26679,10 +26728,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 27 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    METADATASQL845=(Token)match(input,METADATASQL,FOLLOW_METADATASQL_in_keywordAllowedIdent12418); if (state.failed) return retval;
+                    METADATASQL846=(Token)match(input,METADATASQL,FOLLOW_METADATASQL_in_keywordAllowedIdent12435); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    METADATASQL845_tree = (CommonTree)adaptor.create(METADATASQL845);
-                    adaptor.addChild(root_0, METADATASQL845_tree);
+                    METADATASQL846_tree = (CommonTree)adaptor.create(METADATASQL846);
+                    adaptor.addChild(root_0, METADATASQL846_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "metadatasql"; 
@@ -26692,10 +26741,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 28 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    PREVIOUS846=(Token)match(input,PREVIOUS,FOLLOW_PREVIOUS_in_keywordAllowedIdent12425); if (state.failed) return retval;
+                    PREVIOUS847=(Token)match(input,PREVIOUS,FOLLOW_PREVIOUS_in_keywordAllowedIdent12442); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    PREVIOUS846_tree = (CommonTree)adaptor.create(PREVIOUS846);
-                    adaptor.addChild(root_0, PREVIOUS846_tree);
+                    PREVIOUS847_tree = (CommonTree)adaptor.create(PREVIOUS847);
+                    adaptor.addChild(root_0, PREVIOUS847_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "prev"; 
@@ -26705,10 +26754,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 29 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    PREVIOUSTAIL847=(Token)match(input,PREVIOUSTAIL,FOLLOW_PREVIOUSTAIL_in_keywordAllowedIdent12432); if (state.failed) return retval;
+                    PREVIOUSTAIL848=(Token)match(input,PREVIOUSTAIL,FOLLOW_PREVIOUSTAIL_in_keywordAllowedIdent12449); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    PREVIOUSTAIL847_tree = (CommonTree)adaptor.create(PREVIOUSTAIL847);
-                    adaptor.addChild(root_0, PREVIOUSTAIL847_tree);
+                    PREVIOUSTAIL848_tree = (CommonTree)adaptor.create(PREVIOUSTAIL848);
+                    adaptor.addChild(root_0, PREVIOUSTAIL848_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "prevtail"; 
@@ -26718,10 +26767,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 30 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    PRIOR848=(Token)match(input,PRIOR,FOLLOW_PRIOR_in_keywordAllowedIdent12439); if (state.failed) return retval;
+                    PRIOR849=(Token)match(input,PRIOR,FOLLOW_PRIOR_in_keywordAllowedIdent12456); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    PRIOR848_tree = (CommonTree)adaptor.create(PRIOR848);
-                    adaptor.addChild(root_0, PRIOR848_tree);
+                    PRIOR849_tree = (CommonTree)adaptor.create(PRIOR849);
+                    adaptor.addChild(root_0, PRIOR849_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "prior"; 
@@ -26731,10 +26780,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 31 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    WEEKDAY849=(Token)match(input,WEEKDAY,FOLLOW_WEEKDAY_in_keywordAllowedIdent12446); if (state.failed) return retval;
+                    WEEKDAY850=(Token)match(input,WEEKDAY,FOLLOW_WEEKDAY_in_keywordAllowedIdent12463); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    WEEKDAY849_tree = (CommonTree)adaptor.create(WEEKDAY849);
-                    adaptor.addChild(root_0, WEEKDAY849_tree);
+                    WEEKDAY850_tree = (CommonTree)adaptor.create(WEEKDAY850);
+                    adaptor.addChild(root_0, WEEKDAY850_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "weekday"; 
@@ -26744,10 +26793,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 32 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    LW850=(Token)match(input,LW,FOLLOW_LW_in_keywordAllowedIdent12453); if (state.failed) return retval;
+                    LW851=(Token)match(input,LW,FOLLOW_LW_in_keywordAllowedIdent12470); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    LW850_tree = (CommonTree)adaptor.create(LW850);
-                    adaptor.addChild(root_0, LW850_tree);
+                    LW851_tree = (CommonTree)adaptor.create(LW851);
+                    adaptor.addChild(root_0, LW851_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "lastweekday"; 
@@ -26757,10 +26806,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 33 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    INSTANCEOF851=(Token)match(input,INSTANCEOF,FOLLOW_INSTANCEOF_in_keywordAllowedIdent12460); if (state.failed) return retval;
+                    INSTANCEOF852=(Token)match(input,INSTANCEOF,FOLLOW_INSTANCEOF_in_keywordAllowedIdent12477); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    INSTANCEOF851_tree = (CommonTree)adaptor.create(INSTANCEOF851);
-                    adaptor.addChild(root_0, INSTANCEOF851_tree);
+                    INSTANCEOF852_tree = (CommonTree)adaptor.create(INSTANCEOF852);
+                    adaptor.addChild(root_0, INSTANCEOF852_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "instanceof"; 
@@ -26770,10 +26819,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 34 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    TYPEOF852=(Token)match(input,TYPEOF,FOLLOW_TYPEOF_in_keywordAllowedIdent12467); if (state.failed) return retval;
+                    TYPEOF853=(Token)match(input,TYPEOF,FOLLOW_TYPEOF_in_keywordAllowedIdent12484); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    TYPEOF852_tree = (CommonTree)adaptor.create(TYPEOF852);
-                    adaptor.addChild(root_0, TYPEOF852_tree);
+                    TYPEOF853_tree = (CommonTree)adaptor.create(TYPEOF853);
+                    adaptor.addChild(root_0, TYPEOF853_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "typeof"; 
@@ -26783,10 +26832,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 35 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    CAST853=(Token)match(input,CAST,FOLLOW_CAST_in_keywordAllowedIdent12474); if (state.failed) return retval;
+                    CAST854=(Token)match(input,CAST,FOLLOW_CAST_in_keywordAllowedIdent12491); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    CAST853_tree = (CommonTree)adaptor.create(CAST853);
-                    adaptor.addChild(root_0, CAST853_tree);
+                    CAST854_tree = (CommonTree)adaptor.create(CAST854);
+                    adaptor.addChild(root_0, CAST854_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "cast"; 
@@ -26796,10 +26845,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 36 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    SNAPSHOT854=(Token)match(input,SNAPSHOT,FOLLOW_SNAPSHOT_in_keywordAllowedIdent12481); if (state.failed) return retval;
+                    SNAPSHOT855=(Token)match(input,SNAPSHOT,FOLLOW_SNAPSHOT_in_keywordAllowedIdent12498); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    SNAPSHOT854_tree = (CommonTree)adaptor.create(SNAPSHOT854);
-                    adaptor.addChild(root_0, SNAPSHOT854_tree);
+                    SNAPSHOT855_tree = (CommonTree)adaptor.create(SNAPSHOT855);
+                    adaptor.addChild(root_0, SNAPSHOT855_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "snapshot"; 
@@ -26809,10 +26858,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 37 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    VARIABLE855=(Token)match(input,VARIABLE,FOLLOW_VARIABLE_in_keywordAllowedIdent12488); if (state.failed) return retval;
+                    VARIABLE856=(Token)match(input,VARIABLE,FOLLOW_VARIABLE_in_keywordAllowedIdent12505); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    VARIABLE855_tree = (CommonTree)adaptor.create(VARIABLE855);
-                    adaptor.addChild(root_0, VARIABLE855_tree);
+                    VARIABLE856_tree = (CommonTree)adaptor.create(VARIABLE856);
+                    adaptor.addChild(root_0, VARIABLE856_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "variable"; 
@@ -26822,10 +26871,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 38 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    INDEX856=(Token)match(input,INDEX,FOLLOW_INDEX_in_keywordAllowedIdent12497); if (state.failed) return retval;
+                    INDEX857=(Token)match(input,INDEX,FOLLOW_INDEX_in_keywordAllowedIdent12514); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    INDEX856_tree = (CommonTree)adaptor.create(INDEX856);
-                    adaptor.addChild(root_0, INDEX856_tree);
+                    INDEX857_tree = (CommonTree)adaptor.create(INDEX857);
+                    adaptor.addChild(root_0, INDEX857_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "index"; 
@@ -26835,10 +26884,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 39 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    WINDOW857=(Token)match(input,WINDOW,FOLLOW_WINDOW_in_keywordAllowedIdent12506); if (state.failed) return retval;
+                    WINDOW858=(Token)match(input,WINDOW,FOLLOW_WINDOW_in_keywordAllowedIdent12523); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    WINDOW857_tree = (CommonTree)adaptor.create(WINDOW857);
-                    adaptor.addChild(root_0, WINDOW857_tree);
+                    WINDOW858_tree = (CommonTree)adaptor.create(WINDOW858);
+                    adaptor.addChild(root_0, WINDOW858_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "window"; 
@@ -26848,10 +26897,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 40 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    LEFT858=(Token)match(input,LEFT,FOLLOW_LEFT_in_keywordAllowedIdent12513); if (state.failed) return retval;
+                    LEFT859=(Token)match(input,LEFT,FOLLOW_LEFT_in_keywordAllowedIdent12530); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    LEFT858_tree = (CommonTree)adaptor.create(LEFT858);
-                    adaptor.addChild(root_0, LEFT858_tree);
+                    LEFT859_tree = (CommonTree)adaptor.create(LEFT859);
+                    adaptor.addChild(root_0, LEFT859_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "left"; 
@@ -26861,10 +26910,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 41 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    RIGHT859=(Token)match(input,RIGHT,FOLLOW_RIGHT_in_keywordAllowedIdent12520); if (state.failed) return retval;
+                    RIGHT860=(Token)match(input,RIGHT,FOLLOW_RIGHT_in_keywordAllowedIdent12537); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    RIGHT859_tree = (CommonTree)adaptor.create(RIGHT859);
-                    adaptor.addChild(root_0, RIGHT859_tree);
+                    RIGHT860_tree = (CommonTree)adaptor.create(RIGHT860);
+                    adaptor.addChild(root_0, RIGHT860_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "right"; 
@@ -26874,10 +26923,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 42 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    OUTER860=(Token)match(input,OUTER,FOLLOW_OUTER_in_keywordAllowedIdent12527); if (state.failed) return retval;
+                    OUTER861=(Token)match(input,OUTER,FOLLOW_OUTER_in_keywordAllowedIdent12544); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    OUTER860_tree = (CommonTree)adaptor.create(OUTER860);
-                    adaptor.addChild(root_0, OUTER860_tree);
+                    OUTER861_tree = (CommonTree)adaptor.create(OUTER861);
+                    adaptor.addChild(root_0, OUTER861_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "outer"; 
@@ -26887,10 +26936,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 43 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    FULL861=(Token)match(input,FULL,FOLLOW_FULL_in_keywordAllowedIdent12534); if (state.failed) return retval;
+                    FULL862=(Token)match(input,FULL,FOLLOW_FULL_in_keywordAllowedIdent12551); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    FULL861_tree = (CommonTree)adaptor.create(FULL861);
-                    adaptor.addChild(root_0, FULL861_tree);
+                    FULL862_tree = (CommonTree)adaptor.create(FULL862);
+                    adaptor.addChild(root_0, FULL862_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "full"; 
@@ -26900,10 +26949,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 44 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    JOIN862=(Token)match(input,JOIN,FOLLOW_JOIN_in_keywordAllowedIdent12541); if (state.failed) return retval;
+                    JOIN863=(Token)match(input,JOIN,FOLLOW_JOIN_in_keywordAllowedIdent12558); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    JOIN862_tree = (CommonTree)adaptor.create(JOIN862);
-                    adaptor.addChild(root_0, JOIN862_tree);
+                    JOIN863_tree = (CommonTree)adaptor.create(JOIN863);
+                    adaptor.addChild(root_0, JOIN863_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "join"; 
@@ -26913,10 +26962,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 45 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    DEFINE863=(Token)match(input,DEFINE,FOLLOW_DEFINE_in_keywordAllowedIdent12548); if (state.failed) return retval;
+                    DEFINE864=(Token)match(input,DEFINE,FOLLOW_DEFINE_in_keywordAllowedIdent12565); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    DEFINE863_tree = (CommonTree)adaptor.create(DEFINE863);
-                    adaptor.addChild(root_0, DEFINE863_tree);
+                    DEFINE864_tree = (CommonTree)adaptor.create(DEFINE864);
+                    adaptor.addChild(root_0, DEFINE864_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "define"; 
@@ -26926,10 +26975,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 46 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    PARTITION864=(Token)match(input,PARTITION,FOLLOW_PARTITION_in_keywordAllowedIdent12555); if (state.failed) return retval;
+                    PARTITION865=(Token)match(input,PARTITION,FOLLOW_PARTITION_in_keywordAllowedIdent12572); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    PARTITION864_tree = (CommonTree)adaptor.create(PARTITION864);
-                    adaptor.addChild(root_0, PARTITION864_tree);
+                    PARTITION865_tree = (CommonTree)adaptor.create(PARTITION865);
+                    adaptor.addChild(root_0, PARTITION865_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "partition"; 
@@ -26939,10 +26988,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 47 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    MATCHES865=(Token)match(input,MATCHES,FOLLOW_MATCHES_in_keywordAllowedIdent12562); if (state.failed) return retval;
+                    MATCHES866=(Token)match(input,MATCHES,FOLLOW_MATCHES_in_keywordAllowedIdent12579); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    MATCHES865_tree = (CommonTree)adaptor.create(MATCHES865);
-                    adaptor.addChild(root_0, MATCHES865_tree);
+                    MATCHES866_tree = (CommonTree)adaptor.create(MATCHES866);
+                    adaptor.addChild(root_0, MATCHES866_tree);
                     }
                     if ( state.backtracking==0 ) {
                        retval.result = "matches"; 
@@ -26977,25 +27026,25 @@ public class EsperEPL2GrammarParser extends Parser {
         CommonTree i1_tree=null;
         CommonTree i2_tree=null;
         try {
-            int alt316=2;
-            int LA316_0 = input.LA(1);
-            if ( (LA316_0==IDENT) ) {
-                alt316=1;
+            int alt317=2;
+            int LA317_0 = input.LA(1);
+            if ( (LA317_0==IDENT) ) {
+                alt317=1;
             }
-            else if ( (LA316_0==TICKED_STRING_LITERAL) ) {
-                alt316=2;
+            else if ( (LA317_0==TICKED_STRING_LITERAL) ) {
+                alt317=2;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 316, 0, input);
+                    new NoViableAltException("", 317, 0, input);
                 throw nvae;
             }
-            switch (alt316) {
+            switch (alt317) {
                 case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_escapableStr12583); if (state.failed) return retval;
+                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_escapableStr12600); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     i1_tree = (CommonTree)adaptor.create(i1);
                     adaptor.addChild(root_0, i1_tree);
@@ -27008,7 +27057,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 2 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    i2=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_escapableStr12592); if (state.failed) return retval;
+                    i2=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_escapableStr12609); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     i2_tree = (CommonTree)adaptor.create(i2);
                     adaptor.addChild(root_0, i2_tree);
@@ -27041,39 +27090,39 @@ public class EsperEPL2GrammarParser extends Parser {
         retval.start = input.LT(1);
         CommonTree root_0 = null;
         Token t=null;
-        Token IDENT866=null;
+        Token IDENT867=null;
         CommonTree t_tree=null;
-        CommonTree IDENT866_tree=null;
+        CommonTree IDENT867_tree=null;
         RewriteRuleTokenStream stream_TICKED_STRING_LITERAL=new RewriteRuleTokenStream(adaptor,"token TICKED_STRING_LITERAL");
         try {
-            int alt317=2;
-            int LA317_0 = input.LA(1);
-            if ( (LA317_0==IDENT) ) {
-                alt317=1;
+            int alt318=2;
+            int LA318_0 = input.LA(1);
+            if ( (LA318_0==IDENT) ) {
+                alt318=1;
             }
-            else if ( (LA317_0==TICKED_STRING_LITERAL) ) {
-                alt317=2;
+            else if ( (LA318_0==TICKED_STRING_LITERAL) ) {
+                alt318=2;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 317, 0, input);
+                    new NoViableAltException("", 318, 0, input);
                 throw nvae;
             }
-            switch (alt317) {
+            switch (alt318) {
                 case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    IDENT866=(Token)match(input,IDENT,FOLLOW_IDENT_in_escapableIdent12606); if (state.failed) return retval;
+                    IDENT867=(Token)match(input,IDENT,FOLLOW_IDENT_in_escapableIdent12623); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    IDENT866_tree = (CommonTree)adaptor.create(IDENT866);
-                    adaptor.addChild(root_0, IDENT866_tree);
+                    IDENT867_tree = (CommonTree)adaptor.create(IDENT867);
+                    adaptor.addChild(root_0, IDENT867_tree);
                     }
                     }
                     break;
                 case 2 :
                     {
-                    t=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_escapableIdent12614); if (state.failed) return retval; 
+                    t=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_escapableIdent12631); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TICKED_STRING_LITERAL.add(t);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -27107,42 +27156,42 @@ public class EsperEPL2GrammarParser extends Parser {
         EsperEPL2GrammarParser.timePeriod_return retval = new EsperEPL2GrammarParser.timePeriod_return();
         retval.start = input.LT(1);
         CommonTree root_0 = null;
-        EsperEPL2GrammarParser.yearPart_return yearPart867 = null;
-        EsperEPL2GrammarParser.monthPart_return monthPart868 = null;
-        EsperEPL2GrammarParser.weekPart_return weekPart869 = null;
-        EsperEPL2GrammarParser.dayPart_return dayPart870 = null;
-        EsperEPL2GrammarParser.hourPart_return hourPart871 = null;
-        EsperEPL2GrammarParser.minutePart_return minutePart872 = null;
-        EsperEPL2GrammarParser.secondPart_return secondPart873 = null;
-        EsperEPL2GrammarParser.millisecondPart_return millisecondPart874 = null;
-        EsperEPL2GrammarParser.monthPart_return monthPart875 = null;
-        EsperEPL2GrammarParser.weekPart_return weekPart876 = null;
-        EsperEPL2GrammarParser.dayPart_return dayPart877 = null;
-        EsperEPL2GrammarParser.hourPart_return hourPart878 = null;
-        EsperEPL2GrammarParser.minutePart_return minutePart879 = null;
-        EsperEPL2GrammarParser.secondPart_return secondPart880 = null;
-        EsperEPL2GrammarParser.millisecondPart_return millisecondPart881 = null;
-        EsperEPL2GrammarParser.weekPart_return weekPart882 = null;
-        EsperEPL2GrammarParser.dayPart_return dayPart883 = null;
-        EsperEPL2GrammarParser.hourPart_return hourPart884 = null;
-        EsperEPL2GrammarParser.minutePart_return minutePart885 = null;
-        EsperEPL2GrammarParser.secondPart_return secondPart886 = null;
-        EsperEPL2GrammarParser.millisecondPart_return millisecondPart887 = null;
-        EsperEPL2GrammarParser.dayPart_return dayPart888 = null;
-        EsperEPL2GrammarParser.hourPart_return hourPart889 = null;
-        EsperEPL2GrammarParser.minutePart_return minutePart890 = null;
-        EsperEPL2GrammarParser.secondPart_return secondPart891 = null;
-        EsperEPL2GrammarParser.millisecondPart_return millisecondPart892 = null;
-        EsperEPL2GrammarParser.hourPart_return hourPart893 = null;
-        EsperEPL2GrammarParser.minutePart_return minutePart894 = null;
-        EsperEPL2GrammarParser.secondPart_return secondPart895 = null;
-        EsperEPL2GrammarParser.millisecondPart_return millisecondPart896 = null;
-        EsperEPL2GrammarParser.minutePart_return minutePart897 = null;
-        EsperEPL2GrammarParser.secondPart_return secondPart898 = null;
-        EsperEPL2GrammarParser.millisecondPart_return millisecondPart899 = null;
-        EsperEPL2GrammarParser.secondPart_return secondPart900 = null;
-        EsperEPL2GrammarParser.millisecondPart_return millisecondPart901 = null;
+        EsperEPL2GrammarParser.yearPart_return yearPart868 = null;
+        EsperEPL2GrammarParser.monthPart_return monthPart869 = null;
+        EsperEPL2GrammarParser.weekPart_return weekPart870 = null;
+        EsperEPL2GrammarParser.dayPart_return dayPart871 = null;
+        EsperEPL2GrammarParser.hourPart_return hourPart872 = null;
+        EsperEPL2GrammarParser.minutePart_return minutePart873 = null;
+        EsperEPL2GrammarParser.secondPart_return secondPart874 = null;
+        EsperEPL2GrammarParser.millisecondPart_return millisecondPart875 = null;
+        EsperEPL2GrammarParser.monthPart_return monthPart876 = null;
+        EsperEPL2GrammarParser.weekPart_return weekPart877 = null;
+        EsperEPL2GrammarParser.dayPart_return dayPart878 = null;
+        EsperEPL2GrammarParser.hourPart_return hourPart879 = null;
+        EsperEPL2GrammarParser.minutePart_return minutePart880 = null;
+        EsperEPL2GrammarParser.secondPart_return secondPart881 = null;
+        EsperEPL2GrammarParser.millisecondPart_return millisecondPart882 = null;
+        EsperEPL2GrammarParser.weekPart_return weekPart883 = null;
+        EsperEPL2GrammarParser.dayPart_return dayPart884 = null;
+        EsperEPL2GrammarParser.hourPart_return hourPart885 = null;
+        EsperEPL2GrammarParser.minutePart_return minutePart886 = null;
+        EsperEPL2GrammarParser.secondPart_return secondPart887 = null;
+        EsperEPL2GrammarParser.millisecondPart_return millisecondPart888 = null;
+        EsperEPL2GrammarParser.dayPart_return dayPart889 = null;
+        EsperEPL2GrammarParser.hourPart_return hourPart890 = null;
+        EsperEPL2GrammarParser.minutePart_return minutePart891 = null;
+        EsperEPL2GrammarParser.secondPart_return secondPart892 = null;
+        EsperEPL2GrammarParser.millisecondPart_return millisecondPart893 = null;
+        EsperEPL2GrammarParser.hourPart_return hourPart894 = null;
+        EsperEPL2GrammarParser.minutePart_return minutePart895 = null;
+        EsperEPL2GrammarParser.secondPart_return secondPart896 = null;
+        EsperEPL2GrammarParser.millisecondPart_return millisecondPart897 = null;
+        EsperEPL2GrammarParser.minutePart_return minutePart898 = null;
+        EsperEPL2GrammarParser.secondPart_return secondPart899 = null;
+        EsperEPL2GrammarParser.millisecondPart_return millisecondPart900 = null;
+        EsperEPL2GrammarParser.secondPart_return secondPart901 = null;
         EsperEPL2GrammarParser.millisecondPart_return millisecondPart902 = null;
+        EsperEPL2GrammarParser.millisecondPart_return millisecondPart903 = null;
         RewriteRuleSubtreeStream stream_yearPart=new RewriteRuleSubtreeStream(adaptor,"rule yearPart");
         RewriteRuleSubtreeStream stream_secondPart=new RewriteRuleSubtreeStream(adaptor,"rule secondPart");
         RewriteRuleSubtreeStream stream_minutePart=new RewriteRuleSubtreeStream(adaptor,"rule minutePart");
@@ -27153,66 +27202,66 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_monthPart=new RewriteRuleSubtreeStream(adaptor,"rule monthPart");
         try {
             {
-            int alt346=8;
+            int alt347=8;
             switch ( input.LA(1) ) {
             case NUM_INT:
                 {
                 switch ( input.LA(2) ) {
+                case TIMEPERIOD_HOUR:
+                case TIMEPERIOD_HOURS:
+                    {
+                    alt347=5;
+                    }
+                    break;
                 case TIMEPERIOD_WEEK:
                 case TIMEPERIOD_WEEKS:
                     {
-                    alt346=3;
+                    alt347=3;
                     }
                     break;
                 case TIMEPERIOD_DAY:
                 case TIMEPERIOD_DAYS:
                     {
-                    alt346=4;
-                    }
-                    break;
-                case TIMEPERIOD_YEAR:
-                case TIMEPERIOD_YEARS:
-                    {
-                    alt346=1;
-                    }
-                    break;
-                case TIMEPERIOD_HOUR:
-                case TIMEPERIOD_HOURS:
-                    {
-                    alt346=5;
-                    }
-                    break;
-                case TIMEPERIOD_MILLISEC:
-                case TIMEPERIOD_MILLISECOND:
-                case TIMEPERIOD_MILLISECONDS:
-                    {
-                    alt346=8;
-                    }
-                    break;
-                case TIMEPERIOD_SEC:
-                case TIMEPERIOD_SECOND:
-                case TIMEPERIOD_SECONDS:
-                    {
-                    alt346=7;
-                    }
-                    break;
-                case TIMEPERIOD_MONTH:
-                case TIMEPERIOD_MONTHS:
-                    {
-                    alt346=2;
+                    alt347=4;
                     }
                     break;
                 case MIN:
                 case TIMEPERIOD_MINUTE:
                 case TIMEPERIOD_MINUTES:
                     {
-                    alt346=6;
+                    alt347=6;
+                    }
+                    break;
+                case TIMEPERIOD_MONTH:
+                case TIMEPERIOD_MONTHS:
+                    {
+                    alt347=2;
+                    }
+                    break;
+                case TIMEPERIOD_SEC:
+                case TIMEPERIOD_SECOND:
+                case TIMEPERIOD_SECONDS:
+                    {
+                    alt347=7;
+                    }
+                    break;
+                case TIMEPERIOD_MILLISEC:
+                case TIMEPERIOD_MILLISECOND:
+                case TIMEPERIOD_MILLISECONDS:
+                    {
+                    alt347=8;
+                    }
+                    break;
+                case TIMEPERIOD_YEAR:
+                case TIMEPERIOD_YEARS:
+                    {
+                    alt347=1;
                     }
                     break;
                 default:
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 346, 1, input);
+                        new NoViableAltException("", 347, 1, input);
                     throw nvae;
                 }
                 }
@@ -27220,61 +27269,61 @@ public class EsperEPL2GrammarParser extends Parser {
             case NUM_LONG:
                 {
                 switch ( input.LA(2) ) {
+                case TIMEPERIOD_MILLISEC:
+                case TIMEPERIOD_MILLISECOND:
+                case TIMEPERIOD_MILLISECONDS:
+                    {
+                    alt347=8;
+                    }
+                    break;
                 case TIMEPERIOD_HOUR:
                 case TIMEPERIOD_HOURS:
                     {
-                    alt346=5;
-                    }
-                    break;
-                case TIMEPERIOD_WEEK:
-                case TIMEPERIOD_WEEKS:
-                    {
-                    alt346=3;
-                    }
-                    break;
-                case TIMEPERIOD_DAY:
-                case TIMEPERIOD_DAYS:
-                    {
-                    alt346=4;
+                    alt347=5;
                     }
                     break;
                 case TIMEPERIOD_SEC:
                 case TIMEPERIOD_SECOND:
                 case TIMEPERIOD_SECONDS:
                     {
-                    alt346=7;
+                    alt347=7;
                     }
                     break;
-                case TIMEPERIOD_MONTH:
-                case TIMEPERIOD_MONTHS:
+                case TIMEPERIOD_DAY:
+                case TIMEPERIOD_DAYS:
                     {
-                    alt346=2;
+                    alt347=4;
                     }
                     break;
                 case MIN:
                 case TIMEPERIOD_MINUTE:
                 case TIMEPERIOD_MINUTES:
                     {
-                    alt346=6;
-                    }
-                    break;
-                case TIMEPERIOD_MILLISEC:
-                case TIMEPERIOD_MILLISECOND:
-                case TIMEPERIOD_MILLISECONDS:
-                    {
-                    alt346=8;
+                    alt347=6;
                     }
                     break;
                 case TIMEPERIOD_YEAR:
                 case TIMEPERIOD_YEARS:
                     {
-                    alt346=1;
+                    alt347=1;
+                    }
+                    break;
+                case TIMEPERIOD_WEEK:
+                case TIMEPERIOD_WEEKS:
+                    {
+                    alt347=3;
+                    }
+                    break;
+                case TIMEPERIOD_MONTH:
+                case TIMEPERIOD_MONTHS:
+                    {
+                    alt347=2;
                     }
                     break;
                 default:
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 346, 2, input);
+                        new NoViableAltException("", 347, 2, input);
                     throw nvae;
                 }
                 }
@@ -27282,61 +27331,61 @@ public class EsperEPL2GrammarParser extends Parser {
             case NUM_FLOAT:
                 {
                 switch ( input.LA(2) ) {
-                case TIMEPERIOD_HOUR:
-                case TIMEPERIOD_HOURS:
-                    {
-                    alt346=5;
-                    }
-                    break;
                 case TIMEPERIOD_MILLISEC:
                 case TIMEPERIOD_MILLISECOND:
                 case TIMEPERIOD_MILLISECONDS:
                     {
-                    alt346=8;
+                    alt347=8;
                     }
                     break;
                 case TIMEPERIOD_SEC:
                 case TIMEPERIOD_SECOND:
                 case TIMEPERIOD_SECONDS:
                     {
-                    alt346=7;
+                    alt347=7;
+                    }
+                    break;
+                case TIMEPERIOD_YEAR:
+                case TIMEPERIOD_YEARS:
+                    {
+                    alt347=1;
+                    }
+                    break;
+                case TIMEPERIOD_DAY:
+                case TIMEPERIOD_DAYS:
+                    {
+                    alt347=4;
                     }
                     break;
                 case MIN:
                 case TIMEPERIOD_MINUTE:
                 case TIMEPERIOD_MINUTES:
                     {
-                    alt346=6;
+                    alt347=6;
                     }
                     break;
-                case TIMEPERIOD_DAY:
-                case TIMEPERIOD_DAYS:
+                case TIMEPERIOD_HOUR:
+                case TIMEPERIOD_HOURS:
                     {
-                    alt346=4;
+                    alt347=5;
                     }
                     break;
                 case TIMEPERIOD_WEEK:
                 case TIMEPERIOD_WEEKS:
                     {
-                    alt346=3;
+                    alt347=3;
                     }
                     break;
                 case TIMEPERIOD_MONTH:
                 case TIMEPERIOD_MONTHS:
                     {
-                    alt346=2;
-                    }
-                    break;
-                case TIMEPERIOD_YEAR:
-                case TIMEPERIOD_YEARS:
-                    {
-                    alt346=1;
+                    alt347=2;
                     }
                     break;
                 default:
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 346, 3, input);
+                        new NoViableAltException("", 347, 3, input);
                     throw nvae;
                 }
                 }
@@ -27348,57 +27397,57 @@ public class EsperEPL2GrammarParser extends Parser {
                 case TIMEPERIOD_SECOND:
                 case TIMEPERIOD_SECONDS:
                     {
-                    alt346=7;
+                    alt347=7;
                     }
                     break;
-                case MIN:
-                case TIMEPERIOD_MINUTE:
-                case TIMEPERIOD_MINUTES:
+                case TIMEPERIOD_MONTH:
+                case TIMEPERIOD_MONTHS:
                     {
-                    alt346=6;
+                    alt347=2;
                     }
                     break;
                 case TIMEPERIOD_MILLISEC:
                 case TIMEPERIOD_MILLISECOND:
                 case TIMEPERIOD_MILLISECONDS:
                     {
-                    alt346=8;
+                    alt347=8;
                     }
                     break;
                 case TIMEPERIOD_DAY:
                 case TIMEPERIOD_DAYS:
                     {
-                    alt346=4;
+                    alt347=4;
+                    }
+                    break;
+                case MIN:
+                case TIMEPERIOD_MINUTE:
+                case TIMEPERIOD_MINUTES:
+                    {
+                    alt347=6;
                     }
                     break;
                 case TIMEPERIOD_YEAR:
                 case TIMEPERIOD_YEARS:
                     {
-                    alt346=1;
+                    alt347=1;
                     }
                     break;
                 case TIMEPERIOD_WEEK:
                 case TIMEPERIOD_WEEKS:
                     {
-                    alt346=3;
-                    }
-                    break;
-                case TIMEPERIOD_MONTH:
-                case TIMEPERIOD_MONTHS:
-                    {
-                    alt346=2;
+                    alt347=3;
                     }
                     break;
                 case TIMEPERIOD_HOUR:
                 case TIMEPERIOD_HOURS:
                     {
-                    alt346=5;
+                    alt347=5;
                     }
                     break;
                 default:
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 346, 4, input);
+                        new NoViableAltException("", 347, 4, input);
                     throw nvae;
                 }
                 }
@@ -27406,61 +27455,61 @@ public class EsperEPL2GrammarParser extends Parser {
             case IDENT:
                 {
                 switch ( input.LA(2) ) {
-                case TIMEPERIOD_HOUR:
-                case TIMEPERIOD_HOURS:
-                    {
-                    alt346=5;
-                    }
-                    break;
                 case MIN:
                 case TIMEPERIOD_MINUTE:
                 case TIMEPERIOD_MINUTES:
                     {
-                    alt346=6;
-                    }
-                    break;
-                case TIMEPERIOD_DAY:
-                case TIMEPERIOD_DAYS:
-                    {
-                    alt346=4;
-                    }
-                    break;
-                case TIMEPERIOD_WEEK:
-                case TIMEPERIOD_WEEKS:
-                    {
-                    alt346=3;
-                    }
-                    break;
-                case TIMEPERIOD_YEAR:
-                case TIMEPERIOD_YEARS:
-                    {
-                    alt346=1;
+                    alt347=6;
                     }
                     break;
                 case TIMEPERIOD_MONTH:
                 case TIMEPERIOD_MONTHS:
                     {
-                    alt346=2;
+                    alt347=2;
                     }
                     break;
                 case TIMEPERIOD_SEC:
                 case TIMEPERIOD_SECOND:
                 case TIMEPERIOD_SECONDS:
                     {
-                    alt346=7;
+                    alt347=7;
                     }
                     break;
                 case TIMEPERIOD_MILLISEC:
                 case TIMEPERIOD_MILLISECOND:
                 case TIMEPERIOD_MILLISECONDS:
                     {
-                    alt346=8;
+                    alt347=8;
+                    }
+                    break;
+                case TIMEPERIOD_HOUR:
+                case TIMEPERIOD_HOURS:
+                    {
+                    alt347=5;
+                    }
+                    break;
+                case TIMEPERIOD_WEEK:
+                case TIMEPERIOD_WEEKS:
+                    {
+                    alt347=3;
+                    }
+                    break;
+                case TIMEPERIOD_YEAR:
+                case TIMEPERIOD_YEARS:
+                    {
+                    alt347=1;
+                    }
+                    break;
+                case TIMEPERIOD_DAY:
+                case TIMEPERIOD_DAYS:
+                    {
+                    alt347=4;
                     }
                     break;
                 default:
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 346, 5, input);
+                        new NoViableAltException("", 347, 5, input);
                     throw nvae;
                 }
                 }
@@ -27471,58 +27520,58 @@ public class EsperEPL2GrammarParser extends Parser {
                 case TIMEPERIOD_HOUR:
                 case TIMEPERIOD_HOURS:
                     {
-                    alt346=5;
+                    alt347=5;
                     }
                     break;
                 case TIMEPERIOD_WEEK:
                 case TIMEPERIOD_WEEKS:
                     {
-                    alt346=3;
+                    alt347=3;
                     }
                     break;
-                case TIMEPERIOD_DAY:
-                case TIMEPERIOD_DAYS:
+                case TIMEPERIOD_YEAR:
+                case TIMEPERIOD_YEARS:
                     {
-                    alt346=4;
-                    }
-                    break;
-                case MIN:
-                case TIMEPERIOD_MINUTE:
-                case TIMEPERIOD_MINUTES:
-                    {
-                    alt346=6;
-                    }
-                    break;
-                case TIMEPERIOD_MONTH:
-                case TIMEPERIOD_MONTHS:
-                    {
-                    alt346=2;
-                    }
-                    break;
-                case TIMEPERIOD_SEC:
-                case TIMEPERIOD_SECOND:
-                case TIMEPERIOD_SECONDS:
-                    {
-                    alt346=7;
+                    alt347=1;
                     }
                     break;
                 case TIMEPERIOD_MILLISEC:
                 case TIMEPERIOD_MILLISECOND:
                 case TIMEPERIOD_MILLISECONDS:
                     {
-                    alt346=8;
+                    alt347=8;
                     }
                     break;
-                case TIMEPERIOD_YEAR:
-                case TIMEPERIOD_YEARS:
+                case TIMEPERIOD_SEC:
+                case TIMEPERIOD_SECOND:
+                case TIMEPERIOD_SECONDS:
                     {
-                    alt346=1;
+                    alt347=7;
+                    }
+                    break;
+                case TIMEPERIOD_DAY:
+                case TIMEPERIOD_DAYS:
+                    {
+                    alt347=4;
+                    }
+                    break;
+                case TIMEPERIOD_MONTH:
+                case TIMEPERIOD_MONTHS:
+                    {
+                    alt347=2;
+                    }
+                    break;
+                case MIN:
+                case TIMEPERIOD_MINUTE:
+                case TIMEPERIOD_MINUTES:
+                    {
+                    alt347=6;
                     }
                     break;
                 default:
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 346, 6, input);
+                        new NoViableAltException("", 347, 6, input);
                     throw nvae;
                 }
                 }
@@ -27530,85 +27579,23 @@ public class EsperEPL2GrammarParser extends Parser {
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 346, 0, input);
+                    new NoViableAltException("", 347, 0, input);
                 throw nvae;
             }
-            switch (alt346) {
+            switch (alt347) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_yearPart_in_timePeriod12639);
-                    yearPart867=yearPart();
+                    pushFollow(FOLLOW_yearPart_in_timePeriod12656);
+                    yearPart868=yearPart();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_yearPart.add(yearPart867.getTree());
-                    int alt318=2;
-                    switch ( input.LA(1) ) {
-                        case NUM_INT:
-                            {
-                            int LA318_1 = input.LA(2);
-                            if ( ((LA318_1>=TIMEPERIOD_MONTH && LA318_1<=TIMEPERIOD_MONTHS)) ) {
-                                alt318=1;
-                            }
-                            }
-                            break;
-                        case NUM_LONG:
-                            {
-                            int LA318_2 = input.LA(2);
-                            if ( ((LA318_2>=TIMEPERIOD_MONTH && LA318_2<=TIMEPERIOD_MONTHS)) ) {
-                                alt318=1;
-                            }
-                            }
-                            break;
-                        case NUM_FLOAT:
-                            {
-                            int LA318_3 = input.LA(2);
-                            if ( ((LA318_3>=TIMEPERIOD_MONTH && LA318_3<=TIMEPERIOD_MONTHS)) ) {
-                                alt318=1;
-                            }
-                            }
-                            break;
-                        case NUM_DOUBLE:
-                            {
-                            int LA318_4 = input.LA(2);
-                            if ( ((LA318_4>=TIMEPERIOD_MONTH && LA318_4<=TIMEPERIOD_MONTHS)) ) {
-                                alt318=1;
-                            }
-                            }
-                            break;
-                        case IDENT:
-                            {
-                            int LA318_5 = input.LA(2);
-                            if ( ((LA318_5>=TIMEPERIOD_MONTH && LA318_5<=TIMEPERIOD_MONTHS)) ) {
-                                alt318=1;
-                            }
-                            }
-                            break;
-                        case QUESTION:
-                            {
-                            int LA318_6 = input.LA(2);
-                            if ( ((LA318_6>=TIMEPERIOD_MONTH && LA318_6<=TIMEPERIOD_MONTHS)) ) {
-                                alt318=1;
-                            }
-                            }
-                            break;
-                    }
-                    switch (alt318) {
-                        case 1 :
-                            {
-                            pushFollow(FOLLOW_monthPart_in_timePeriod12641);
-                            monthPart868=monthPart();
-                            state._fsp--;
-                            if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_monthPart.add(monthPart868.getTree());
-                            }
-                            break;
-                    }
+                    if ( state.backtracking==0 ) stream_yearPart.add(yearPart868.getTree());
                     int alt319=2;
                     switch ( input.LA(1) ) {
                         case NUM_INT:
                             {
                             int LA319_1 = input.LA(2);
-                            if ( ((LA319_1>=TIMEPERIOD_WEEK && LA319_1<=TIMEPERIOD_WEEKS)) ) {
+                            if ( ((LA319_1>=TIMEPERIOD_MONTH && LA319_1<=TIMEPERIOD_MONTHS)) ) {
                                 alt319=1;
                             }
                             }
@@ -27616,7 +27603,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA319_2 = input.LA(2);
-                            if ( ((LA319_2>=TIMEPERIOD_WEEK && LA319_2<=TIMEPERIOD_WEEKS)) ) {
+                            if ( ((LA319_2>=TIMEPERIOD_MONTH && LA319_2<=TIMEPERIOD_MONTHS)) ) {
                                 alt319=1;
                             }
                             }
@@ -27624,7 +27611,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA319_3 = input.LA(2);
-                            if ( ((LA319_3>=TIMEPERIOD_WEEK && LA319_3<=TIMEPERIOD_WEEKS)) ) {
+                            if ( ((LA319_3>=TIMEPERIOD_MONTH && LA319_3<=TIMEPERIOD_MONTHS)) ) {
                                 alt319=1;
                             }
                             }
@@ -27632,7 +27619,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA319_4 = input.LA(2);
-                            if ( ((LA319_4>=TIMEPERIOD_WEEK && LA319_4<=TIMEPERIOD_WEEKS)) ) {
+                            if ( ((LA319_4>=TIMEPERIOD_MONTH && LA319_4<=TIMEPERIOD_MONTHS)) ) {
                                 alt319=1;
                             }
                             }
@@ -27640,7 +27627,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA319_5 = input.LA(2);
-                            if ( ((LA319_5>=TIMEPERIOD_WEEK && LA319_5<=TIMEPERIOD_WEEKS)) ) {
+                            if ( ((LA319_5>=TIMEPERIOD_MONTH && LA319_5<=TIMEPERIOD_MONTHS)) ) {
                                 alt319=1;
                             }
                             }
@@ -27648,7 +27635,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA319_6 = input.LA(2);
-                            if ( ((LA319_6>=TIMEPERIOD_WEEK && LA319_6<=TIMEPERIOD_WEEKS)) ) {
+                            if ( ((LA319_6>=TIMEPERIOD_MONTH && LA319_6<=TIMEPERIOD_MONTHS)) ) {
                                 alt319=1;
                             }
                             }
@@ -27657,11 +27644,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt319) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_weekPart_in_timePeriod12644);
-                            weekPart869=weekPart();
+                            pushFollow(FOLLOW_monthPart_in_timePeriod12658);
+                            monthPart869=monthPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_weekPart.add(weekPart869.getTree());
+                            if ( state.backtracking==0 ) stream_monthPart.add(monthPart869.getTree());
                             }
                             break;
                     }
@@ -27670,7 +27657,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_INT:
                             {
                             int LA320_1 = input.LA(2);
-                            if ( ((LA320_1>=TIMEPERIOD_DAY && LA320_1<=TIMEPERIOD_DAYS)) ) {
+                            if ( ((LA320_1>=TIMEPERIOD_WEEK && LA320_1<=TIMEPERIOD_WEEKS)) ) {
                                 alt320=1;
                             }
                             }
@@ -27678,7 +27665,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA320_2 = input.LA(2);
-                            if ( ((LA320_2>=TIMEPERIOD_DAY && LA320_2<=TIMEPERIOD_DAYS)) ) {
+                            if ( ((LA320_2>=TIMEPERIOD_WEEK && LA320_2<=TIMEPERIOD_WEEKS)) ) {
                                 alt320=1;
                             }
                             }
@@ -27686,7 +27673,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA320_3 = input.LA(2);
-                            if ( ((LA320_3>=TIMEPERIOD_DAY && LA320_3<=TIMEPERIOD_DAYS)) ) {
+                            if ( ((LA320_3>=TIMEPERIOD_WEEK && LA320_3<=TIMEPERIOD_WEEKS)) ) {
                                 alt320=1;
                             }
                             }
@@ -27694,7 +27681,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA320_4 = input.LA(2);
-                            if ( ((LA320_4>=TIMEPERIOD_DAY && LA320_4<=TIMEPERIOD_DAYS)) ) {
+                            if ( ((LA320_4>=TIMEPERIOD_WEEK && LA320_4<=TIMEPERIOD_WEEKS)) ) {
                                 alt320=1;
                             }
                             }
@@ -27702,7 +27689,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA320_5 = input.LA(2);
-                            if ( ((LA320_5>=TIMEPERIOD_DAY && LA320_5<=TIMEPERIOD_DAYS)) ) {
+                            if ( ((LA320_5>=TIMEPERIOD_WEEK && LA320_5<=TIMEPERIOD_WEEKS)) ) {
                                 alt320=1;
                             }
                             }
@@ -27710,7 +27697,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA320_6 = input.LA(2);
-                            if ( ((LA320_6>=TIMEPERIOD_DAY && LA320_6<=TIMEPERIOD_DAYS)) ) {
+                            if ( ((LA320_6>=TIMEPERIOD_WEEK && LA320_6<=TIMEPERIOD_WEEKS)) ) {
                                 alt320=1;
                             }
                             }
@@ -27719,11 +27706,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt320) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_dayPart_in_timePeriod12647);
-                            dayPart870=dayPart();
+                            pushFollow(FOLLOW_weekPart_in_timePeriod12661);
+                            weekPart870=weekPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_dayPart.add(dayPart870.getTree());
+                            if ( state.backtracking==0 ) stream_weekPart.add(weekPart870.getTree());
                             }
                             break;
                     }
@@ -27732,7 +27719,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_INT:
                             {
                             int LA321_1 = input.LA(2);
-                            if ( ((LA321_1>=TIMEPERIOD_HOUR && LA321_1<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA321_1>=TIMEPERIOD_DAY && LA321_1<=TIMEPERIOD_DAYS)) ) {
                                 alt321=1;
                             }
                             }
@@ -27740,7 +27727,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA321_2 = input.LA(2);
-                            if ( ((LA321_2>=TIMEPERIOD_HOUR && LA321_2<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA321_2>=TIMEPERIOD_DAY && LA321_2<=TIMEPERIOD_DAYS)) ) {
                                 alt321=1;
                             }
                             }
@@ -27748,7 +27735,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA321_3 = input.LA(2);
-                            if ( ((LA321_3>=TIMEPERIOD_HOUR && LA321_3<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA321_3>=TIMEPERIOD_DAY && LA321_3<=TIMEPERIOD_DAYS)) ) {
                                 alt321=1;
                             }
                             }
@@ -27756,7 +27743,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA321_4 = input.LA(2);
-                            if ( ((LA321_4>=TIMEPERIOD_HOUR && LA321_4<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA321_4>=TIMEPERIOD_DAY && LA321_4<=TIMEPERIOD_DAYS)) ) {
                                 alt321=1;
                             }
                             }
@@ -27764,7 +27751,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA321_5 = input.LA(2);
-                            if ( ((LA321_5>=TIMEPERIOD_HOUR && LA321_5<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA321_5>=TIMEPERIOD_DAY && LA321_5<=TIMEPERIOD_DAYS)) ) {
                                 alt321=1;
                             }
                             }
@@ -27772,7 +27759,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA321_6 = input.LA(2);
-                            if ( ((LA321_6>=TIMEPERIOD_HOUR && LA321_6<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA321_6>=TIMEPERIOD_DAY && LA321_6<=TIMEPERIOD_DAYS)) ) {
                                 alt321=1;
                             }
                             }
@@ -27781,11 +27768,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt321) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_hourPart_in_timePeriod12650);
-                            hourPart871=hourPart();
+                            pushFollow(FOLLOW_dayPart_in_timePeriod12664);
+                            dayPart871=dayPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_hourPart.add(hourPart871.getTree());
+                            if ( state.backtracking==0 ) stream_dayPart.add(dayPart871.getTree());
                             }
                             break;
                     }
@@ -27794,7 +27781,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_INT:
                             {
                             int LA322_1 = input.LA(2);
-                            if ( (LA322_1==MIN||(LA322_1>=TIMEPERIOD_MINUTE && LA322_1<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA322_1>=TIMEPERIOD_HOUR && LA322_1<=TIMEPERIOD_HOURS)) ) {
                                 alt322=1;
                             }
                             }
@@ -27802,7 +27789,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA322_2 = input.LA(2);
-                            if ( (LA322_2==MIN||(LA322_2>=TIMEPERIOD_MINUTE && LA322_2<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA322_2>=TIMEPERIOD_HOUR && LA322_2<=TIMEPERIOD_HOURS)) ) {
                                 alt322=1;
                             }
                             }
@@ -27810,7 +27797,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA322_3 = input.LA(2);
-                            if ( (LA322_3==MIN||(LA322_3>=TIMEPERIOD_MINUTE && LA322_3<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA322_3>=TIMEPERIOD_HOUR && LA322_3<=TIMEPERIOD_HOURS)) ) {
                                 alt322=1;
                             }
                             }
@@ -27818,7 +27805,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA322_4 = input.LA(2);
-                            if ( (LA322_4==MIN||(LA322_4>=TIMEPERIOD_MINUTE && LA322_4<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA322_4>=TIMEPERIOD_HOUR && LA322_4<=TIMEPERIOD_HOURS)) ) {
                                 alt322=1;
                             }
                             }
@@ -27826,7 +27813,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA322_5 = input.LA(2);
-                            if ( (LA322_5==MIN||(LA322_5>=TIMEPERIOD_MINUTE && LA322_5<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA322_5>=TIMEPERIOD_HOUR && LA322_5<=TIMEPERIOD_HOURS)) ) {
                                 alt322=1;
                             }
                             }
@@ -27834,7 +27821,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA322_6 = input.LA(2);
-                            if ( (LA322_6==MIN||(LA322_6>=TIMEPERIOD_MINUTE && LA322_6<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA322_6>=TIMEPERIOD_HOUR && LA322_6<=TIMEPERIOD_HOURS)) ) {
                                 alt322=1;
                             }
                             }
@@ -27843,11 +27830,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt322) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_minutePart_in_timePeriod12653);
-                            minutePart872=minutePart();
+                            pushFollow(FOLLOW_hourPart_in_timePeriod12667);
+                            hourPart872=hourPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_minutePart.add(minutePart872.getTree());
+                            if ( state.backtracking==0 ) stream_hourPart.add(hourPart872.getTree());
                             }
                             break;
                     }
@@ -27856,7 +27843,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_INT:
                             {
                             int LA323_1 = input.LA(2);
-                            if ( ((LA323_1>=TIMEPERIOD_SEC && LA323_1<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA323_1==MIN||(LA323_1>=TIMEPERIOD_MINUTE && LA323_1<=TIMEPERIOD_MINUTES)) ) {
                                 alt323=1;
                             }
                             }
@@ -27864,7 +27851,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA323_2 = input.LA(2);
-                            if ( ((LA323_2>=TIMEPERIOD_SEC && LA323_2<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA323_2==MIN||(LA323_2>=TIMEPERIOD_MINUTE && LA323_2<=TIMEPERIOD_MINUTES)) ) {
                                 alt323=1;
                             }
                             }
@@ -27872,7 +27859,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA323_3 = input.LA(2);
-                            if ( ((LA323_3>=TIMEPERIOD_SEC && LA323_3<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA323_3==MIN||(LA323_3>=TIMEPERIOD_MINUTE && LA323_3<=TIMEPERIOD_MINUTES)) ) {
                                 alt323=1;
                             }
                             }
@@ -27880,7 +27867,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA323_4 = input.LA(2);
-                            if ( ((LA323_4>=TIMEPERIOD_SEC && LA323_4<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA323_4==MIN||(LA323_4>=TIMEPERIOD_MINUTE && LA323_4<=TIMEPERIOD_MINUTES)) ) {
                                 alt323=1;
                             }
                             }
@@ -27888,7 +27875,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA323_5 = input.LA(2);
-                            if ( ((LA323_5>=TIMEPERIOD_SEC && LA323_5<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA323_5==MIN||(LA323_5>=TIMEPERIOD_MINUTE && LA323_5<=TIMEPERIOD_MINUTES)) ) {
                                 alt323=1;
                             }
                             }
@@ -27896,7 +27883,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA323_6 = input.LA(2);
-                            if ( ((LA323_6>=TIMEPERIOD_SEC && LA323_6<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA323_6==MIN||(LA323_6>=TIMEPERIOD_MINUTE && LA323_6<=TIMEPERIOD_MINUTES)) ) {
                                 alt323=1;
                             }
                             }
@@ -27905,27 +27892,89 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt323) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod12656);
-                            secondPart873=secondPart();
+                            pushFollow(FOLLOW_minutePart_in_timePeriod12670);
+                            minutePart873=minutePart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart873.getTree());
+                            if ( state.backtracking==0 ) stream_minutePart.add(minutePart873.getTree());
                             }
                             break;
                     }
                     int alt324=2;
-                    int LA324_0 = input.LA(1);
-                    if ( (LA324_0==NUM_DOUBLE||LA324_0==IDENT||LA324_0==QUESTION||LA324_0==NUM_INT||(LA324_0>=NUM_LONG && LA324_0<=NUM_FLOAT)) ) {
-                        alt324=1;
+                    switch ( input.LA(1) ) {
+                        case NUM_INT:
+                            {
+                            int LA324_1 = input.LA(2);
+                            if ( ((LA324_1>=TIMEPERIOD_SEC && LA324_1<=TIMEPERIOD_SECONDS)) ) {
+                                alt324=1;
+                            }
+                            }
+                            break;
+                        case NUM_LONG:
+                            {
+                            int LA324_2 = input.LA(2);
+                            if ( ((LA324_2>=TIMEPERIOD_SEC && LA324_2<=TIMEPERIOD_SECONDS)) ) {
+                                alt324=1;
+                            }
+                            }
+                            break;
+                        case NUM_FLOAT:
+                            {
+                            int LA324_3 = input.LA(2);
+                            if ( ((LA324_3>=TIMEPERIOD_SEC && LA324_3<=TIMEPERIOD_SECONDS)) ) {
+                                alt324=1;
+                            }
+                            }
+                            break;
+                        case NUM_DOUBLE:
+                            {
+                            int LA324_4 = input.LA(2);
+                            if ( ((LA324_4>=TIMEPERIOD_SEC && LA324_4<=TIMEPERIOD_SECONDS)) ) {
+                                alt324=1;
+                            }
+                            }
+                            break;
+                        case IDENT:
+                            {
+                            int LA324_5 = input.LA(2);
+                            if ( ((LA324_5>=TIMEPERIOD_SEC && LA324_5<=TIMEPERIOD_SECONDS)) ) {
+                                alt324=1;
+                            }
+                            }
+                            break;
+                        case QUESTION:
+                            {
+                            int LA324_6 = input.LA(2);
+                            if ( ((LA324_6>=TIMEPERIOD_SEC && LA324_6<=TIMEPERIOD_SECONDS)) ) {
+                                alt324=1;
+                            }
+                            }
+                            break;
                     }
                     switch (alt324) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12659);
-                            millisecondPart874=millisecondPart();
+                            pushFollow(FOLLOW_secondPart_in_timePeriod12673);
+                            secondPart874=secondPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart874.getTree());
+                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart874.getTree());
+                            }
+                            break;
+                    }
+                    int alt325=2;
+                    int LA325_0 = input.LA(1);
+                    if ( (LA325_0==NUM_DOUBLE||LA325_0==IDENT||LA325_0==QUESTION||LA325_0==NUM_INT||(LA325_0>=NUM_LONG && LA325_0<=NUM_FLOAT)) ) {
+                        alt325=1;
+                    }
+                    switch (alt325) {
+                        case 1 :
+                            {
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12676);
+                            millisecondPart875=millisecondPart();
+                            state._fsp--;
+                            if (state.failed) return retval;
+                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart875.getTree());
                             }
                             break;
                     }
@@ -27933,79 +27982,17 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    pushFollow(FOLLOW_monthPart_in_timePeriod12665);
-                    monthPart875=monthPart();
+                    pushFollow(FOLLOW_monthPart_in_timePeriod12682);
+                    monthPart876=monthPart();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_monthPart.add(monthPart875.getTree());
-                    int alt325=2;
-                    switch ( input.LA(1) ) {
-                        case NUM_INT:
-                            {
-                            int LA325_1 = input.LA(2);
-                            if ( ((LA325_1>=TIMEPERIOD_WEEK && LA325_1<=TIMEPERIOD_WEEKS)) ) {
-                                alt325=1;
-                            }
-                            }
-                            break;
-                        case NUM_LONG:
-                            {
-                            int LA325_2 = input.LA(2);
-                            if ( ((LA325_2>=TIMEPERIOD_WEEK && LA325_2<=TIMEPERIOD_WEEKS)) ) {
-                                alt325=1;
-                            }
-                            }
-                            break;
-                        case NUM_FLOAT:
-                            {
-                            int LA325_3 = input.LA(2);
-                            if ( ((LA325_3>=TIMEPERIOD_WEEK && LA325_3<=TIMEPERIOD_WEEKS)) ) {
-                                alt325=1;
-                            }
-                            }
-                            break;
-                        case NUM_DOUBLE:
-                            {
-                            int LA325_4 = input.LA(2);
-                            if ( ((LA325_4>=TIMEPERIOD_WEEK && LA325_4<=TIMEPERIOD_WEEKS)) ) {
-                                alt325=1;
-                            }
-                            }
-                            break;
-                        case IDENT:
-                            {
-                            int LA325_5 = input.LA(2);
-                            if ( ((LA325_5>=TIMEPERIOD_WEEK && LA325_5<=TIMEPERIOD_WEEKS)) ) {
-                                alt325=1;
-                            }
-                            }
-                            break;
-                        case QUESTION:
-                            {
-                            int LA325_6 = input.LA(2);
-                            if ( ((LA325_6>=TIMEPERIOD_WEEK && LA325_6<=TIMEPERIOD_WEEKS)) ) {
-                                alt325=1;
-                            }
-                            }
-                            break;
-                    }
-                    switch (alt325) {
-                        case 1 :
-                            {
-                            pushFollow(FOLLOW_weekPart_in_timePeriod12667);
-                            weekPart876=weekPart();
-                            state._fsp--;
-                            if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_weekPart.add(weekPart876.getTree());
-                            }
-                            break;
-                    }
+                    if ( state.backtracking==0 ) stream_monthPart.add(monthPart876.getTree());
                     int alt326=2;
                     switch ( input.LA(1) ) {
                         case NUM_INT:
                             {
                             int LA326_1 = input.LA(2);
-                            if ( ((LA326_1>=TIMEPERIOD_DAY && LA326_1<=TIMEPERIOD_DAYS)) ) {
+                            if ( ((LA326_1>=TIMEPERIOD_WEEK && LA326_1<=TIMEPERIOD_WEEKS)) ) {
                                 alt326=1;
                             }
                             }
@@ -28013,7 +28000,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA326_2 = input.LA(2);
-                            if ( ((LA326_2>=TIMEPERIOD_DAY && LA326_2<=TIMEPERIOD_DAYS)) ) {
+                            if ( ((LA326_2>=TIMEPERIOD_WEEK && LA326_2<=TIMEPERIOD_WEEKS)) ) {
                                 alt326=1;
                             }
                             }
@@ -28021,7 +28008,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA326_3 = input.LA(2);
-                            if ( ((LA326_3>=TIMEPERIOD_DAY && LA326_3<=TIMEPERIOD_DAYS)) ) {
+                            if ( ((LA326_3>=TIMEPERIOD_WEEK && LA326_3<=TIMEPERIOD_WEEKS)) ) {
                                 alt326=1;
                             }
                             }
@@ -28029,7 +28016,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA326_4 = input.LA(2);
-                            if ( ((LA326_4>=TIMEPERIOD_DAY && LA326_4<=TIMEPERIOD_DAYS)) ) {
+                            if ( ((LA326_4>=TIMEPERIOD_WEEK && LA326_4<=TIMEPERIOD_WEEKS)) ) {
                                 alt326=1;
                             }
                             }
@@ -28037,7 +28024,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA326_5 = input.LA(2);
-                            if ( ((LA326_5>=TIMEPERIOD_DAY && LA326_5<=TIMEPERIOD_DAYS)) ) {
+                            if ( ((LA326_5>=TIMEPERIOD_WEEK && LA326_5<=TIMEPERIOD_WEEKS)) ) {
                                 alt326=1;
                             }
                             }
@@ -28045,7 +28032,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA326_6 = input.LA(2);
-                            if ( ((LA326_6>=TIMEPERIOD_DAY && LA326_6<=TIMEPERIOD_DAYS)) ) {
+                            if ( ((LA326_6>=TIMEPERIOD_WEEK && LA326_6<=TIMEPERIOD_WEEKS)) ) {
                                 alt326=1;
                             }
                             }
@@ -28054,11 +28041,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt326) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_dayPart_in_timePeriod12670);
-                            dayPart877=dayPart();
+                            pushFollow(FOLLOW_weekPart_in_timePeriod12684);
+                            weekPart877=weekPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_dayPart.add(dayPart877.getTree());
+                            if ( state.backtracking==0 ) stream_weekPart.add(weekPart877.getTree());
                             }
                             break;
                     }
@@ -28067,7 +28054,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_INT:
                             {
                             int LA327_1 = input.LA(2);
-                            if ( ((LA327_1>=TIMEPERIOD_HOUR && LA327_1<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA327_1>=TIMEPERIOD_DAY && LA327_1<=TIMEPERIOD_DAYS)) ) {
                                 alt327=1;
                             }
                             }
@@ -28075,7 +28062,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA327_2 = input.LA(2);
-                            if ( ((LA327_2>=TIMEPERIOD_HOUR && LA327_2<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA327_2>=TIMEPERIOD_DAY && LA327_2<=TIMEPERIOD_DAYS)) ) {
                                 alt327=1;
                             }
                             }
@@ -28083,7 +28070,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA327_3 = input.LA(2);
-                            if ( ((LA327_3>=TIMEPERIOD_HOUR && LA327_3<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA327_3>=TIMEPERIOD_DAY && LA327_3<=TIMEPERIOD_DAYS)) ) {
                                 alt327=1;
                             }
                             }
@@ -28091,7 +28078,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA327_4 = input.LA(2);
-                            if ( ((LA327_4>=TIMEPERIOD_HOUR && LA327_4<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA327_4>=TIMEPERIOD_DAY && LA327_4<=TIMEPERIOD_DAYS)) ) {
                                 alt327=1;
                             }
                             }
@@ -28099,7 +28086,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA327_5 = input.LA(2);
-                            if ( ((LA327_5>=TIMEPERIOD_HOUR && LA327_5<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA327_5>=TIMEPERIOD_DAY && LA327_5<=TIMEPERIOD_DAYS)) ) {
                                 alt327=1;
                             }
                             }
@@ -28107,7 +28094,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA327_6 = input.LA(2);
-                            if ( ((LA327_6>=TIMEPERIOD_HOUR && LA327_6<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA327_6>=TIMEPERIOD_DAY && LA327_6<=TIMEPERIOD_DAYS)) ) {
                                 alt327=1;
                             }
                             }
@@ -28116,11 +28103,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt327) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_hourPart_in_timePeriod12673);
-                            hourPart878=hourPart();
+                            pushFollow(FOLLOW_dayPart_in_timePeriod12687);
+                            dayPart878=dayPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_hourPart.add(hourPart878.getTree());
+                            if ( state.backtracking==0 ) stream_dayPart.add(dayPart878.getTree());
                             }
                             break;
                     }
@@ -28129,7 +28116,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_INT:
                             {
                             int LA328_1 = input.LA(2);
-                            if ( (LA328_1==MIN||(LA328_1>=TIMEPERIOD_MINUTE && LA328_1<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA328_1>=TIMEPERIOD_HOUR && LA328_1<=TIMEPERIOD_HOURS)) ) {
                                 alt328=1;
                             }
                             }
@@ -28137,7 +28124,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA328_2 = input.LA(2);
-                            if ( (LA328_2==MIN||(LA328_2>=TIMEPERIOD_MINUTE && LA328_2<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA328_2>=TIMEPERIOD_HOUR && LA328_2<=TIMEPERIOD_HOURS)) ) {
                                 alt328=1;
                             }
                             }
@@ -28145,7 +28132,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA328_3 = input.LA(2);
-                            if ( (LA328_3==MIN||(LA328_3>=TIMEPERIOD_MINUTE && LA328_3<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA328_3>=TIMEPERIOD_HOUR && LA328_3<=TIMEPERIOD_HOURS)) ) {
                                 alt328=1;
                             }
                             }
@@ -28153,7 +28140,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA328_4 = input.LA(2);
-                            if ( (LA328_4==MIN||(LA328_4>=TIMEPERIOD_MINUTE && LA328_4<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA328_4>=TIMEPERIOD_HOUR && LA328_4<=TIMEPERIOD_HOURS)) ) {
                                 alt328=1;
                             }
                             }
@@ -28161,7 +28148,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA328_5 = input.LA(2);
-                            if ( (LA328_5==MIN||(LA328_5>=TIMEPERIOD_MINUTE && LA328_5<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA328_5>=TIMEPERIOD_HOUR && LA328_5<=TIMEPERIOD_HOURS)) ) {
                                 alt328=1;
                             }
                             }
@@ -28169,7 +28156,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA328_6 = input.LA(2);
-                            if ( (LA328_6==MIN||(LA328_6>=TIMEPERIOD_MINUTE && LA328_6<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA328_6>=TIMEPERIOD_HOUR && LA328_6<=TIMEPERIOD_HOURS)) ) {
                                 alt328=1;
                             }
                             }
@@ -28178,11 +28165,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt328) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_minutePart_in_timePeriod12676);
-                            minutePart879=minutePart();
+                            pushFollow(FOLLOW_hourPart_in_timePeriod12690);
+                            hourPart879=hourPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_minutePart.add(minutePart879.getTree());
+                            if ( state.backtracking==0 ) stream_hourPart.add(hourPart879.getTree());
                             }
                             break;
                     }
@@ -28191,7 +28178,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_INT:
                             {
                             int LA329_1 = input.LA(2);
-                            if ( ((LA329_1>=TIMEPERIOD_SEC && LA329_1<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA329_1==MIN||(LA329_1>=TIMEPERIOD_MINUTE && LA329_1<=TIMEPERIOD_MINUTES)) ) {
                                 alt329=1;
                             }
                             }
@@ -28199,7 +28186,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA329_2 = input.LA(2);
-                            if ( ((LA329_2>=TIMEPERIOD_SEC && LA329_2<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA329_2==MIN||(LA329_2>=TIMEPERIOD_MINUTE && LA329_2<=TIMEPERIOD_MINUTES)) ) {
                                 alt329=1;
                             }
                             }
@@ -28207,7 +28194,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA329_3 = input.LA(2);
-                            if ( ((LA329_3>=TIMEPERIOD_SEC && LA329_3<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA329_3==MIN||(LA329_3>=TIMEPERIOD_MINUTE && LA329_3<=TIMEPERIOD_MINUTES)) ) {
                                 alt329=1;
                             }
                             }
@@ -28215,7 +28202,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA329_4 = input.LA(2);
-                            if ( ((LA329_4>=TIMEPERIOD_SEC && LA329_4<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA329_4==MIN||(LA329_4>=TIMEPERIOD_MINUTE && LA329_4<=TIMEPERIOD_MINUTES)) ) {
                                 alt329=1;
                             }
                             }
@@ -28223,7 +28210,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA329_5 = input.LA(2);
-                            if ( ((LA329_5>=TIMEPERIOD_SEC && LA329_5<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA329_5==MIN||(LA329_5>=TIMEPERIOD_MINUTE && LA329_5<=TIMEPERIOD_MINUTES)) ) {
                                 alt329=1;
                             }
                             }
@@ -28231,7 +28218,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA329_6 = input.LA(2);
-                            if ( ((LA329_6>=TIMEPERIOD_SEC && LA329_6<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA329_6==MIN||(LA329_6>=TIMEPERIOD_MINUTE && LA329_6<=TIMEPERIOD_MINUTES)) ) {
                                 alt329=1;
                             }
                             }
@@ -28240,27 +28227,89 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt329) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod12679);
-                            secondPart880=secondPart();
+                            pushFollow(FOLLOW_minutePart_in_timePeriod12693);
+                            minutePart880=minutePart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart880.getTree());
+                            if ( state.backtracking==0 ) stream_minutePart.add(minutePart880.getTree());
                             }
                             break;
                     }
                     int alt330=2;
-                    int LA330_0 = input.LA(1);
-                    if ( (LA330_0==NUM_DOUBLE||LA330_0==IDENT||LA330_0==QUESTION||LA330_0==NUM_INT||(LA330_0>=NUM_LONG && LA330_0<=NUM_FLOAT)) ) {
-                        alt330=1;
+                    switch ( input.LA(1) ) {
+                        case NUM_INT:
+                            {
+                            int LA330_1 = input.LA(2);
+                            if ( ((LA330_1>=TIMEPERIOD_SEC && LA330_1<=TIMEPERIOD_SECONDS)) ) {
+                                alt330=1;
+                            }
+                            }
+                            break;
+                        case NUM_LONG:
+                            {
+                            int LA330_2 = input.LA(2);
+                            if ( ((LA330_2>=TIMEPERIOD_SEC && LA330_2<=TIMEPERIOD_SECONDS)) ) {
+                                alt330=1;
+                            }
+                            }
+                            break;
+                        case NUM_FLOAT:
+                            {
+                            int LA330_3 = input.LA(2);
+                            if ( ((LA330_3>=TIMEPERIOD_SEC && LA330_3<=TIMEPERIOD_SECONDS)) ) {
+                                alt330=1;
+                            }
+                            }
+                            break;
+                        case NUM_DOUBLE:
+                            {
+                            int LA330_4 = input.LA(2);
+                            if ( ((LA330_4>=TIMEPERIOD_SEC && LA330_4<=TIMEPERIOD_SECONDS)) ) {
+                                alt330=1;
+                            }
+                            }
+                            break;
+                        case IDENT:
+                            {
+                            int LA330_5 = input.LA(2);
+                            if ( ((LA330_5>=TIMEPERIOD_SEC && LA330_5<=TIMEPERIOD_SECONDS)) ) {
+                                alt330=1;
+                            }
+                            }
+                            break;
+                        case QUESTION:
+                            {
+                            int LA330_6 = input.LA(2);
+                            if ( ((LA330_6>=TIMEPERIOD_SEC && LA330_6<=TIMEPERIOD_SECONDS)) ) {
+                                alt330=1;
+                            }
+                            }
+                            break;
                     }
                     switch (alt330) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12682);
-                            millisecondPart881=millisecondPart();
+                            pushFollow(FOLLOW_secondPart_in_timePeriod12696);
+                            secondPart881=secondPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart881.getTree());
+                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart881.getTree());
+                            }
+                            break;
+                    }
+                    int alt331=2;
+                    int LA331_0 = input.LA(1);
+                    if ( (LA331_0==NUM_DOUBLE||LA331_0==IDENT||LA331_0==QUESTION||LA331_0==NUM_INT||(LA331_0>=NUM_LONG && LA331_0<=NUM_FLOAT)) ) {
+                        alt331=1;
+                    }
+                    switch (alt331) {
+                        case 1 :
+                            {
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12699);
+                            millisecondPart882=millisecondPart();
+                            state._fsp--;
+                            if (state.failed) return retval;
+                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart882.getTree());
                             }
                             break;
                     }
@@ -28268,79 +28317,17 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_weekPart_in_timePeriod12688);
-                    weekPart882=weekPart();
+                    pushFollow(FOLLOW_weekPart_in_timePeriod12705);
+                    weekPart883=weekPart();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_weekPart.add(weekPart882.getTree());
-                    int alt331=2;
-                    switch ( input.LA(1) ) {
-                        case NUM_INT:
-                            {
-                            int LA331_1 = input.LA(2);
-                            if ( ((LA331_1>=TIMEPERIOD_DAY && LA331_1<=TIMEPERIOD_DAYS)) ) {
-                                alt331=1;
-                            }
-                            }
-                            break;
-                        case NUM_LONG:
-                            {
-                            int LA331_2 = input.LA(2);
-                            if ( ((LA331_2>=TIMEPERIOD_DAY && LA331_2<=TIMEPERIOD_DAYS)) ) {
-                                alt331=1;
-                            }
-                            }
-                            break;
-                        case NUM_FLOAT:
-                            {
-                            int LA331_3 = input.LA(2);
-                            if ( ((LA331_3>=TIMEPERIOD_DAY && LA331_3<=TIMEPERIOD_DAYS)) ) {
-                                alt331=1;
-                            }
-                            }
-                            break;
-                        case NUM_DOUBLE:
-                            {
-                            int LA331_4 = input.LA(2);
-                            if ( ((LA331_4>=TIMEPERIOD_DAY && LA331_4<=TIMEPERIOD_DAYS)) ) {
-                                alt331=1;
-                            }
-                            }
-                            break;
-                        case IDENT:
-                            {
-                            int LA331_5 = input.LA(2);
-                            if ( ((LA331_5>=TIMEPERIOD_DAY && LA331_5<=TIMEPERIOD_DAYS)) ) {
-                                alt331=1;
-                            }
-                            }
-                            break;
-                        case QUESTION:
-                            {
-                            int LA331_6 = input.LA(2);
-                            if ( ((LA331_6>=TIMEPERIOD_DAY && LA331_6<=TIMEPERIOD_DAYS)) ) {
-                                alt331=1;
-                            }
-                            }
-                            break;
-                    }
-                    switch (alt331) {
-                        case 1 :
-                            {
-                            pushFollow(FOLLOW_dayPart_in_timePeriod12690);
-                            dayPart883=dayPart();
-                            state._fsp--;
-                            if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_dayPart.add(dayPart883.getTree());
-                            }
-                            break;
-                    }
+                    if ( state.backtracking==0 ) stream_weekPart.add(weekPart883.getTree());
                     int alt332=2;
                     switch ( input.LA(1) ) {
                         case NUM_INT:
                             {
                             int LA332_1 = input.LA(2);
-                            if ( ((LA332_1>=TIMEPERIOD_HOUR && LA332_1<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA332_1>=TIMEPERIOD_DAY && LA332_1<=TIMEPERIOD_DAYS)) ) {
                                 alt332=1;
                             }
                             }
@@ -28348,7 +28335,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA332_2 = input.LA(2);
-                            if ( ((LA332_2>=TIMEPERIOD_HOUR && LA332_2<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA332_2>=TIMEPERIOD_DAY && LA332_2<=TIMEPERIOD_DAYS)) ) {
                                 alt332=1;
                             }
                             }
@@ -28356,7 +28343,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA332_3 = input.LA(2);
-                            if ( ((LA332_3>=TIMEPERIOD_HOUR && LA332_3<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA332_3>=TIMEPERIOD_DAY && LA332_3<=TIMEPERIOD_DAYS)) ) {
                                 alt332=1;
                             }
                             }
@@ -28364,7 +28351,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA332_4 = input.LA(2);
-                            if ( ((LA332_4>=TIMEPERIOD_HOUR && LA332_4<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA332_4>=TIMEPERIOD_DAY && LA332_4<=TIMEPERIOD_DAYS)) ) {
                                 alt332=1;
                             }
                             }
@@ -28372,7 +28359,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA332_5 = input.LA(2);
-                            if ( ((LA332_5>=TIMEPERIOD_HOUR && LA332_5<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA332_5>=TIMEPERIOD_DAY && LA332_5<=TIMEPERIOD_DAYS)) ) {
                                 alt332=1;
                             }
                             }
@@ -28380,7 +28367,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA332_6 = input.LA(2);
-                            if ( ((LA332_6>=TIMEPERIOD_HOUR && LA332_6<=TIMEPERIOD_HOURS)) ) {
+                            if ( ((LA332_6>=TIMEPERIOD_DAY && LA332_6<=TIMEPERIOD_DAYS)) ) {
                                 alt332=1;
                             }
                             }
@@ -28389,11 +28376,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt332) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_hourPart_in_timePeriod12693);
-                            hourPart884=hourPart();
+                            pushFollow(FOLLOW_dayPart_in_timePeriod12707);
+                            dayPart884=dayPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_hourPart.add(hourPart884.getTree());
+                            if ( state.backtracking==0 ) stream_dayPart.add(dayPart884.getTree());
                             }
                             break;
                     }
@@ -28402,7 +28389,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_INT:
                             {
                             int LA333_1 = input.LA(2);
-                            if ( (LA333_1==MIN||(LA333_1>=TIMEPERIOD_MINUTE && LA333_1<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA333_1>=TIMEPERIOD_HOUR && LA333_1<=TIMEPERIOD_HOURS)) ) {
                                 alt333=1;
                             }
                             }
@@ -28410,7 +28397,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA333_2 = input.LA(2);
-                            if ( (LA333_2==MIN||(LA333_2>=TIMEPERIOD_MINUTE && LA333_2<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA333_2>=TIMEPERIOD_HOUR && LA333_2<=TIMEPERIOD_HOURS)) ) {
                                 alt333=1;
                             }
                             }
@@ -28418,7 +28405,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA333_3 = input.LA(2);
-                            if ( (LA333_3==MIN||(LA333_3>=TIMEPERIOD_MINUTE && LA333_3<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA333_3>=TIMEPERIOD_HOUR && LA333_3<=TIMEPERIOD_HOURS)) ) {
                                 alt333=1;
                             }
                             }
@@ -28426,7 +28413,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA333_4 = input.LA(2);
-                            if ( (LA333_4==MIN||(LA333_4>=TIMEPERIOD_MINUTE && LA333_4<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA333_4>=TIMEPERIOD_HOUR && LA333_4<=TIMEPERIOD_HOURS)) ) {
                                 alt333=1;
                             }
                             }
@@ -28434,7 +28421,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA333_5 = input.LA(2);
-                            if ( (LA333_5==MIN||(LA333_5>=TIMEPERIOD_MINUTE && LA333_5<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA333_5>=TIMEPERIOD_HOUR && LA333_5<=TIMEPERIOD_HOURS)) ) {
                                 alt333=1;
                             }
                             }
@@ -28442,7 +28429,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA333_6 = input.LA(2);
-                            if ( (LA333_6==MIN||(LA333_6>=TIMEPERIOD_MINUTE && LA333_6<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA333_6>=TIMEPERIOD_HOUR && LA333_6<=TIMEPERIOD_HOURS)) ) {
                                 alt333=1;
                             }
                             }
@@ -28451,11 +28438,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt333) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_minutePart_in_timePeriod12696);
-                            minutePart885=minutePart();
+                            pushFollow(FOLLOW_hourPart_in_timePeriod12710);
+                            hourPart885=hourPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_minutePart.add(minutePart885.getTree());
+                            if ( state.backtracking==0 ) stream_hourPart.add(hourPart885.getTree());
                             }
                             break;
                     }
@@ -28464,7 +28451,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_INT:
                             {
                             int LA334_1 = input.LA(2);
-                            if ( ((LA334_1>=TIMEPERIOD_SEC && LA334_1<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA334_1==MIN||(LA334_1>=TIMEPERIOD_MINUTE && LA334_1<=TIMEPERIOD_MINUTES)) ) {
                                 alt334=1;
                             }
                             }
@@ -28472,7 +28459,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA334_2 = input.LA(2);
-                            if ( ((LA334_2>=TIMEPERIOD_SEC && LA334_2<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA334_2==MIN||(LA334_2>=TIMEPERIOD_MINUTE && LA334_2<=TIMEPERIOD_MINUTES)) ) {
                                 alt334=1;
                             }
                             }
@@ -28480,7 +28467,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA334_3 = input.LA(2);
-                            if ( ((LA334_3>=TIMEPERIOD_SEC && LA334_3<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA334_3==MIN||(LA334_3>=TIMEPERIOD_MINUTE && LA334_3<=TIMEPERIOD_MINUTES)) ) {
                                 alt334=1;
                             }
                             }
@@ -28488,7 +28475,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA334_4 = input.LA(2);
-                            if ( ((LA334_4>=TIMEPERIOD_SEC && LA334_4<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA334_4==MIN||(LA334_4>=TIMEPERIOD_MINUTE && LA334_4<=TIMEPERIOD_MINUTES)) ) {
                                 alt334=1;
                             }
                             }
@@ -28496,7 +28483,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA334_5 = input.LA(2);
-                            if ( ((LA334_5>=TIMEPERIOD_SEC && LA334_5<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA334_5==MIN||(LA334_5>=TIMEPERIOD_MINUTE && LA334_5<=TIMEPERIOD_MINUTES)) ) {
                                 alt334=1;
                             }
                             }
@@ -28504,7 +28491,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA334_6 = input.LA(2);
-                            if ( ((LA334_6>=TIMEPERIOD_SEC && LA334_6<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA334_6==MIN||(LA334_6>=TIMEPERIOD_MINUTE && LA334_6<=TIMEPERIOD_MINUTES)) ) {
                                 alt334=1;
                             }
                             }
@@ -28513,27 +28500,89 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt334) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod12699);
-                            secondPart886=secondPart();
+                            pushFollow(FOLLOW_minutePart_in_timePeriod12713);
+                            minutePart886=minutePart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart886.getTree());
+                            if ( state.backtracking==0 ) stream_minutePart.add(minutePart886.getTree());
                             }
                             break;
                     }
                     int alt335=2;
-                    int LA335_0 = input.LA(1);
-                    if ( (LA335_0==NUM_DOUBLE||LA335_0==IDENT||LA335_0==QUESTION||LA335_0==NUM_INT||(LA335_0>=NUM_LONG && LA335_0<=NUM_FLOAT)) ) {
-                        alt335=1;
+                    switch ( input.LA(1) ) {
+                        case NUM_INT:
+                            {
+                            int LA335_1 = input.LA(2);
+                            if ( ((LA335_1>=TIMEPERIOD_SEC && LA335_1<=TIMEPERIOD_SECONDS)) ) {
+                                alt335=1;
+                            }
+                            }
+                            break;
+                        case NUM_LONG:
+                            {
+                            int LA335_2 = input.LA(2);
+                            if ( ((LA335_2>=TIMEPERIOD_SEC && LA335_2<=TIMEPERIOD_SECONDS)) ) {
+                                alt335=1;
+                            }
+                            }
+                            break;
+                        case NUM_FLOAT:
+                            {
+                            int LA335_3 = input.LA(2);
+                            if ( ((LA335_3>=TIMEPERIOD_SEC && LA335_3<=TIMEPERIOD_SECONDS)) ) {
+                                alt335=1;
+                            }
+                            }
+                            break;
+                        case NUM_DOUBLE:
+                            {
+                            int LA335_4 = input.LA(2);
+                            if ( ((LA335_4>=TIMEPERIOD_SEC && LA335_4<=TIMEPERIOD_SECONDS)) ) {
+                                alt335=1;
+                            }
+                            }
+                            break;
+                        case IDENT:
+                            {
+                            int LA335_5 = input.LA(2);
+                            if ( ((LA335_5>=TIMEPERIOD_SEC && LA335_5<=TIMEPERIOD_SECONDS)) ) {
+                                alt335=1;
+                            }
+                            }
+                            break;
+                        case QUESTION:
+                            {
+                            int LA335_6 = input.LA(2);
+                            if ( ((LA335_6>=TIMEPERIOD_SEC && LA335_6<=TIMEPERIOD_SECONDS)) ) {
+                                alt335=1;
+                            }
+                            }
+                            break;
                     }
                     switch (alt335) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12702);
-                            millisecondPart887=millisecondPart();
+                            pushFollow(FOLLOW_secondPart_in_timePeriod12716);
+                            secondPart887=secondPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart887.getTree());
+                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart887.getTree());
+                            }
+                            break;
+                    }
+                    int alt336=2;
+                    int LA336_0 = input.LA(1);
+                    if ( (LA336_0==NUM_DOUBLE||LA336_0==IDENT||LA336_0==QUESTION||LA336_0==NUM_INT||(LA336_0>=NUM_LONG && LA336_0<=NUM_FLOAT)) ) {
+                        alt336=1;
+                    }
+                    switch (alt336) {
+                        case 1 :
+                            {
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12719);
+                            millisecondPart888=millisecondPart();
+                            state._fsp--;
+                            if (state.failed) return retval;
+                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart888.getTree());
                             }
                             break;
                     }
@@ -28541,79 +28590,17 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 4 :
                     {
-                    pushFollow(FOLLOW_dayPart_in_timePeriod12708);
-                    dayPart888=dayPart();
+                    pushFollow(FOLLOW_dayPart_in_timePeriod12725);
+                    dayPart889=dayPart();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_dayPart.add(dayPart888.getTree());
-                    int alt336=2;
-                    switch ( input.LA(1) ) {
-                        case NUM_INT:
-                            {
-                            int LA336_1 = input.LA(2);
-                            if ( ((LA336_1>=TIMEPERIOD_HOUR && LA336_1<=TIMEPERIOD_HOURS)) ) {
-                                alt336=1;
-                            }
-                            }
-                            break;
-                        case NUM_LONG:
-                            {
-                            int LA336_2 = input.LA(2);
-                            if ( ((LA336_2>=TIMEPERIOD_HOUR && LA336_2<=TIMEPERIOD_HOURS)) ) {
-                                alt336=1;
-                            }
-                            }
-                            break;
-                        case NUM_FLOAT:
-                            {
-                            int LA336_3 = input.LA(2);
-                            if ( ((LA336_3>=TIMEPERIOD_HOUR && LA336_3<=TIMEPERIOD_HOURS)) ) {
-                                alt336=1;
-                            }
-                            }
-                            break;
-                        case NUM_DOUBLE:
-                            {
-                            int LA336_4 = input.LA(2);
-                            if ( ((LA336_4>=TIMEPERIOD_HOUR && LA336_4<=TIMEPERIOD_HOURS)) ) {
-                                alt336=1;
-                            }
-                            }
-                            break;
-                        case IDENT:
-                            {
-                            int LA336_5 = input.LA(2);
-                            if ( ((LA336_5>=TIMEPERIOD_HOUR && LA336_5<=TIMEPERIOD_HOURS)) ) {
-                                alt336=1;
-                            }
-                            }
-                            break;
-                        case QUESTION:
-                            {
-                            int LA336_6 = input.LA(2);
-                            if ( ((LA336_6>=TIMEPERIOD_HOUR && LA336_6<=TIMEPERIOD_HOURS)) ) {
-                                alt336=1;
-                            }
-                            }
-                            break;
-                    }
-                    switch (alt336) {
-                        case 1 :
-                            {
-                            pushFollow(FOLLOW_hourPart_in_timePeriod12710);
-                            hourPart889=hourPart();
-                            state._fsp--;
-                            if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_hourPart.add(hourPart889.getTree());
-                            }
-                            break;
-                    }
+                    if ( state.backtracking==0 ) stream_dayPart.add(dayPart889.getTree());
                     int alt337=2;
                     switch ( input.LA(1) ) {
                         case NUM_INT:
                             {
                             int LA337_1 = input.LA(2);
-                            if ( (LA337_1==MIN||(LA337_1>=TIMEPERIOD_MINUTE && LA337_1<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA337_1>=TIMEPERIOD_HOUR && LA337_1<=TIMEPERIOD_HOURS)) ) {
                                 alt337=1;
                             }
                             }
@@ -28621,7 +28608,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA337_2 = input.LA(2);
-                            if ( (LA337_2==MIN||(LA337_2>=TIMEPERIOD_MINUTE && LA337_2<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA337_2>=TIMEPERIOD_HOUR && LA337_2<=TIMEPERIOD_HOURS)) ) {
                                 alt337=1;
                             }
                             }
@@ -28629,7 +28616,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA337_3 = input.LA(2);
-                            if ( (LA337_3==MIN||(LA337_3>=TIMEPERIOD_MINUTE && LA337_3<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA337_3>=TIMEPERIOD_HOUR && LA337_3<=TIMEPERIOD_HOURS)) ) {
                                 alt337=1;
                             }
                             }
@@ -28637,7 +28624,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA337_4 = input.LA(2);
-                            if ( (LA337_4==MIN||(LA337_4>=TIMEPERIOD_MINUTE && LA337_4<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA337_4>=TIMEPERIOD_HOUR && LA337_4<=TIMEPERIOD_HOURS)) ) {
                                 alt337=1;
                             }
                             }
@@ -28645,7 +28632,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA337_5 = input.LA(2);
-                            if ( (LA337_5==MIN||(LA337_5>=TIMEPERIOD_MINUTE && LA337_5<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA337_5>=TIMEPERIOD_HOUR && LA337_5<=TIMEPERIOD_HOURS)) ) {
                                 alt337=1;
                             }
                             }
@@ -28653,7 +28640,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA337_6 = input.LA(2);
-                            if ( (LA337_6==MIN||(LA337_6>=TIMEPERIOD_MINUTE && LA337_6<=TIMEPERIOD_MINUTES)) ) {
+                            if ( ((LA337_6>=TIMEPERIOD_HOUR && LA337_6<=TIMEPERIOD_HOURS)) ) {
                                 alt337=1;
                             }
                             }
@@ -28662,11 +28649,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt337) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_minutePart_in_timePeriod12713);
-                            minutePart890=minutePart();
+                            pushFollow(FOLLOW_hourPart_in_timePeriod12727);
+                            hourPart890=hourPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_minutePart.add(minutePart890.getTree());
+                            if ( state.backtracking==0 ) stream_hourPart.add(hourPart890.getTree());
                             }
                             break;
                     }
@@ -28675,7 +28662,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_INT:
                             {
                             int LA338_1 = input.LA(2);
-                            if ( ((LA338_1>=TIMEPERIOD_SEC && LA338_1<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA338_1==MIN||(LA338_1>=TIMEPERIOD_MINUTE && LA338_1<=TIMEPERIOD_MINUTES)) ) {
                                 alt338=1;
                             }
                             }
@@ -28683,7 +28670,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA338_2 = input.LA(2);
-                            if ( ((LA338_2>=TIMEPERIOD_SEC && LA338_2<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA338_2==MIN||(LA338_2>=TIMEPERIOD_MINUTE && LA338_2<=TIMEPERIOD_MINUTES)) ) {
                                 alt338=1;
                             }
                             }
@@ -28691,7 +28678,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA338_3 = input.LA(2);
-                            if ( ((LA338_3>=TIMEPERIOD_SEC && LA338_3<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA338_3==MIN||(LA338_3>=TIMEPERIOD_MINUTE && LA338_3<=TIMEPERIOD_MINUTES)) ) {
                                 alt338=1;
                             }
                             }
@@ -28699,7 +28686,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA338_4 = input.LA(2);
-                            if ( ((LA338_4>=TIMEPERIOD_SEC && LA338_4<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA338_4==MIN||(LA338_4>=TIMEPERIOD_MINUTE && LA338_4<=TIMEPERIOD_MINUTES)) ) {
                                 alt338=1;
                             }
                             }
@@ -28707,7 +28694,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA338_5 = input.LA(2);
-                            if ( ((LA338_5>=TIMEPERIOD_SEC && LA338_5<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA338_5==MIN||(LA338_5>=TIMEPERIOD_MINUTE && LA338_5<=TIMEPERIOD_MINUTES)) ) {
                                 alt338=1;
                             }
                             }
@@ -28715,7 +28702,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA338_6 = input.LA(2);
-                            if ( ((LA338_6>=TIMEPERIOD_SEC && LA338_6<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA338_6==MIN||(LA338_6>=TIMEPERIOD_MINUTE && LA338_6<=TIMEPERIOD_MINUTES)) ) {
                                 alt338=1;
                             }
                             }
@@ -28724,27 +28711,89 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt338) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod12716);
-                            secondPart891=secondPart();
+                            pushFollow(FOLLOW_minutePart_in_timePeriod12730);
+                            minutePart891=minutePart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart891.getTree());
+                            if ( state.backtracking==0 ) stream_minutePart.add(minutePart891.getTree());
                             }
                             break;
                     }
                     int alt339=2;
-                    int LA339_0 = input.LA(1);
-                    if ( (LA339_0==NUM_DOUBLE||LA339_0==IDENT||LA339_0==QUESTION||LA339_0==NUM_INT||(LA339_0>=NUM_LONG && LA339_0<=NUM_FLOAT)) ) {
-                        alt339=1;
+                    switch ( input.LA(1) ) {
+                        case NUM_INT:
+                            {
+                            int LA339_1 = input.LA(2);
+                            if ( ((LA339_1>=TIMEPERIOD_SEC && LA339_1<=TIMEPERIOD_SECONDS)) ) {
+                                alt339=1;
+                            }
+                            }
+                            break;
+                        case NUM_LONG:
+                            {
+                            int LA339_2 = input.LA(2);
+                            if ( ((LA339_2>=TIMEPERIOD_SEC && LA339_2<=TIMEPERIOD_SECONDS)) ) {
+                                alt339=1;
+                            }
+                            }
+                            break;
+                        case NUM_FLOAT:
+                            {
+                            int LA339_3 = input.LA(2);
+                            if ( ((LA339_3>=TIMEPERIOD_SEC && LA339_3<=TIMEPERIOD_SECONDS)) ) {
+                                alt339=1;
+                            }
+                            }
+                            break;
+                        case NUM_DOUBLE:
+                            {
+                            int LA339_4 = input.LA(2);
+                            if ( ((LA339_4>=TIMEPERIOD_SEC && LA339_4<=TIMEPERIOD_SECONDS)) ) {
+                                alt339=1;
+                            }
+                            }
+                            break;
+                        case IDENT:
+                            {
+                            int LA339_5 = input.LA(2);
+                            if ( ((LA339_5>=TIMEPERIOD_SEC && LA339_5<=TIMEPERIOD_SECONDS)) ) {
+                                alt339=1;
+                            }
+                            }
+                            break;
+                        case QUESTION:
+                            {
+                            int LA339_6 = input.LA(2);
+                            if ( ((LA339_6>=TIMEPERIOD_SEC && LA339_6<=TIMEPERIOD_SECONDS)) ) {
+                                alt339=1;
+                            }
+                            }
+                            break;
                     }
                     switch (alt339) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12719);
-                            millisecondPart892=millisecondPart();
+                            pushFollow(FOLLOW_secondPart_in_timePeriod12733);
+                            secondPart892=secondPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart892.getTree());
+                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart892.getTree());
+                            }
+                            break;
+                    }
+                    int alt340=2;
+                    int LA340_0 = input.LA(1);
+                    if ( (LA340_0==NUM_DOUBLE||LA340_0==IDENT||LA340_0==QUESTION||LA340_0==NUM_INT||(LA340_0>=NUM_LONG && LA340_0<=NUM_FLOAT)) ) {
+                        alt340=1;
+                    }
+                    switch (alt340) {
+                        case 1 :
+                            {
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12736);
+                            millisecondPart893=millisecondPart();
+                            state._fsp--;
+                            if (state.failed) return retval;
+                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart893.getTree());
                             }
                             break;
                     }
@@ -28752,79 +28801,17 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 5 :
                     {
-                    pushFollow(FOLLOW_hourPart_in_timePeriod12725);
-                    hourPart893=hourPart();
+                    pushFollow(FOLLOW_hourPart_in_timePeriod12742);
+                    hourPart894=hourPart();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_hourPart.add(hourPart893.getTree());
-                    int alt340=2;
-                    switch ( input.LA(1) ) {
-                        case NUM_INT:
-                            {
-                            int LA340_1 = input.LA(2);
-                            if ( (LA340_1==MIN||(LA340_1>=TIMEPERIOD_MINUTE && LA340_1<=TIMEPERIOD_MINUTES)) ) {
-                                alt340=1;
-                            }
-                            }
-                            break;
-                        case NUM_LONG:
-                            {
-                            int LA340_2 = input.LA(2);
-                            if ( (LA340_2==MIN||(LA340_2>=TIMEPERIOD_MINUTE && LA340_2<=TIMEPERIOD_MINUTES)) ) {
-                                alt340=1;
-                            }
-                            }
-                            break;
-                        case NUM_FLOAT:
-                            {
-                            int LA340_3 = input.LA(2);
-                            if ( (LA340_3==MIN||(LA340_3>=TIMEPERIOD_MINUTE && LA340_3<=TIMEPERIOD_MINUTES)) ) {
-                                alt340=1;
-                            }
-                            }
-                            break;
-                        case NUM_DOUBLE:
-                            {
-                            int LA340_4 = input.LA(2);
-                            if ( (LA340_4==MIN||(LA340_4>=TIMEPERIOD_MINUTE && LA340_4<=TIMEPERIOD_MINUTES)) ) {
-                                alt340=1;
-                            }
-                            }
-                            break;
-                        case IDENT:
-                            {
-                            int LA340_5 = input.LA(2);
-                            if ( (LA340_5==MIN||(LA340_5>=TIMEPERIOD_MINUTE && LA340_5<=TIMEPERIOD_MINUTES)) ) {
-                                alt340=1;
-                            }
-                            }
-                            break;
-                        case QUESTION:
-                            {
-                            int LA340_6 = input.LA(2);
-                            if ( (LA340_6==MIN||(LA340_6>=TIMEPERIOD_MINUTE && LA340_6<=TIMEPERIOD_MINUTES)) ) {
-                                alt340=1;
-                            }
-                            }
-                            break;
-                    }
-                    switch (alt340) {
-                        case 1 :
-                            {
-                            pushFollow(FOLLOW_minutePart_in_timePeriod12727);
-                            minutePart894=minutePart();
-                            state._fsp--;
-                            if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_minutePart.add(minutePart894.getTree());
-                            }
-                            break;
-                    }
+                    if ( state.backtracking==0 ) stream_hourPart.add(hourPart894.getTree());
                     int alt341=2;
                     switch ( input.LA(1) ) {
                         case NUM_INT:
                             {
                             int LA341_1 = input.LA(2);
-                            if ( ((LA341_1>=TIMEPERIOD_SEC && LA341_1<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA341_1==MIN||(LA341_1>=TIMEPERIOD_MINUTE && LA341_1<=TIMEPERIOD_MINUTES)) ) {
                                 alt341=1;
                             }
                             }
@@ -28832,7 +28819,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_LONG:
                             {
                             int LA341_2 = input.LA(2);
-                            if ( ((LA341_2>=TIMEPERIOD_SEC && LA341_2<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA341_2==MIN||(LA341_2>=TIMEPERIOD_MINUTE && LA341_2<=TIMEPERIOD_MINUTES)) ) {
                                 alt341=1;
                             }
                             }
@@ -28840,7 +28827,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_FLOAT:
                             {
                             int LA341_3 = input.LA(2);
-                            if ( ((LA341_3>=TIMEPERIOD_SEC && LA341_3<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA341_3==MIN||(LA341_3>=TIMEPERIOD_MINUTE && LA341_3<=TIMEPERIOD_MINUTES)) ) {
                                 alt341=1;
                             }
                             }
@@ -28848,7 +28835,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case NUM_DOUBLE:
                             {
                             int LA341_4 = input.LA(2);
-                            if ( ((LA341_4>=TIMEPERIOD_SEC && LA341_4<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA341_4==MIN||(LA341_4>=TIMEPERIOD_MINUTE && LA341_4<=TIMEPERIOD_MINUTES)) ) {
                                 alt341=1;
                             }
                             }
@@ -28856,7 +28843,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case IDENT:
                             {
                             int LA341_5 = input.LA(2);
-                            if ( ((LA341_5>=TIMEPERIOD_SEC && LA341_5<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA341_5==MIN||(LA341_5>=TIMEPERIOD_MINUTE && LA341_5<=TIMEPERIOD_MINUTES)) ) {
                                 alt341=1;
                             }
                             }
@@ -28864,7 +28851,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         case QUESTION:
                             {
                             int LA341_6 = input.LA(2);
-                            if ( ((LA341_6>=TIMEPERIOD_SEC && LA341_6<=TIMEPERIOD_SECONDS)) ) {
+                            if ( (LA341_6==MIN||(LA341_6>=TIMEPERIOD_MINUTE && LA341_6<=TIMEPERIOD_MINUTES)) ) {
                                 alt341=1;
                             }
                             }
@@ -28873,27 +28860,89 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt341) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod12730);
-                            secondPart895=secondPart();
+                            pushFollow(FOLLOW_minutePart_in_timePeriod12744);
+                            minutePart895=minutePart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart895.getTree());
+                            if ( state.backtracking==0 ) stream_minutePart.add(minutePart895.getTree());
                             }
                             break;
                     }
                     int alt342=2;
-                    int LA342_0 = input.LA(1);
-                    if ( (LA342_0==NUM_DOUBLE||LA342_0==IDENT||LA342_0==QUESTION||LA342_0==NUM_INT||(LA342_0>=NUM_LONG && LA342_0<=NUM_FLOAT)) ) {
-                        alt342=1;
+                    switch ( input.LA(1) ) {
+                        case NUM_INT:
+                            {
+                            int LA342_1 = input.LA(2);
+                            if ( ((LA342_1>=TIMEPERIOD_SEC && LA342_1<=TIMEPERIOD_SECONDS)) ) {
+                                alt342=1;
+                            }
+                            }
+                            break;
+                        case NUM_LONG:
+                            {
+                            int LA342_2 = input.LA(2);
+                            if ( ((LA342_2>=TIMEPERIOD_SEC && LA342_2<=TIMEPERIOD_SECONDS)) ) {
+                                alt342=1;
+                            }
+                            }
+                            break;
+                        case NUM_FLOAT:
+                            {
+                            int LA342_3 = input.LA(2);
+                            if ( ((LA342_3>=TIMEPERIOD_SEC && LA342_3<=TIMEPERIOD_SECONDS)) ) {
+                                alt342=1;
+                            }
+                            }
+                            break;
+                        case NUM_DOUBLE:
+                            {
+                            int LA342_4 = input.LA(2);
+                            if ( ((LA342_4>=TIMEPERIOD_SEC && LA342_4<=TIMEPERIOD_SECONDS)) ) {
+                                alt342=1;
+                            }
+                            }
+                            break;
+                        case IDENT:
+                            {
+                            int LA342_5 = input.LA(2);
+                            if ( ((LA342_5>=TIMEPERIOD_SEC && LA342_5<=TIMEPERIOD_SECONDS)) ) {
+                                alt342=1;
+                            }
+                            }
+                            break;
+                        case QUESTION:
+                            {
+                            int LA342_6 = input.LA(2);
+                            if ( ((LA342_6>=TIMEPERIOD_SEC && LA342_6<=TIMEPERIOD_SECONDS)) ) {
+                                alt342=1;
+                            }
+                            }
+                            break;
                     }
                     switch (alt342) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12733);
-                            millisecondPart896=millisecondPart();
+                            pushFollow(FOLLOW_secondPart_in_timePeriod12747);
+                            secondPart896=secondPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart896.getTree());
+                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart896.getTree());
+                            }
+                            break;
+                    }
+                    int alt343=2;
+                    int LA343_0 = input.LA(1);
+                    if ( (LA343_0==NUM_DOUBLE||LA343_0==IDENT||LA343_0==QUESTION||LA343_0==NUM_INT||(LA343_0>=NUM_LONG && LA343_0<=NUM_FLOAT)) ) {
+                        alt343=1;
+                    }
+                    switch (alt343) {
+                        case 1 :
+                            {
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12750);
+                            millisecondPart897=millisecondPart();
+                            state._fsp--;
+                            if (state.failed) return retval;
+                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart897.getTree());
                             }
                             break;
                     }
@@ -28901,98 +28950,73 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 6 :
                     {
-                    pushFollow(FOLLOW_minutePart_in_timePeriod12739);
-                    minutePart897=minutePart();
+                    pushFollow(FOLLOW_minutePart_in_timePeriod12756);
+                    minutePart898=minutePart();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_minutePart.add(minutePart897.getTree());
-                    int alt343=2;
+                    if ( state.backtracking==0 ) stream_minutePart.add(minutePart898.getTree());
+                    int alt344=2;
                     switch ( input.LA(1) ) {
                         case NUM_INT:
                             {
-                            int LA343_1 = input.LA(2);
-                            if ( ((LA343_1>=TIMEPERIOD_SEC && LA343_1<=TIMEPERIOD_SECONDS)) ) {
-                                alt343=1;
+                            int LA344_1 = input.LA(2);
+                            if ( ((LA344_1>=TIMEPERIOD_SEC && LA344_1<=TIMEPERIOD_SECONDS)) ) {
+                                alt344=1;
                             }
                             }
                             break;
                         case NUM_LONG:
                             {
-                            int LA343_2 = input.LA(2);
-                            if ( ((LA343_2>=TIMEPERIOD_SEC && LA343_2<=TIMEPERIOD_SECONDS)) ) {
-                                alt343=1;
+                            int LA344_2 = input.LA(2);
+                            if ( ((LA344_2>=TIMEPERIOD_SEC && LA344_2<=TIMEPERIOD_SECONDS)) ) {
+                                alt344=1;
                             }
                             }
                             break;
                         case NUM_FLOAT:
                             {
-                            int LA343_3 = input.LA(2);
-                            if ( ((LA343_3>=TIMEPERIOD_SEC && LA343_3<=TIMEPERIOD_SECONDS)) ) {
-                                alt343=1;
+                            int LA344_3 = input.LA(2);
+                            if ( ((LA344_3>=TIMEPERIOD_SEC && LA344_3<=TIMEPERIOD_SECONDS)) ) {
+                                alt344=1;
                             }
                             }
                             break;
                         case NUM_DOUBLE:
                             {
-                            int LA343_4 = input.LA(2);
-                            if ( ((LA343_4>=TIMEPERIOD_SEC && LA343_4<=TIMEPERIOD_SECONDS)) ) {
-                                alt343=1;
+                            int LA344_4 = input.LA(2);
+                            if ( ((LA344_4>=TIMEPERIOD_SEC && LA344_4<=TIMEPERIOD_SECONDS)) ) {
+                                alt344=1;
                             }
                             }
                             break;
                         case IDENT:
                             {
-                            int LA343_5 = input.LA(2);
-                            if ( ((LA343_5>=TIMEPERIOD_SEC && LA343_5<=TIMEPERIOD_SECONDS)) ) {
-                                alt343=1;
+                            int LA344_5 = input.LA(2);
+                            if ( ((LA344_5>=TIMEPERIOD_SEC && LA344_5<=TIMEPERIOD_SECONDS)) ) {
+                                alt344=1;
                             }
                             }
                             break;
                         case QUESTION:
                             {
-                            int LA343_6 = input.LA(2);
-                            if ( ((LA343_6>=TIMEPERIOD_SEC && LA343_6<=TIMEPERIOD_SECONDS)) ) {
-                                alt343=1;
+                            int LA344_6 = input.LA(2);
+                            if ( ((LA344_6>=TIMEPERIOD_SEC && LA344_6<=TIMEPERIOD_SECONDS)) ) {
+                                alt344=1;
                             }
                             }
                             break;
-                    }
-                    switch (alt343) {
-                        case 1 :
-                            {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod12741);
-                            secondPart898=secondPart();
-                            state._fsp--;
-                            if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart898.getTree());
-                            }
-                            break;
-                    }
-                    int alt344=2;
-                    int LA344_0 = input.LA(1);
-                    if ( (LA344_0==NUM_DOUBLE||LA344_0==IDENT||LA344_0==QUESTION||LA344_0==NUM_INT||(LA344_0>=NUM_LONG && LA344_0<=NUM_FLOAT)) ) {
-                        alt344=1;
                     }
                     switch (alt344) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12744);
-                            millisecondPart899=millisecondPart();
+                            pushFollow(FOLLOW_secondPart_in_timePeriod12758);
+                            secondPart899=secondPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart899.getTree());
+                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart899.getTree());
                             }
                             break;
                     }
-                    }
-                    break;
-                case 7 :
-                    {
-                    pushFollow(FOLLOW_secondPart_in_timePeriod12750);
-                    secondPart900=secondPart();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_secondPart.add(secondPart900.getTree());
                     int alt345=2;
                     int LA345_0 = input.LA(1);
                     if ( (LA345_0==NUM_DOUBLE||LA345_0==IDENT||LA345_0==QUESTION||LA345_0==NUM_INT||(LA345_0>=NUM_LONG && LA345_0<=NUM_FLOAT)) ) {
@@ -29001,11 +29025,36 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt345) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12752);
-                            millisecondPart901=millisecondPart();
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12761);
+                            millisecondPart900=millisecondPart();
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart901.getTree());
+                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart900.getTree());
+                            }
+                            break;
+                    }
+                    }
+                    break;
+                case 7 :
+                    {
+                    pushFollow(FOLLOW_secondPart_in_timePeriod12767);
+                    secondPart901=secondPart();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_secondPart.add(secondPart901.getTree());
+                    int alt346=2;
+                    int LA346_0 = input.LA(1);
+                    if ( (LA346_0==NUM_DOUBLE||LA346_0==IDENT||LA346_0==QUESTION||LA346_0==NUM_INT||(LA346_0>=NUM_LONG && LA346_0<=NUM_FLOAT)) ) {
+                        alt346=1;
+                    }
+                    switch (alt346) {
+                        case 1 :
+                            {
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod12769);
+                            millisecondPart902=millisecondPart();
+                            state._fsp--;
+                            if (state.failed) return retval;
+                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart902.getTree());
                             }
                             break;
                     }
@@ -29013,11 +29062,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 8 :
                     {
-                    pushFollow(FOLLOW_millisecondPart_in_timePeriod12758);
-                    millisecondPart902=millisecondPart();
+                    pushFollow(FOLLOW_millisecondPart_in_timePeriod12775);
+                    millisecondPart903=millisecondPart();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart902.getTree());
+                    if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart903.getTree());
                     }
                     break;
             }
@@ -29088,13 +29137,13 @@ public class EsperEPL2GrammarParser extends Parser {
         retval.start = input.LT(1);
         CommonTree root_0 = null;
         Token i=null;
-        Token TIMEPERIOD_YEARS905=null;
-        Token TIMEPERIOD_YEAR906=null;
-        EsperEPL2GrammarParser.number_return number903 = null;
-        EsperEPL2GrammarParser.substitution_return substitution904 = null;
+        Token TIMEPERIOD_YEARS906=null;
+        Token TIMEPERIOD_YEAR907=null;
+        EsperEPL2GrammarParser.number_return number904 = null;
+        EsperEPL2GrammarParser.substitution_return substitution905 = null;
         CommonTree i_tree=null;
-        CommonTree TIMEPERIOD_YEARS905_tree=null;
-        CommonTree TIMEPERIOD_YEAR906_tree=null;
+        CommonTree TIMEPERIOD_YEARS906_tree=null;
+        CommonTree TIMEPERIOD_YEAR907_tree=null;
         RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_TIMEPERIOD_YEARS=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_YEARS");
         RewriteRuleTokenStream stream_TIMEPERIOD_YEAR=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_YEAR");
@@ -29102,67 +29151,27 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
             {
-            int alt347=3;
+            int alt348=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt347=1;
+                alt348=1;
                 }
                 break;
             case IDENT:
                 {
-                alt347=2;
+                alt348=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt347=3;
+                alt348=3;
                 }
                 break;
             default:
-                if (state.backtracking>0) {state.failed=true; return retval;}
-                NoViableAltException nvae =
-                    new NoViableAltException("", 347, 0, input);
-                throw nvae;
-            }
-            switch (alt347) {
-                case 1 :
-                    {
-                    pushFollow(FOLLOW_number_in_yearPart12805);
-                    number903=number();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_number.add(number903.getTree());
-                    }
-                    break;
-                case 2 :
-                    {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_yearPart12809); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_IDENT.add(i);
-                    }
-                    break;
-                case 3 :
-                    {
-                    pushFollow(FOLLOW_substitution_in_yearPart12811);
-                    substitution904=substitution();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_substitution.add(substitution904.getTree());
-                    }
-                    break;
-            }
-            int alt348=2;
-            int LA348_0 = input.LA(1);
-            if ( (LA348_0==TIMEPERIOD_YEARS) ) {
-                alt348=1;
-            }
-            else if ( (LA348_0==TIMEPERIOD_YEAR) ) {
-                alt348=2;
-            }
-            else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
                     new NoViableAltException("", 348, 0, input);
@@ -29171,14 +29180,54 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt348) {
                 case 1 :
                     {
-                    TIMEPERIOD_YEARS905=(Token)match(input,TIMEPERIOD_YEARS,FOLLOW_TIMEPERIOD_YEARS_in_yearPart12815); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_YEARS.add(TIMEPERIOD_YEARS905);
+                    pushFollow(FOLLOW_number_in_yearPart12822);
+                    number904=number();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_number.add(number904.getTree());
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_YEAR906=(Token)match(input,TIMEPERIOD_YEAR,FOLLOW_TIMEPERIOD_YEAR_in_yearPart12819); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_YEAR.add(TIMEPERIOD_YEAR906);
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_yearPart12826); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_IDENT.add(i);
+                    }
+                    break;
+                case 3 :
+                    {
+                    pushFollow(FOLLOW_substitution_in_yearPart12828);
+                    substitution905=substitution();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_substitution.add(substitution905.getTree());
+                    }
+                    break;
+            }
+            int alt349=2;
+            int LA349_0 = input.LA(1);
+            if ( (LA349_0==TIMEPERIOD_YEARS) ) {
+                alt349=1;
+            }
+            else if ( (LA349_0==TIMEPERIOD_YEAR) ) {
+                alt349=2;
+            }
+            else {
+                if (state.backtracking>0) {state.failed=true; return retval;}
+                NoViableAltException nvae =
+                    new NoViableAltException("", 349, 0, input);
+                throw nvae;
+            }
+            switch (alt349) {
+                case 1 :
+                    {
+                    TIMEPERIOD_YEARS906=(Token)match(input,TIMEPERIOD_YEARS,FOLLOW_TIMEPERIOD_YEARS_in_yearPart12832); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_YEARS.add(TIMEPERIOD_YEARS906);
+                    }
+                    break;
+                case 2 :
+                    {
+                    TIMEPERIOD_YEAR907=(Token)match(input,TIMEPERIOD_YEAR,FOLLOW_TIMEPERIOD_YEAR_in_yearPart12836); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_YEAR.add(TIMEPERIOD_YEAR907);
                     }
                     break;
             }
@@ -29245,13 +29294,13 @@ public class EsperEPL2GrammarParser extends Parser {
         retval.start = input.LT(1);
         CommonTree root_0 = null;
         Token i=null;
-        Token TIMEPERIOD_MONTHS909=null;
-        Token TIMEPERIOD_MONTH910=null;
-        EsperEPL2GrammarParser.number_return number907 = null;
-        EsperEPL2GrammarParser.substitution_return substitution908 = null;
+        Token TIMEPERIOD_MONTHS910=null;
+        Token TIMEPERIOD_MONTH911=null;
+        EsperEPL2GrammarParser.number_return number908 = null;
+        EsperEPL2GrammarParser.substitution_return substitution909 = null;
         CommonTree i_tree=null;
-        CommonTree TIMEPERIOD_MONTHS909_tree=null;
-        CommonTree TIMEPERIOD_MONTH910_tree=null;
+        CommonTree TIMEPERIOD_MONTHS910_tree=null;
+        CommonTree TIMEPERIOD_MONTH911_tree=null;
         RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_TIMEPERIOD_MONTH=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_MONTH");
         RewriteRuleTokenStream stream_TIMEPERIOD_MONTHS=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_MONTHS");
@@ -29259,67 +29308,27 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
             {
-            int alt349=3;
+            int alt350=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt349=1;
+                alt350=1;
                 }
                 break;
             case IDENT:
                 {
-                alt349=2;
+                alt350=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt349=3;
+                alt350=3;
                 }
                 break;
             default:
-                if (state.backtracking>0) {state.failed=true; return retval;}
-                NoViableAltException nvae =
-                    new NoViableAltException("", 349, 0, input);
-                throw nvae;
-            }
-            switch (alt349) {
-                case 1 :
-                    {
-                    pushFollow(FOLLOW_number_in_monthPart12867);
-                    number907=number();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_number.add(number907.getTree());
-                    }
-                    break;
-                case 2 :
-                    {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_monthPart12871); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_IDENT.add(i);
-                    }
-                    break;
-                case 3 :
-                    {
-                    pushFollow(FOLLOW_substitution_in_monthPart12873);
-                    substitution908=substitution();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_substitution.add(substitution908.getTree());
-                    }
-                    break;
-            }
-            int alt350=2;
-            int LA350_0 = input.LA(1);
-            if ( (LA350_0==TIMEPERIOD_MONTHS) ) {
-                alt350=1;
-            }
-            else if ( (LA350_0==TIMEPERIOD_MONTH) ) {
-                alt350=2;
-            }
-            else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
                     new NoViableAltException("", 350, 0, input);
@@ -29328,14 +29337,54 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt350) {
                 case 1 :
                     {
-                    TIMEPERIOD_MONTHS909=(Token)match(input,TIMEPERIOD_MONTHS,FOLLOW_TIMEPERIOD_MONTHS_in_monthPart12877); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MONTHS.add(TIMEPERIOD_MONTHS909);
+                    pushFollow(FOLLOW_number_in_monthPart12884);
+                    number908=number();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_number.add(number908.getTree());
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_MONTH910=(Token)match(input,TIMEPERIOD_MONTH,FOLLOW_TIMEPERIOD_MONTH_in_monthPart12881); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MONTH.add(TIMEPERIOD_MONTH910);
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_monthPart12888); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_IDENT.add(i);
+                    }
+                    break;
+                case 3 :
+                    {
+                    pushFollow(FOLLOW_substitution_in_monthPart12890);
+                    substitution909=substitution();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_substitution.add(substitution909.getTree());
+                    }
+                    break;
+            }
+            int alt351=2;
+            int LA351_0 = input.LA(1);
+            if ( (LA351_0==TIMEPERIOD_MONTHS) ) {
+                alt351=1;
+            }
+            else if ( (LA351_0==TIMEPERIOD_MONTH) ) {
+                alt351=2;
+            }
+            else {
+                if (state.backtracking>0) {state.failed=true; return retval;}
+                NoViableAltException nvae =
+                    new NoViableAltException("", 351, 0, input);
+                throw nvae;
+            }
+            switch (alt351) {
+                case 1 :
+                    {
+                    TIMEPERIOD_MONTHS910=(Token)match(input,TIMEPERIOD_MONTHS,FOLLOW_TIMEPERIOD_MONTHS_in_monthPart12894); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MONTHS.add(TIMEPERIOD_MONTHS910);
+                    }
+                    break;
+                case 2 :
+                    {
+                    TIMEPERIOD_MONTH911=(Token)match(input,TIMEPERIOD_MONTH,FOLLOW_TIMEPERIOD_MONTH_in_monthPart12898); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MONTH.add(TIMEPERIOD_MONTH911);
                     }
                     break;
             }
@@ -29402,13 +29451,13 @@ public class EsperEPL2GrammarParser extends Parser {
         retval.start = input.LT(1);
         CommonTree root_0 = null;
         Token i=null;
-        Token TIMEPERIOD_WEEKS913=null;
-        Token TIMEPERIOD_WEEK914=null;
-        EsperEPL2GrammarParser.number_return number911 = null;
-        EsperEPL2GrammarParser.substitution_return substitution912 = null;
+        Token TIMEPERIOD_WEEKS914=null;
+        Token TIMEPERIOD_WEEK915=null;
+        EsperEPL2GrammarParser.number_return number912 = null;
+        EsperEPL2GrammarParser.substitution_return substitution913 = null;
         CommonTree i_tree=null;
-        CommonTree TIMEPERIOD_WEEKS913_tree=null;
-        CommonTree TIMEPERIOD_WEEK914_tree=null;
+        CommonTree TIMEPERIOD_WEEKS914_tree=null;
+        CommonTree TIMEPERIOD_WEEK915_tree=null;
         RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_TIMEPERIOD_WEEK=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_WEEK");
         RewriteRuleTokenStream stream_TIMEPERIOD_WEEKS=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_WEEKS");
@@ -29416,67 +29465,27 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
             {
-            int alt351=3;
+            int alt352=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt351=1;
+                alt352=1;
                 }
                 break;
             case IDENT:
                 {
-                alt351=2;
+                alt352=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt351=3;
+                alt352=3;
                 }
                 break;
             default:
-                if (state.backtracking>0) {state.failed=true; return retval;}
-                NoViableAltException nvae =
-                    new NoViableAltException("", 351, 0, input);
-                throw nvae;
-            }
-            switch (alt351) {
-                case 1 :
-                    {
-                    pushFollow(FOLLOW_number_in_weekPart12929);
-                    number911=number();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_number.add(number911.getTree());
-                    }
-                    break;
-                case 2 :
-                    {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_weekPart12933); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_IDENT.add(i);
-                    }
-                    break;
-                case 3 :
-                    {
-                    pushFollow(FOLLOW_substitution_in_weekPart12935);
-                    substitution912=substitution();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_substitution.add(substitution912.getTree());
-                    }
-                    break;
-            }
-            int alt352=2;
-            int LA352_0 = input.LA(1);
-            if ( (LA352_0==TIMEPERIOD_WEEKS) ) {
-                alt352=1;
-            }
-            else if ( (LA352_0==TIMEPERIOD_WEEK) ) {
-                alt352=2;
-            }
-            else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
                     new NoViableAltException("", 352, 0, input);
@@ -29485,14 +29494,54 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt352) {
                 case 1 :
                     {
-                    TIMEPERIOD_WEEKS913=(Token)match(input,TIMEPERIOD_WEEKS,FOLLOW_TIMEPERIOD_WEEKS_in_weekPart12939); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_WEEKS.add(TIMEPERIOD_WEEKS913);
+                    pushFollow(FOLLOW_number_in_weekPart12946);
+                    number912=number();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_number.add(number912.getTree());
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_WEEK914=(Token)match(input,TIMEPERIOD_WEEK,FOLLOW_TIMEPERIOD_WEEK_in_weekPart12943); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_WEEK.add(TIMEPERIOD_WEEK914);
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_weekPart12950); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_IDENT.add(i);
+                    }
+                    break;
+                case 3 :
+                    {
+                    pushFollow(FOLLOW_substitution_in_weekPart12952);
+                    substitution913=substitution();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_substitution.add(substitution913.getTree());
+                    }
+                    break;
+            }
+            int alt353=2;
+            int LA353_0 = input.LA(1);
+            if ( (LA353_0==TIMEPERIOD_WEEKS) ) {
+                alt353=1;
+            }
+            else if ( (LA353_0==TIMEPERIOD_WEEK) ) {
+                alt353=2;
+            }
+            else {
+                if (state.backtracking>0) {state.failed=true; return retval;}
+                NoViableAltException nvae =
+                    new NoViableAltException("", 353, 0, input);
+                throw nvae;
+            }
+            switch (alt353) {
+                case 1 :
+                    {
+                    TIMEPERIOD_WEEKS914=(Token)match(input,TIMEPERIOD_WEEKS,FOLLOW_TIMEPERIOD_WEEKS_in_weekPart12956); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_WEEKS.add(TIMEPERIOD_WEEKS914);
+                    }
+                    break;
+                case 2 :
+                    {
+                    TIMEPERIOD_WEEK915=(Token)match(input,TIMEPERIOD_WEEK,FOLLOW_TIMEPERIOD_WEEK_in_weekPart12960); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_WEEK.add(TIMEPERIOD_WEEK915);
                     }
                     break;
             }
@@ -29559,13 +29608,13 @@ public class EsperEPL2GrammarParser extends Parser {
         retval.start = input.LT(1);
         CommonTree root_0 = null;
         Token i=null;
-        Token TIMEPERIOD_DAYS917=null;
-        Token TIMEPERIOD_DAY918=null;
-        EsperEPL2GrammarParser.number_return number915 = null;
-        EsperEPL2GrammarParser.substitution_return substitution916 = null;
+        Token TIMEPERIOD_DAYS918=null;
+        Token TIMEPERIOD_DAY919=null;
+        EsperEPL2GrammarParser.number_return number916 = null;
+        EsperEPL2GrammarParser.substitution_return substitution917 = null;
         CommonTree i_tree=null;
-        CommonTree TIMEPERIOD_DAYS917_tree=null;
-        CommonTree TIMEPERIOD_DAY918_tree=null;
+        CommonTree TIMEPERIOD_DAYS918_tree=null;
+        CommonTree TIMEPERIOD_DAY919_tree=null;
         RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_TIMEPERIOD_DAY=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_DAY");
         RewriteRuleTokenStream stream_TIMEPERIOD_DAYS=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_DAYS");
@@ -29573,67 +29622,27 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
             {
-            int alt353=3;
+            int alt354=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt353=1;
+                alt354=1;
                 }
                 break;
             case IDENT:
                 {
-                alt353=2;
+                alt354=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt353=3;
+                alt354=3;
                 }
                 break;
             default:
-                if (state.backtracking>0) {state.failed=true; return retval;}
-                NoViableAltException nvae =
-                    new NoViableAltException("", 353, 0, input);
-                throw nvae;
-            }
-            switch (alt353) {
-                case 1 :
-                    {
-                    pushFollow(FOLLOW_number_in_dayPart12991);
-                    number915=number();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_number.add(number915.getTree());
-                    }
-                    break;
-                case 2 :
-                    {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_dayPart12995); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_IDENT.add(i);
-                    }
-                    break;
-                case 3 :
-                    {
-                    pushFollow(FOLLOW_substitution_in_dayPart12997);
-                    substitution916=substitution();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_substitution.add(substitution916.getTree());
-                    }
-                    break;
-            }
-            int alt354=2;
-            int LA354_0 = input.LA(1);
-            if ( (LA354_0==TIMEPERIOD_DAYS) ) {
-                alt354=1;
-            }
-            else if ( (LA354_0==TIMEPERIOD_DAY) ) {
-                alt354=2;
-            }
-            else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
                     new NoViableAltException("", 354, 0, input);
@@ -29642,14 +29651,54 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt354) {
                 case 1 :
                     {
-                    TIMEPERIOD_DAYS917=(Token)match(input,TIMEPERIOD_DAYS,FOLLOW_TIMEPERIOD_DAYS_in_dayPart13001); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_DAYS.add(TIMEPERIOD_DAYS917);
+                    pushFollow(FOLLOW_number_in_dayPart13008);
+                    number916=number();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_number.add(number916.getTree());
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_DAY918=(Token)match(input,TIMEPERIOD_DAY,FOLLOW_TIMEPERIOD_DAY_in_dayPart13005); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_DAY.add(TIMEPERIOD_DAY918);
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_dayPart13012); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_IDENT.add(i);
+                    }
+                    break;
+                case 3 :
+                    {
+                    pushFollow(FOLLOW_substitution_in_dayPart13014);
+                    substitution917=substitution();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_substitution.add(substitution917.getTree());
+                    }
+                    break;
+            }
+            int alt355=2;
+            int LA355_0 = input.LA(1);
+            if ( (LA355_0==TIMEPERIOD_DAYS) ) {
+                alt355=1;
+            }
+            else if ( (LA355_0==TIMEPERIOD_DAY) ) {
+                alt355=2;
+            }
+            else {
+                if (state.backtracking>0) {state.failed=true; return retval;}
+                NoViableAltException nvae =
+                    new NoViableAltException("", 355, 0, input);
+                throw nvae;
+            }
+            switch (alt355) {
+                case 1 :
+                    {
+                    TIMEPERIOD_DAYS918=(Token)match(input,TIMEPERIOD_DAYS,FOLLOW_TIMEPERIOD_DAYS_in_dayPart13018); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_DAYS.add(TIMEPERIOD_DAYS918);
+                    }
+                    break;
+                case 2 :
+                    {
+                    TIMEPERIOD_DAY919=(Token)match(input,TIMEPERIOD_DAY,FOLLOW_TIMEPERIOD_DAY_in_dayPart13022); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_DAY.add(TIMEPERIOD_DAY919);
                     }
                     break;
             }
@@ -29716,13 +29765,13 @@ public class EsperEPL2GrammarParser extends Parser {
         retval.start = input.LT(1);
         CommonTree root_0 = null;
         Token i=null;
-        Token TIMEPERIOD_HOURS921=null;
-        Token TIMEPERIOD_HOUR922=null;
-        EsperEPL2GrammarParser.number_return number919 = null;
-        EsperEPL2GrammarParser.substitution_return substitution920 = null;
+        Token TIMEPERIOD_HOURS922=null;
+        Token TIMEPERIOD_HOUR923=null;
+        EsperEPL2GrammarParser.number_return number920 = null;
+        EsperEPL2GrammarParser.substitution_return substitution921 = null;
         CommonTree i_tree=null;
-        CommonTree TIMEPERIOD_HOURS921_tree=null;
-        CommonTree TIMEPERIOD_HOUR922_tree=null;
+        CommonTree TIMEPERIOD_HOURS922_tree=null;
+        CommonTree TIMEPERIOD_HOUR923_tree=null;
         RewriteRuleTokenStream stream_TIMEPERIOD_HOURS=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_HOURS");
         RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_TIMEPERIOD_HOUR=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_HOUR");
@@ -29730,67 +29779,27 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
             {
-            int alt355=3;
+            int alt356=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt355=1;
+                alt356=1;
                 }
                 break;
             case IDENT:
                 {
-                alt355=2;
+                alt356=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt355=3;
+                alt356=3;
                 }
                 break;
             default:
-                if (state.backtracking>0) {state.failed=true; return retval;}
-                NoViableAltException nvae =
-                    new NoViableAltException("", 355, 0, input);
-                throw nvae;
-            }
-            switch (alt355) {
-                case 1 :
-                    {
-                    pushFollow(FOLLOW_number_in_hourPart13054);
-                    number919=number();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_number.add(number919.getTree());
-                    }
-                    break;
-                case 2 :
-                    {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_hourPart13058); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_IDENT.add(i);
-                    }
-                    break;
-                case 3 :
-                    {
-                    pushFollow(FOLLOW_substitution_in_hourPart13060);
-                    substitution920=substitution();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_substitution.add(substitution920.getTree());
-                    }
-                    break;
-            }
-            int alt356=2;
-            int LA356_0 = input.LA(1);
-            if ( (LA356_0==TIMEPERIOD_HOURS) ) {
-                alt356=1;
-            }
-            else if ( (LA356_0==TIMEPERIOD_HOUR) ) {
-                alt356=2;
-            }
-            else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
                     new NoViableAltException("", 356, 0, input);
@@ -29799,14 +29808,54 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt356) {
                 case 1 :
                     {
-                    TIMEPERIOD_HOURS921=(Token)match(input,TIMEPERIOD_HOURS,FOLLOW_TIMEPERIOD_HOURS_in_hourPart13064); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_HOURS.add(TIMEPERIOD_HOURS921);
+                    pushFollow(FOLLOW_number_in_hourPart13071);
+                    number920=number();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_number.add(number920.getTree());
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_HOUR922=(Token)match(input,TIMEPERIOD_HOUR,FOLLOW_TIMEPERIOD_HOUR_in_hourPart13068); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_HOUR.add(TIMEPERIOD_HOUR922);
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_hourPart13075); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_IDENT.add(i);
+                    }
+                    break;
+                case 3 :
+                    {
+                    pushFollow(FOLLOW_substitution_in_hourPart13077);
+                    substitution921=substitution();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_substitution.add(substitution921.getTree());
+                    }
+                    break;
+            }
+            int alt357=2;
+            int LA357_0 = input.LA(1);
+            if ( (LA357_0==TIMEPERIOD_HOURS) ) {
+                alt357=1;
+            }
+            else if ( (LA357_0==TIMEPERIOD_HOUR) ) {
+                alt357=2;
+            }
+            else {
+                if (state.backtracking>0) {state.failed=true; return retval;}
+                NoViableAltException nvae =
+                    new NoViableAltException("", 357, 0, input);
+                throw nvae;
+            }
+            switch (alt357) {
+                case 1 :
+                    {
+                    TIMEPERIOD_HOURS922=(Token)match(input,TIMEPERIOD_HOURS,FOLLOW_TIMEPERIOD_HOURS_in_hourPart13081); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_HOURS.add(TIMEPERIOD_HOURS922);
+                    }
+                    break;
+                case 2 :
+                    {
+                    TIMEPERIOD_HOUR923=(Token)match(input,TIMEPERIOD_HOUR,FOLLOW_TIMEPERIOD_HOUR_in_hourPart13085); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_HOUR.add(TIMEPERIOD_HOUR923);
                     }
                     break;
             }
@@ -29873,15 +29922,15 @@ public class EsperEPL2GrammarParser extends Parser {
         retval.start = input.LT(1);
         CommonTree root_0 = null;
         Token i=null;
-        Token TIMEPERIOD_MINUTES925=null;
-        Token TIMEPERIOD_MINUTE926=null;
-        Token MIN927=null;
-        EsperEPL2GrammarParser.number_return number923 = null;
-        EsperEPL2GrammarParser.substitution_return substitution924 = null;
+        Token TIMEPERIOD_MINUTES926=null;
+        Token TIMEPERIOD_MINUTE927=null;
+        Token MIN928=null;
+        EsperEPL2GrammarParser.number_return number924 = null;
+        EsperEPL2GrammarParser.substitution_return substitution925 = null;
         CommonTree i_tree=null;
-        CommonTree TIMEPERIOD_MINUTES925_tree=null;
-        CommonTree TIMEPERIOD_MINUTE926_tree=null;
-        CommonTree MIN927_tree=null;
+        CommonTree TIMEPERIOD_MINUTES926_tree=null;
+        CommonTree TIMEPERIOD_MINUTE927_tree=null;
+        CommonTree MIN928_tree=null;
         RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_TIMEPERIOD_MINUTE=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_MINUTE");
         RewriteRuleTokenStream stream_MIN=new RewriteRuleTokenStream(adaptor,"token MIN");
@@ -29890,71 +29939,22 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
             {
-            int alt357=3;
+            int alt358=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt357=1;
+                alt358=1;
                 }
                 break;
             case IDENT:
                 {
-                alt357=2;
-                }
-                break;
-            case QUESTION:
-                {
-                alt357=3;
-                }
-                break;
-            default:
-                if (state.backtracking>0) {state.failed=true; return retval;}
-                NoViableAltException nvae =
-                    new NoViableAltException("", 357, 0, input);
-                throw nvae;
-            }
-            switch (alt357) {
-                case 1 :
-                    {
-                    pushFollow(FOLLOW_number_in_minutePart13117);
-                    number923=number();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_number.add(number923.getTree());
-                    }
-                    break;
-                case 2 :
-                    {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_minutePart13121); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_IDENT.add(i);
-                    }
-                    break;
-                case 3 :
-                    {
-                    pushFollow(FOLLOW_substitution_in_minutePart13123);
-                    substitution924=substitution();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_substitution.add(substitution924.getTree());
-                    }
-                    break;
-            }
-            int alt358=3;
-            switch ( input.LA(1) ) {
-            case TIMEPERIOD_MINUTES:
-                {
-                alt358=1;
-                }
-                break;
-            case TIMEPERIOD_MINUTE:
-                {
                 alt358=2;
                 }
                 break;
-            case MIN:
+            case QUESTION:
                 {
                 alt358=3;
                 }
@@ -29968,20 +29968,69 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt358) {
                 case 1 :
                     {
-                    TIMEPERIOD_MINUTES925=(Token)match(input,TIMEPERIOD_MINUTES,FOLLOW_TIMEPERIOD_MINUTES_in_minutePart13127); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MINUTES.add(TIMEPERIOD_MINUTES925);
+                    pushFollow(FOLLOW_number_in_minutePart13134);
+                    number924=number();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_number.add(number924.getTree());
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_MINUTE926=(Token)match(input,TIMEPERIOD_MINUTE,FOLLOW_TIMEPERIOD_MINUTE_in_minutePart13131); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MINUTE.add(TIMEPERIOD_MINUTE926);
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_minutePart13138); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    MIN927=(Token)match(input,MIN,FOLLOW_MIN_in_minutePart13135); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_MIN.add(MIN927);
+                    pushFollow(FOLLOW_substitution_in_minutePart13140);
+                    substitution925=substitution();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_substitution.add(substitution925.getTree());
+                    }
+                    break;
+            }
+            int alt359=3;
+            switch ( input.LA(1) ) {
+            case TIMEPERIOD_MINUTES:
+                {
+                alt359=1;
+                }
+                break;
+            case TIMEPERIOD_MINUTE:
+                {
+                alt359=2;
+                }
+                break;
+            case MIN:
+                {
+                alt359=3;
+                }
+                break;
+            default:
+                if (state.backtracking>0) {state.failed=true; return retval;}
+                NoViableAltException nvae =
+                    new NoViableAltException("", 359, 0, input);
+                throw nvae;
+            }
+            switch (alt359) {
+                case 1 :
+                    {
+                    TIMEPERIOD_MINUTES926=(Token)match(input,TIMEPERIOD_MINUTES,FOLLOW_TIMEPERIOD_MINUTES_in_minutePart13144); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MINUTES.add(TIMEPERIOD_MINUTES926);
+                    }
+                    break;
+                case 2 :
+                    {
+                    TIMEPERIOD_MINUTE927=(Token)match(input,TIMEPERIOD_MINUTE,FOLLOW_TIMEPERIOD_MINUTE_in_minutePart13148); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MINUTE.add(TIMEPERIOD_MINUTE927);
+                    }
+                    break;
+                case 3 :
+                    {
+                    MIN928=(Token)match(input,MIN,FOLLOW_MIN_in_minutePart13152); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_MIN.add(MIN928);
                     }
                     break;
             }
@@ -30048,15 +30097,15 @@ public class EsperEPL2GrammarParser extends Parser {
         retval.start = input.LT(1);
         CommonTree root_0 = null;
         Token i=null;
-        Token TIMEPERIOD_SECONDS930=null;
-        Token TIMEPERIOD_SECOND931=null;
-        Token TIMEPERIOD_SEC932=null;
-        EsperEPL2GrammarParser.number_return number928 = null;
-        EsperEPL2GrammarParser.substitution_return substitution929 = null;
+        Token TIMEPERIOD_SECONDS931=null;
+        Token TIMEPERIOD_SECOND932=null;
+        Token TIMEPERIOD_SEC933=null;
+        EsperEPL2GrammarParser.number_return number929 = null;
+        EsperEPL2GrammarParser.substitution_return substitution930 = null;
         CommonTree i_tree=null;
-        CommonTree TIMEPERIOD_SECONDS930_tree=null;
-        CommonTree TIMEPERIOD_SECOND931_tree=null;
-        CommonTree TIMEPERIOD_SEC932_tree=null;
+        CommonTree TIMEPERIOD_SECONDS931_tree=null;
+        CommonTree TIMEPERIOD_SECOND932_tree=null;
+        CommonTree TIMEPERIOD_SEC933_tree=null;
         RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_TIMEPERIOD_SEC=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_SEC");
         RewriteRuleTokenStream stream_TIMEPERIOD_SECOND=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_SECOND");
@@ -30065,71 +30114,22 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
             {
-            int alt359=3;
+            int alt360=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt359=1;
+                alt360=1;
                 }
                 break;
             case IDENT:
                 {
-                alt359=2;
-                }
-                break;
-            case QUESTION:
-                {
-                alt359=3;
-                }
-                break;
-            default:
-                if (state.backtracking>0) {state.failed=true; return retval;}
-                NoViableAltException nvae =
-                    new NoViableAltException("", 359, 0, input);
-                throw nvae;
-            }
-            switch (alt359) {
-                case 1 :
-                    {
-                    pushFollow(FOLLOW_number_in_secondPart13185);
-                    number928=number();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_number.add(number928.getTree());
-                    }
-                    break;
-                case 2 :
-                    {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_secondPart13189); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_IDENT.add(i);
-                    }
-                    break;
-                case 3 :
-                    {
-                    pushFollow(FOLLOW_substitution_in_secondPart13191);
-                    substitution929=substitution();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_substitution.add(substitution929.getTree());
-                    }
-                    break;
-            }
-            int alt360=3;
-            switch ( input.LA(1) ) {
-            case TIMEPERIOD_SECONDS:
-                {
-                alt360=1;
-                }
-                break;
-            case TIMEPERIOD_SECOND:
-                {
                 alt360=2;
                 }
                 break;
-            case TIMEPERIOD_SEC:
+            case QUESTION:
                 {
                 alt360=3;
                 }
@@ -30143,20 +30143,69 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt360) {
                 case 1 :
                     {
-                    TIMEPERIOD_SECONDS930=(Token)match(input,TIMEPERIOD_SECONDS,FOLLOW_TIMEPERIOD_SECONDS_in_secondPart13195); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_SECONDS.add(TIMEPERIOD_SECONDS930);
+                    pushFollow(FOLLOW_number_in_secondPart13202);
+                    number929=number();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_number.add(number929.getTree());
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_SECOND931=(Token)match(input,TIMEPERIOD_SECOND,FOLLOW_TIMEPERIOD_SECOND_in_secondPart13199); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_SECOND.add(TIMEPERIOD_SECOND931);
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_secondPart13206); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    TIMEPERIOD_SEC932=(Token)match(input,TIMEPERIOD_SEC,FOLLOW_TIMEPERIOD_SEC_in_secondPart13203); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_SEC.add(TIMEPERIOD_SEC932);
+                    pushFollow(FOLLOW_substitution_in_secondPart13208);
+                    substitution930=substitution();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_substitution.add(substitution930.getTree());
+                    }
+                    break;
+            }
+            int alt361=3;
+            switch ( input.LA(1) ) {
+            case TIMEPERIOD_SECONDS:
+                {
+                alt361=1;
+                }
+                break;
+            case TIMEPERIOD_SECOND:
+                {
+                alt361=2;
+                }
+                break;
+            case TIMEPERIOD_SEC:
+                {
+                alt361=3;
+                }
+                break;
+            default:
+                if (state.backtracking>0) {state.failed=true; return retval;}
+                NoViableAltException nvae =
+                    new NoViableAltException("", 361, 0, input);
+                throw nvae;
+            }
+            switch (alt361) {
+                case 1 :
+                    {
+                    TIMEPERIOD_SECONDS931=(Token)match(input,TIMEPERIOD_SECONDS,FOLLOW_TIMEPERIOD_SECONDS_in_secondPart13212); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_SECONDS.add(TIMEPERIOD_SECONDS931);
+                    }
+                    break;
+                case 2 :
+                    {
+                    TIMEPERIOD_SECOND932=(Token)match(input,TIMEPERIOD_SECOND,FOLLOW_TIMEPERIOD_SECOND_in_secondPart13216); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_SECOND.add(TIMEPERIOD_SECOND932);
+                    }
+                    break;
+                case 3 :
+                    {
+                    TIMEPERIOD_SEC933=(Token)match(input,TIMEPERIOD_SEC,FOLLOW_TIMEPERIOD_SEC_in_secondPart13220); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_SEC.add(TIMEPERIOD_SEC933);
                     }
                     break;
             }
@@ -30223,15 +30272,15 @@ public class EsperEPL2GrammarParser extends Parser {
         retval.start = input.LT(1);
         CommonTree root_0 = null;
         Token i=null;
-        Token TIMEPERIOD_MILLISECONDS935=null;
-        Token TIMEPERIOD_MILLISECOND936=null;
-        Token TIMEPERIOD_MILLISEC937=null;
-        EsperEPL2GrammarParser.number_return number933 = null;
-        EsperEPL2GrammarParser.substitution_return substitution934 = null;
+        Token TIMEPERIOD_MILLISECONDS936=null;
+        Token TIMEPERIOD_MILLISECOND937=null;
+        Token TIMEPERIOD_MILLISEC938=null;
+        EsperEPL2GrammarParser.number_return number934 = null;
+        EsperEPL2GrammarParser.substitution_return substitution935 = null;
         CommonTree i_tree=null;
-        CommonTree TIMEPERIOD_MILLISECONDS935_tree=null;
-        CommonTree TIMEPERIOD_MILLISECOND936_tree=null;
-        CommonTree TIMEPERIOD_MILLISEC937_tree=null;
+        CommonTree TIMEPERIOD_MILLISECONDS936_tree=null;
+        CommonTree TIMEPERIOD_MILLISECOND937_tree=null;
+        CommonTree TIMEPERIOD_MILLISEC938_tree=null;
         RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_TIMEPERIOD_MILLISEC=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_MILLISEC");
         RewriteRuleTokenStream stream_TIMEPERIOD_MILLISECOND=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_MILLISECOND");
@@ -30240,71 +30289,22 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
             {
-            int alt361=3;
+            int alt362=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt361=1;
+                alt362=1;
                 }
                 break;
             case IDENT:
                 {
-                alt361=2;
-                }
-                break;
-            case QUESTION:
-                {
-                alt361=3;
-                }
-                break;
-            default:
-                if (state.backtracking>0) {state.failed=true; return retval;}
-                NoViableAltException nvae =
-                    new NoViableAltException("", 361, 0, input);
-                throw nvae;
-            }
-            switch (alt361) {
-                case 1 :
-                    {
-                    pushFollow(FOLLOW_number_in_millisecondPart13253);
-                    number933=number();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_number.add(number933.getTree());
-                    }
-                    break;
-                case 2 :
-                    {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_millisecondPart13257); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_IDENT.add(i);
-                    }
-                    break;
-                case 3 :
-                    {
-                    pushFollow(FOLLOW_substitution_in_millisecondPart13259);
-                    substitution934=substitution();
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_substitution.add(substitution934.getTree());
-                    }
-                    break;
-            }
-            int alt362=3;
-            switch ( input.LA(1) ) {
-            case TIMEPERIOD_MILLISECONDS:
-                {
-                alt362=1;
-                }
-                break;
-            case TIMEPERIOD_MILLISECOND:
-                {
                 alt362=2;
                 }
                 break;
-            case TIMEPERIOD_MILLISEC:
+            case QUESTION:
                 {
                 alt362=3;
                 }
@@ -30318,20 +30318,69 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt362) {
                 case 1 :
                     {
-                    TIMEPERIOD_MILLISECONDS935=(Token)match(input,TIMEPERIOD_MILLISECONDS,FOLLOW_TIMEPERIOD_MILLISECONDS_in_millisecondPart13263); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MILLISECONDS.add(TIMEPERIOD_MILLISECONDS935);
+                    pushFollow(FOLLOW_number_in_millisecondPart13270);
+                    number934=number();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_number.add(number934.getTree());
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_MILLISECOND936=(Token)match(input,TIMEPERIOD_MILLISECOND,FOLLOW_TIMEPERIOD_MILLISECOND_in_millisecondPart13267); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MILLISECOND.add(TIMEPERIOD_MILLISECOND936);
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_millisecondPart13274); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    TIMEPERIOD_MILLISEC937=(Token)match(input,TIMEPERIOD_MILLISEC,FOLLOW_TIMEPERIOD_MILLISEC_in_millisecondPart13271); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MILLISEC.add(TIMEPERIOD_MILLISEC937);
+                    pushFollow(FOLLOW_substitution_in_millisecondPart13276);
+                    substitution935=substitution();
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_substitution.add(substitution935.getTree());
+                    }
+                    break;
+            }
+            int alt363=3;
+            switch ( input.LA(1) ) {
+            case TIMEPERIOD_MILLISECONDS:
+                {
+                alt363=1;
+                }
+                break;
+            case TIMEPERIOD_MILLISECOND:
+                {
+                alt363=2;
+                }
+                break;
+            case TIMEPERIOD_MILLISEC:
+                {
+                alt363=3;
+                }
+                break;
+            default:
+                if (state.backtracking>0) {state.failed=true; return retval;}
+                NoViableAltException nvae =
+                    new NoViableAltException("", 363, 0, input);
+                throw nvae;
+            }
+            switch (alt363) {
+                case 1 :
+                    {
+                    TIMEPERIOD_MILLISECONDS936=(Token)match(input,TIMEPERIOD_MILLISECONDS,FOLLOW_TIMEPERIOD_MILLISECONDS_in_millisecondPart13280); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MILLISECONDS.add(TIMEPERIOD_MILLISECONDS936);
+                    }
+                    break;
+                case 2 :
+                    {
+                    TIMEPERIOD_MILLISECOND937=(Token)match(input,TIMEPERIOD_MILLISECOND,FOLLOW_TIMEPERIOD_MILLISECOND_in_millisecondPart13284); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MILLISECOND.add(TIMEPERIOD_MILLISECOND937);
+                    }
+                    break;
+                case 3 :
+                    {
+                    TIMEPERIOD_MILLISEC938=(Token)match(input,TIMEPERIOD_MILLISEC,FOLLOW_TIMEPERIOD_MILLISEC_in_millisecondPart13288); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_TIMEPERIOD_MILLISEC.add(TIMEPERIOD_MILLISEC938);
                     }
                     break;
             }
@@ -30410,38 +30459,38 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_NUM_FLOAT=new RewriteRuleTokenStream(adaptor,"token NUM_FLOAT");
         RewriteRuleTokenStream stream_NUM_INT=new RewriteRuleTokenStream(adaptor,"token NUM_INT");
         try {
-            int alt363=4;
+            int alt364=4;
             switch ( input.LA(1) ) {
             case NUM_INT:
                 {
-                alt363=1;
+                alt364=1;
                 }
                 break;
             case NUM_LONG:
                 {
-                alt363=2;
+                alt364=2;
                 }
                 break;
             case NUM_FLOAT:
                 {
-                alt363=3;
+                alt364=3;
                 }
                 break;
             case NUM_DOUBLE:
                 {
-                alt363=4;
+                alt364=4;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 363, 0, input);
+                    new NoViableAltException("", 364, 0, input);
                 throw nvae;
             }
-            switch (alt363) {
+            switch (alt364) {
                 case 1 :
                     {
-                    ni=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_number13326); if (state.failed) return retval; 
+                    ni=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_number13343); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_INT.add(ni);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -30455,7 +30504,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    nl=(Token)match(input,NUM_LONG,FOLLOW_NUM_LONG_in_number13343); if (state.failed) return retval; 
+                    nl=(Token)match(input,NUM_LONG,FOLLOW_NUM_LONG_in_number13360); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_LONG.add(nl);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -30469,7 +30518,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 3 :
                     {
-                    nf=(Token)match(input,NUM_FLOAT,FOLLOW_NUM_FLOAT_in_number13360); if (state.failed) return retval; 
+                    nf=(Token)match(input,NUM_FLOAT,FOLLOW_NUM_FLOAT_in_number13377); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_FLOAT.add(nf);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -30483,7 +30532,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 4 :
                     {
-                    nd=(Token)match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_number13377); if (state.failed) return retval; 
+                    nd=(Token)match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_number13394); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_DOUBLE.add(nd);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -30522,7 +30571,7 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_QUESTION=new RewriteRuleTokenStream(adaptor,"token QUESTION");
         try {
             {
-            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_substitution13398); if (state.failed) return retval; 
+            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_substitution13415); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_QUESTION.add(q);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
@@ -30557,8 +30606,8 @@ public class EsperEPL2GrammarParser extends Parser {
         Token t=null;
         Token f=null;
         Token nu=null;
-        EsperEPL2GrammarParser.numberconstant_return numberconstant938 = null;
-        EsperEPL2GrammarParser.stringconstant_return stringconstant939 = null;
+        EsperEPL2GrammarParser.numberconstant_return numberconstant939 = null;
+        EsperEPL2GrammarParser.stringconstant_return stringconstant940 = null;
         CommonTree t_tree=null;
         CommonTree f_tree=null;
         CommonTree nu_tree=null;
@@ -30566,7 +30615,7 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_VALUE_NULL=new RewriteRuleTokenStream(adaptor,"token VALUE_NULL");
         RewriteRuleTokenStream stream_BOOLEAN_FALSE=new RewriteRuleTokenStream(adaptor,"token BOOLEAN_FALSE");
         try {
-            int alt364=5;
+            int alt365=5;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case PLUS:
@@ -30575,60 +30624,60 @@ public class EsperEPL2GrammarParser extends Parser {
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt364=1;
+                alt365=1;
                 }
                 break;
             case STRING_LITERAL:
             case QUOTED_STRING_LITERAL:
                 {
-                alt364=2;
+                alt365=2;
                 }
                 break;
             case BOOLEAN_TRUE:
                 {
-                alt364=3;
+                alt365=3;
                 }
                 break;
             case BOOLEAN_FALSE:
                 {
-                alt364=4;
+                alt365=4;
                 }
                 break;
             case VALUE_NULL:
                 {
-                alt364=5;
+                alt365=5;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 364, 0, input);
+                    new NoViableAltException("", 365, 0, input);
                 throw nvae;
             }
-            switch (alt364) {
+            switch (alt365) {
                 case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_numberconstant_in_constant13417);
-                    numberconstant938=numberconstant();
+                    pushFollow(FOLLOW_numberconstant_in_constant13434);
+                    numberconstant939=numberconstant();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, numberconstant938.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, numberconstant939.getTree());
                     }
                     break;
                 case 2 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_stringconstant_in_constant13424);
-                    stringconstant939=stringconstant();
+                    pushFollow(FOLLOW_stringconstant_in_constant13441);
+                    stringconstant940=stringconstant();
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, stringconstant939.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, stringconstant940.getTree());
                     }
                     break;
                 case 3 :
                     {
-                    t=(Token)match(input,BOOLEAN_TRUE,FOLLOW_BOOLEAN_TRUE_in_constant13437); if (state.failed) return retval; 
+                    t=(Token)match(input,BOOLEAN_TRUE,FOLLOW_BOOLEAN_TRUE_in_constant13454); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_BOOLEAN_TRUE.add(t);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -30646,7 +30695,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 4 :
                     {
-                    f=(Token)match(input,BOOLEAN_FALSE,FOLLOW_BOOLEAN_FALSE_in_constant13457); if (state.failed) return retval; 
+                    f=(Token)match(input,BOOLEAN_FALSE,FOLLOW_BOOLEAN_FALSE_in_constant13474); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_BOOLEAN_FALSE.add(f);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -30664,7 +30713,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 5 :
                     {
-                    nu=(Token)match(input,VALUE_NULL,FOLLOW_VALUE_NULL_in_constant13477); if (state.failed) return retval; 
+                    nu=(Token)match(input,VALUE_NULL,FOLLOW_VALUE_NULL_in_constant13494); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_VALUE_NULL.add(nu);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -30704,7 +30753,7 @@ public class EsperEPL2GrammarParser extends Parser {
         CommonTree root_0 = null;
         Token m=null;
         Token p=null;
-        EsperEPL2GrammarParser.number_return number940 = null;
+        EsperEPL2GrammarParser.number_return number941 = null;
         CommonTree m_tree=null;
         CommonTree p_tree=null;
         RewriteRuleTokenStream stream_PLUS=new RewriteRuleTokenStream(adaptor,"token PLUS");
@@ -30712,39 +30761,39 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         try {
             {
-            int alt365=3;
-            int LA365_0 = input.LA(1);
-            if ( (LA365_0==MINUS) ) {
-                alt365=1;
+            int alt366=3;
+            int LA366_0 = input.LA(1);
+            if ( (LA366_0==MINUS) ) {
+                alt366=1;
             }
-            else if ( (LA365_0==PLUS) ) {
-                alt365=2;
+            else if ( (LA366_0==PLUS) ) {
+                alt366=2;
             }
-            switch (alt365) {
+            switch (alt366) {
                 case 1 :
                     {
-                    m=(Token)match(input,MINUS,FOLLOW_MINUS_in_numberconstant13499); if (state.failed) return retval; 
+                    m=(Token)match(input,MINUS,FOLLOW_MINUS_in_numberconstant13516); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_MINUS.add(m);
                     }
                     break;
                 case 2 :
                     {
-                    p=(Token)match(input,PLUS,FOLLOW_PLUS_in_numberconstant13505); if (state.failed) return retval; 
+                    p=(Token)match(input,PLUS,FOLLOW_PLUS_in_numberconstant13522); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_PLUS.add(p);
                     }
                     break;
             }
-            pushFollow(FOLLOW_number_in_numberconstant13509);
-            number940=number();
+            pushFollow(FOLLOW_number_in_numberconstant13526);
+            number941=number();
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_number.add(number940.getTree());
+            if ( state.backtracking==0 ) stream_number.add(number941.getTree());
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
             root_0 = (CommonTree)adaptor.nil();
             if (m != null) {
-                adaptor.addChild(root_0, adaptor.create((number940!=null?((CommonTree)number940.tree):null).getType(), "-" + (number940!=null?input.toString(number940.start,number940.stop):null)));
+                adaptor.addChild(root_0, adaptor.create((number941!=null?((CommonTree)number941.tree):null).getType(), "-" + (number941!=null?input.toString(number941.start,number941.stop):null)));
             }
             else 
             {
@@ -30780,24 +30829,24 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_STRING_LITERAL=new RewriteRuleTokenStream(adaptor,"token STRING_LITERAL");
         RewriteRuleTokenStream stream_QUOTED_STRING_LITERAL=new RewriteRuleTokenStream(adaptor,"token QUOTED_STRING_LITERAL");
         try {
-            int alt366=2;
-            int LA366_0 = input.LA(1);
-            if ( (LA366_0==STRING_LITERAL) ) {
-                alt366=1;
+            int alt367=2;
+            int LA367_0 = input.LA(1);
+            if ( (LA367_0==STRING_LITERAL) ) {
+                alt367=1;
             }
-            else if ( (LA366_0==QUOTED_STRING_LITERAL) ) {
-                alt366=2;
+            else if ( (LA367_0==QUOTED_STRING_LITERAL) ) {
+                alt367=2;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 366, 0, input);
+                    new NoViableAltException("", 367, 0, input);
                 throw nvae;
             }
-            switch (alt366) {
+            switch (alt367) {
                 case 1 :
                     {
-                    sl=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_stringconstant13538); if (state.failed) return retval; 
+                    sl=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_stringconstant13555); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_STRING_LITERAL.add(sl);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -30815,7 +30864,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    qsl=(Token)match(input,QUOTED_STRING_LITERAL,FOLLOW_QUOTED_STRING_LITERAL_in_stringconstant13554); if (state.failed) return retval; 
+                    qsl=(Token)match(input,QUOTED_STRING_LITERAL,FOLLOW_QUOTED_STRING_LITERAL_in_stringconstant13571); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_QUOTED_STRING_LITERAL.add(qsl);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -30895,72 +30944,72 @@ public class EsperEPL2GrammarParser extends Parser {
     }
     public final void synpred7_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_lastOperand_in_synpred7_EsperEPL2Grammar11352);
-        lastOperand();
+        pushFollow(FOLLOW_lastWeekdayOperand_in_synpred7_EsperEPL2Grammar11355);
+        lastWeekdayOperand();
         state._fsp--;
         if (state.failed) return ;
         }
     }
     public final void synpred8_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_lastWeekdayOperand_in_synpred8_EsperEPL2Grammar11363);
-        lastWeekdayOperand();
+        pushFollow(FOLLOW_timePeriod_in_synpred8_EsperEPL2Grammar11366);
+        timePeriod();
         state._fsp--;
         if (state.failed) return ;
         }
     }
     public final void synpred9_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_timePeriod_in_synpred9_EsperEPL2Grammar11374);
-        timePeriod();
+        pushFollow(FOLLOW_expressionQualifyable_in_synpred9_EsperEPL2Grammar11377);
+        expressionQualifyable();
         state._fsp--;
         if (state.failed) return ;
         }
     }
     public final void synpred10_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_expressionQualifyable_in_synpred10_EsperEPL2Grammar11385);
-        expressionQualifyable();
+        pushFollow(FOLLOW_rangeOperand_in_synpred10_EsperEPL2Grammar11388);
+        rangeOperand();
         state._fsp--;
         if (state.failed) return ;
         }
     }
     public final void synpred11_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_rangeOperand_in_synpred11_EsperEPL2Grammar11396);
-        rangeOperand();
+        pushFollow(FOLLOW_frequencyOperand_in_synpred11_EsperEPL2Grammar11400);
+        frequencyOperand();
         state._fsp--;
         if (state.failed) return ;
         }
     }
     public final void synpred12_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_frequencyOperand_in_synpred12_EsperEPL2Grammar11408);
-        frequencyOperand();
+        pushFollow(FOLLOW_lastOperator_in_synpred12_EsperEPL2Grammar11411);
+        lastOperator();
         state._fsp--;
         if (state.failed) return ;
         }
     }
     public final void synpred13_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_lastOperator_in_synpred13_EsperEPL2Grammar11419);
-        lastOperator();
+        pushFollow(FOLLOW_weekDayOperator_in_synpred13_EsperEPL2Grammar11422);
+        weekDayOperator();
         state._fsp--;
         if (state.failed) return ;
         }
     }
     public final void synpred14_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_weekDayOperator_in_synpred14_EsperEPL2Grammar11430);
-        weekDayOperator();
+        pushFollow(FOLLOW_numericParameterList_in_synpred14_EsperEPL2Grammar11435);
+        numericParameterList();
         state._fsp--;
         if (state.failed) return ;
         }
     }
     public final void synpred15_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_numericParameterList_in_synpred15_EsperEPL2Grammar11443);
-        numericParameterList();
+        pushFollow(FOLLOW_lastOperand_in_synpred15_EsperEPL2Grammar11460);
+        lastOperand();
         state._fsp--;
         if (state.failed) return ;
         }
@@ -31187,15 +31236,15 @@ public class EsperEPL2GrammarParser extends Parser {
         "\1\5\73\uffff\1\5\73\uffff\1\5\73\uffff\1\5\73\uffff\1\5\73\uffff"+
         "\1\5\73\uffff\1\5\73\uffff\1\5\73\uffff\1\5\73\uffff\1\5\73\uffff"+
         "\1\5\73\uffff\1\u0135\73\uffff\1\5\73\uffff\1\5\73\uffff\1\5\73"+
-        "\uffff\1\5\73\uffff\1\5\11\uffff\2\6\76\uffff\2\6\106\uffff\2\6"+
-        "\115\uffff\2\6\106\uffff\2\6\75\uffff\2\6\106\uffff\2\6\106\uffff"+
-        "\2\6\106\uffff\2\6\106\uffff\2\6\104\uffff\2\6\107\uffff\2\6\104"+
-        "\uffff\2\6\104\uffff\2\6\104\uffff\2\6\166\uffff\1\0\55\uffff\1"+
-        "\0\31\uffff\1\0\5\uffff\1\0\31\uffff\1\0\31\uffff\1\0\141\uffff"+
-        "\1\0\31\uffff\1\0\5\uffff\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff"+
-        "\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff\1\0\55\uffff"+
-        "\1\0\5\uffff\1\0\31\uffff\1\0\31\uffff\1\0\115\uffff\1\0\30\uffff"+
-        "\1\0\141\uffff\1\0\5\uffff\1\0\30\uffff";
+        "\uffff\1\5\73\uffff\1\5\2\6\107\uffff\2\6\117\uffff\2\6\75\uffff"+
+        "\2\6\115\uffff\2\6\75\uffff\2\6\106\uffff\2\6\117\uffff\2\6\106"+
+        "\uffff\2\6\75\uffff\2\6\104\uffff\2\6\107\uffff\2\6\113\uffff\2"+
+        "\6\75\uffff\2\6\104\uffff\2\6\166\uffff\1\0\31\uffff\1\0\31\uffff"+
+        "\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff\1\0\115\uffff\1\0\31\uffff"+
+        "\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff"+
+        "\1\0\55\uffff\1\0\5\uffff\1\0\31\uffff\1\0\31\uffff\1\0\55\uffff"+
+        "\1\0\31\uffff\1\0\31\uffff\1\0\114\uffff\1\0\30\uffff\1\0\116\uffff"+
+        "\1\0\5\uffff\1\0\30\uffff";
     static final String DFA196_maxS =
         "\2\u014b\13\uffff\1\u014b\3\uffff\1\u0148\2\uffff\2\u0148\2\uffff"+
         "\4\u0148\1\uffff\2\u0148\12\uffff\3\u0148\2\uffff\3\u0148\3\uffff"+
@@ -31203,43 +31252,43 @@ public class EsperEPL2GrammarParser extends Parser {
         "\uffff\1\u014b\73\uffff\1\u014b\73\uffff\1\u014b\73\uffff\1\u014b"+
         "\73\uffff\1\u014b\73\uffff\1\u014b\73\uffff\1\u014b\73\uffff\1\u014b"+
         "\73\uffff\1\u014b\73\uffff\1\u0143\73\uffff\1\u014b\73\uffff\1\u014b"+
-        "\73\uffff\1\u014b\73\uffff\1\u014b\73\uffff\1\u0149\11\uffff\2\u0142"+
-        "\76\uffff\2\u0142\106\uffff\2\u0142\115\uffff\2\u0142\106\uffff"+
-        "\2\u0142\75\uffff\2\u0142\106\uffff\2\u0142\106\uffff\2\u0142\106"+
-        "\uffff\2\u0142\106\uffff\2\u0142\104\uffff\2\u0142\107\uffff\2\u0142"+
-        "\104\uffff\2\u0142\104\uffff\2\u0142\104\uffff\2\u0142\166\uffff"+
-        "\1\0\55\uffff\1\0\31\uffff\1\0\5\uffff\1\0\31\uffff\1\0\31\uffff"+
-        "\1\0\141\uffff\1\0\31\uffff\1\0\5\uffff\1\0\31\uffff\1\0\31\uffff"+
-        "\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff"+
-        "\1\0\55\uffff\1\0\5\uffff\1\0\31\uffff\1\0\31\uffff\1\0\115\uffff"+
-        "\1\0\30\uffff\1\0\141\uffff\1\0\5\uffff\1\0\30\uffff";
+        "\73\uffff\1\u014b\73\uffff\1\u014b\73\uffff\1\u0149\2\u0142\107"+
+        "\uffff\2\u0142\117\uffff\2\u0142\75\uffff\2\u0142\115\uffff\2\u0142"+
+        "\75\uffff\2\u0142\106\uffff\2\u0142\117\uffff\2\u0142\106\uffff"+
+        "\2\u0142\75\uffff\2\u0142\104\uffff\2\u0142\107\uffff\2\u0142\113"+
+        "\uffff\2\u0142\75\uffff\2\u0142\104\uffff\2\u0142\166\uffff\1\0"+
+        "\31\uffff\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff\1"+
+        "\0\115\uffff\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff"+
+        "\1\0\31\uffff\1\0\31\uffff\1\0\55\uffff\1\0\5\uffff\1\0\31\uffff"+
+        "\1\0\31\uffff\1\0\55\uffff\1\0\31\uffff\1\0\31\uffff\1\0\114\uffff"+
+        "\1\0\30\uffff\1\0\116\uffff\1\0\5\uffff\1\0\30\uffff";
     static final String DFA196_acceptS =
         "\2\uffff\1\2\11\uffff\1\3\1\uffff\1\5\60\uffff\2\6\1\uffff\1\6"+
-        "\1\7\1\12\4\uffff\1\1\56\uffff\1\10\1\4\u0406\uffff\11\6\2\uffff"+
-        "\76\6\2\uffff\106\6\2\uffff\115\6\2\uffff\106\6\2\uffff\75\6\2\uffff"+
-        "\106\6\2\uffff\106\6\2\uffff\106\6\2\uffff\106\6\2\uffff\104\6\2"+
-        "\uffff\105\6\4\uffff\104\6\2\uffff\104\6\2\uffff\104\6\2\uffff\106"+
-        "\6\1\11\57\6\1\uffff\55\6\1\uffff\31\6\1\uffff\5\6\1\uffff\31\6"+
-        "\1\uffff\31\6\1\uffff\31\6\1\uffff\31\6\1\uffff\55\6\1\uffff\31"+
-        "\6\1\uffff\5\6\1\uffff\31\6\1\uffff\31\6\1\uffff\31\6\1\uffff\31"+
+        "\1\7\1\12\4\uffff\1\1\56\uffff\1\10\1\4\u0408\uffff\107\6\2\uffff"+
+        "\117\6\2\uffff\75\6\2\uffff\115\6\2\uffff\75\6\2\uffff\106\6\2\uffff"+
+        "\117\6\2\uffff\106\6\2\uffff\75\6\2\uffff\104\6\2\uffff\105\6\4"+
+        "\uffff\113\6\2\uffff\75\6\2\uffff\104\6\2\uffff\106\6\1\11\57\6"+
+        "\1\uffff\31\6\1\uffff\31\6\1\uffff\31\6\1\uffff\31\6\1\uffff\31"+
+        "\6\1\uffff\62\6\2\uffff\31\6\1\uffff\31\6\1\uffff\31\6\1\uffff\31"+
         "\6\1\uffff\31\6\1\uffff\31\6\1\uffff\31\6\1\uffff\55\6\1\uffff\5"+
-        "\6\1\uffff\31\6\1\uffff\31\6\1\uffff\62\6\1\uffff\31\6\2\uffff\30"+
-        "\6\1\uffff\62\6\2\uffff\55\6\1\uffff\5\6\1\uffff\30\6";
+        "\6\1\uffff\31\6\1\uffff\31\6\1\uffff\55\6\1\uffff\31\6\1\uffff\31"+
+        "\6\1\uffff\5\6\1\uffff\31\6\1\uffff\54\6\1\uffff\30\6\1\uffff\5"+
+        "\6\1\uffff\32\6\1\uffff\55\6\1\uffff\5\6\1\uffff\30\6";
     static final String DFA196_specialS =
         "\1\0\u00be\uffff\1\1\73\uffff\1\2\73\uffff\1\3\73\uffff\1\4\73"+
         "\uffff\1\5\73\uffff\1\6\73\uffff\1\7\73\uffff\1\10\73\uffff\1\11"+
         "\73\uffff\1\12\73\uffff\1\13\73\uffff\1\14\73\uffff\1\15\73\uffff"+
-        "\1\16\73\uffff\1\17\73\uffff\1\20\73\uffff\1\21\11\uffff\1\22\1"+
-        "\23\76\uffff\1\24\1\25\106\uffff\1\26\1\27\115\uffff\1\30\1\31\106"+
-        "\uffff\1\32\1\33\75\uffff\1\34\1\35\106\uffff\1\36\1\37\106\uffff"+
-        "\1\40\1\41\106\uffff\1\42\1\43\106\uffff\1\44\1\45\104\uffff\1\46"+
-        "\1\47\107\uffff\1\50\1\51\104\uffff\1\52\1\53\104\uffff\1\54\1\55"+
-        "\104\uffff\1\56\1\57\166\uffff\1\60\55\uffff\1\61\31\uffff\1\62"+
-        "\5\uffff\1\63\31\uffff\1\64\31\uffff\1\65\141\uffff\1\66\31\uffff"+
-        "\1\67\5\uffff\1\70\31\uffff\1\71\31\uffff\1\72\31\uffff\1\73\31"+
-        "\uffff\1\74\31\uffff\1\75\31\uffff\1\76\31\uffff\1\77\55\uffff\1"+
-        "\100\5\uffff\1\101\31\uffff\1\102\31\uffff\1\103\115\uffff\1\104"+
-        "\30\uffff\1\105\141\uffff\1\106\5\uffff\1\107\30\uffff}>";
+        "\1\16\73\uffff\1\17\73\uffff\1\20\73\uffff\1\21\1\22\1\23\107\uffff"+
+        "\1\24\1\25\117\uffff\1\26\1\27\75\uffff\1\30\1\31\115\uffff\1\32"+
+        "\1\33\75\uffff\1\34\1\35\106\uffff\1\36\1\37\117\uffff\1\40\1\41"+
+        "\106\uffff\1\42\1\43\75\uffff\1\44\1\45\104\uffff\1\46\1\47\107"+
+        "\uffff\1\50\1\51\113\uffff\1\52\1\53\75\uffff\1\54\1\55\104\uffff"+
+        "\1\56\1\57\166\uffff\1\60\31\uffff\1\61\31\uffff\1\62\31\uffff\1"+
+        "\63\31\uffff\1\64\31\uffff\1\65\115\uffff\1\66\31\uffff\1\67\31"+
+        "\uffff\1\70\31\uffff\1\71\31\uffff\1\72\31\uffff\1\73\31\uffff\1"+
+        "\74\55\uffff\1\75\5\uffff\1\76\31\uffff\1\77\31\uffff\1\100\55\uffff"+
+        "\1\101\31\uffff\1\102\31\uffff\1\103\114\uffff\1\104\30\uffff\1"+
+        "\105\116\uffff\1\106\5\uffff\1\107\30\uffff}>";
     static final String[] DFA196_transitionS = {
             "\1\64\4\uffff\1\16\3\uffff\1\16\1\uffff\1\16\1\uffff\1\24\1"+
             "\25\2\16\1\30\1\31\1\32\1\33\1\21\10\uffff\1\16\1\uffff\4\16"+
@@ -31513,17 +31562,17 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "\1\u04b6\4\uffff\1\u0494\2\uffff\1\u04c7\1\u0495\1\uffff\1"+
             "\u04bf\1\uffff\1\u0496\1\u0497\1\u0498\1\u0499\1\u049a\1\u049b"+
-            "\1\u049c\1\u049d\1\u0493\1\uffff\1\u0482\6\uffff\1\u04b9\1\uffff"+
-            "\1\u04bb\1\u04b7\1\u04b8\1\u04ba\5\uffff\1\u0481\1\u0480\3\uffff"+
+            "\1\u049c\1\u049d\1\u0493\1\uffff\1\u0484\6\uffff\1\u04b9\1\uffff"+
+            "\1\u04bb\1\u04b7\1\u04b8\1\u04ba\5\uffff\1\u0483\1\u0482\3\uffff"+
             "\1\u049e\1\u049f\1\u04a0\11\uffff\1\u04a4\1\u04a5\1\u04a6\1"+
             "\u04a8\1\u04a9\1\u04aa\1\u04ab\1\u04ac\1\u04c1\1\u04c2\1\u04ad"+
             "\1\u04c3\1\u04ae\1\u04af\1\u04b0\1\u04b1\1\u04b2\1\u04c4\1\uffff"+
             "\1\u04b3\1\u04c0\1\u04b4\1\u04a7\1\u0492\1\u04b5\22\uffff\1"+
             "\u048b\1\u048c\1\u048d\5\uffff\1\u04bc\1\u04bd\1\u04be\2\uffff"+
             "\1\u04a1\1\uffff\1\u04a2\1\u04a3\1\uffff\1\u04c6\u009a\uffff"+
-            "\1\u0488\15\uffff\1\u0490\1\u04c5\1\uffff\1\u048f\7\uffff\1"+
-            "\u04c8\1\uffff\1\u0484\1\u048e\1\uffff\1\u0489\1\u048a\11\uffff"+
-            "\1\u0483\2\uffff\1\u0485\5\uffff\1\u0491\1\u0486\1\u0487",
+            "\1\u048a\15\uffff\1\u0490\1\u04c5\1\uffff\1\u048f\7\uffff\1"+
+            "\u04c8\1\uffff\1\u0486\1\u048e\1\uffff\1\u0480\1\u0481\11\uffff"+
+            "\1\u0485\2\uffff\1\u0487\5\uffff\1\u0491\1\u0488\1\u0489",
             "",
             "",
             "",
@@ -31657,17 +31706,17 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "\1\u0547\4\uffff\1\u0525\2\uffff\1\u0558\1\u0526\1\uffff\1"+
             "\u0550\1\uffff\1\u0527\1\u0528\1\u0529\1\u052a\1\u052b\1\u052c"+
-            "\1\u052d\1\u052e\1\u0524\1\uffff\1\u0515\6\uffff\1\u054a\1\uffff"+
-            "\1\u054c\1\u0548\1\u0549\1\u054b\5\uffff\1\u0514\1\u0513\3\uffff"+
+            "\1\u052d\1\u052e\1\u0524\1\uffff\1\u0513\6\uffff\1\u054a\1\uffff"+
+            "\1\u054c\1\u0548\1\u0549\1\u054b\5\uffff\1\u0512\1\u0511\3\uffff"+
             "\1\u052f\1\u0530\1\u0531\11\uffff\1\u0535\1\u0536\1\u0537\1"+
             "\u0539\1\u053a\1\u053b\1\u053c\1\u053d\1\u0552\1\u0553\1\u053e"+
             "\1\u0554\1\u053f\1\u0540\1\u0541\1\u0542\1\u0543\1\u0555\1\uffff"+
             "\1\u0544\1\u0551\1\u0545\1\u0538\1\u0523\1\u0546\22\uffff\1"+
             "\u051c\1\u051d\1\u051e\5\uffff\1\u054d\1\u054e\1\u054f\2\uffff"+
             "\1\u0532\1\uffff\1\u0533\1\u0534\1\uffff\1\u0557\u009a\uffff"+
-            "\1\u051b\15\uffff\1\u0521\1\u0556\1\uffff\1\u0520\11\uffff\1"+
-            "\u0517\1\u051f\1\uffff\1\u0511\1\u0512\11\uffff\1\u0516\2\uffff"+
-            "\1\u0518\5\uffff\1\u0522\1\u0519\1\u051a",
+            "\1\u0519\15\uffff\1\u0521\1\u0556\1\uffff\1\u0520\11\uffff\1"+
+            "\u0515\1\u051f\1\uffff\1\u051a\1\u051b\11\uffff\1\u0514\2\uffff"+
+            "\1\u0516\5\uffff\1\u0522\1\u0517\1\u0518",
             "",
             "",
             "",
@@ -31729,17 +31778,17 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "\1\u058d\4\uffff\1\u056b\2\uffff\1\u059e\1\u056c\1\uffff\1"+
             "\u0596\1\uffff\1\u056d\1\u056e\1\u056f\1\u0570\1\u0571\1\u0572"+
-            "\1\u0573\1\u0574\1\u056a\1\uffff\1\u0559\6\uffff\1\u0590\1\uffff"+
+            "\1\u0573\1\u0574\1\u056a\1\uffff\1\u055b\6\uffff\1\u0590\1\uffff"+
             "\1\u0592\1\u058e\1\u058f\1\u0591\12\uffff\1\u0575\1\u0576\1"+
             "\u0577\11\uffff\1\u057b\1\u057c\1\u057d\1\u057f\1\u0580\1\u0581"+
             "\1\u0582\1\u0583\1\u0598\1\u0599\1\u0584\1\u059a\1\u0585\1\u0586"+
             "\1\u0587\1\u0588\1\u0589\1\u059b\1\uffff\1\u058a\1\u0597\1\u058b"+
             "\1\u057e\1\u0569\1\u058c\22\uffff\1\u0562\1\u0563\1\u0564\5"+
             "\uffff\1\u0593\1\u0594\1\u0595\2\uffff\1\u0578\1\uffff\1\u0579"+
-            "\1\u057a\1\uffff\1\u059d\u009a\uffff\1\u055f\15\uffff\1\u0567"+
-            "\1\u059c\1\uffff\1\u0566\11\uffff\1\u055b\1\u0565\1\uffff\1"+
-            "\u0560\1\u0561\11\uffff\1\u055a\2\uffff\1\u055c\5\uffff\1\u0568"+
-            "\1\u055d\1\u055e",
+            "\1\u057a\1\uffff\1\u059d\u009a\uffff\1\u0561\15\uffff\1\u0567"+
+            "\1\u059c\1\uffff\1\u0566\11\uffff\1\u055d\1\u0565\1\uffff\1"+
+            "\u0559\1\u055a\11\uffff\1\u055c\2\uffff\1\u055e\5\uffff\1\u0568"+
+            "\1\u055f\1\u0560",
             "",
             "",
             "",
@@ -32017,17 +32066,17 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "\1\u06ac\4\uffff\1\u068a\2\uffff\1\u06bd\1\u068b\1\uffff\1"+
             "\u06b5\1\uffff\1\u068c\1\u068d\1\u068e\1\u068f\1\u0690\1\u0691"+
-            "\1\u0692\1\u0693\1\u0689\1\uffff\1\u067b\6\uffff\1\u06af\1\uffff"+
+            "\1\u0692\1\u0693\1\u0689\1\uffff\1\u0679\6\uffff\1\u06af\1\uffff"+
             "\1\u06b1\1\u06ad\1\u06ae\1\u06b0\12\uffff\1\u0694\1\u0695\1"+
             "\u0696\11\uffff\1\u069a\1\u069b\1\u069c\1\u069e\1\u069f\1\u06a0"+
             "\1\u06a1\1\u06a2\1\u06b7\1\u06b8\1\u06a3\1\u06b9\1\u06a4\1\u06a5"+
             "\1\u06a6\1\u06a7\1\u06a8\1\u06ba\1\uffff\1\u06a9\1\u06b6\1\u06aa"+
             "\1\u069d\1\u0688\1\u06ab\22\uffff\1\u0682\1\u0683\1\u0684\5"+
             "\uffff\1\u06b2\1\u06b3\1\u06b4\2\uffff\1\u0697\1\uffff\1\u0698"+
-            "\1\u0699\1\uffff\1\u06bc\u009a\uffff\1\u0681\15\uffff\1\u067a"+
-            "\1\u06bb\1\uffff\1\u0686\1\u06be\6\uffff\1\u0679\1\uffff\1\u067d"+
-            "\1\u0685\1\uffff\1\u0677\1\u0678\11\uffff\1\u067c\2\uffff\1"+
-            "\u067e\5\uffff\1\u0687\1\u067f\1\u0680",
+            "\1\u0699\1\uffff\1\u06bc\u009a\uffff\1\u067f\15\uffff\1\u0678"+
+            "\1\u06bb\1\uffff\1\u0686\1\u06be\6\uffff\1\u0677\1\uffff\1\u067b"+
+            "\1\u0685\1\uffff\1\u0680\1\u0681\11\uffff\1\u067a\2\uffff\1"+
+            "\u067c\5\uffff\1\u0687\1\u067d\1\u067e",
             "",
             "",
             "",
@@ -32089,17 +32138,17 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "\1\u06f4\4\uffff\1\u06d2\2\uffff\1\u0705\1\u06d3\1\uffff\1"+
             "\u06fd\1\uffff\1\u06d4\1\u06d5\1\u06d6\1\u06d7\1\u06d8\1\u06d9"+
-            "\1\u06da\1\u06db\1\u06d1\1\uffff\1\u06c3\6\uffff\1\u06f7\1\uffff"+
+            "\1\u06da\1\u06db\1\u06d1\1\uffff\1\u06c1\6\uffff\1\u06f7\1\uffff"+
             "\1\u06f9\1\u06f5\1\u06f6\1\u06f8\12\uffff\1\u06dc\1\u06dd\1"+
             "\u06de\11\uffff\1\u06e2\1\u06e3\1\u06e4\1\u06e6\1\u06e7\1\u06e8"+
             "\1\u06e9\1\u06ea\1\u06ff\1\u0700\1\u06eb\1\u0701\1\u06ec\1\u06ed"+
             "\1\u06ee\1\u06ef\1\u06f0\1\u0702\1\uffff\1\u06f1\1\u06fe\1\u06f2"+
             "\1\u06e5\1\u06d0\1\u06f3\22\uffff\1\u06ca\1\u06cb\1\u06cc\5"+
             "\uffff\1\u06fa\1\u06fb\1\u06fc\2\uffff\1\u06df\1\uffff\1\u06e0"+
-            "\1\u06e1\1\uffff\1\u0704\u009a\uffff\1\u06c9\15\uffff\1\u06c2"+
-            "\1\u0703\1\uffff\1\u06ce\1\u0706\6\uffff\1\u06c1\1\uffff\1\u06c5"+
-            "\1\u06cd\1\uffff\1\u06bf\1\u06c0\11\uffff\1\u06c4\2\uffff\1"+
-            "\u06c6\5\uffff\1\u06cf\1\u06c7\1\u06c8",
+            "\1\u06e1\1\uffff\1\u0704\u009a\uffff\1\u06c7\15\uffff\1\u06c0"+
+            "\1\u0703\1\uffff\1\u06ce\1\u0706\6\uffff\1\u06bf\1\uffff\1\u06c3"+
+            "\1\u06cd\1\uffff\1\u06c8\1\u06c9\11\uffff\1\u06c2\2\uffff\1"+
+            "\u06c4\5\uffff\1\u06cf\1\u06c5\1\u06c6",
             "",
             "",
             "",
@@ -32437,17 +32486,17 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "\1\u0810\4\uffff\1\u07ee\2\uffff\1\u0821\1\u07ef\1\uffff\1"+
             "\u0819\1\uffff\1\u07f0\1\u07f1\1\u07f2\1\u07f3\1\u07f4\1\u07f5"+
-            "\1\u07f6\1\u07f7\1\u07ed\1\uffff\1\u07de\6\uffff\1\u0813\1\uffff"+
+            "\1\u07f6\1\u07f7\1\u07ed\1\uffff\1\u07dc\6\uffff\1\u0813\1\uffff"+
             "\1\u0815\1\u0811\1\u0812\1\u0814\12\uffff\1\u07f8\1\u07f9\1"+
             "\u07fa\11\uffff\1\u07fe\1\u07ff\1\u0800\1\u0802\1\u0803\1\u0804"+
             "\1\u0805\1\u0806\1\u081b\1\u081c\1\u0807\1\u081d\1\u0808\1\u0809"+
             "\1\u080a\1\u080b\1\u080c\1\u081e\1\uffff\1\u080d\1\u081a\1\u080e"+
             "\1\u0801\1\u07ec\1\u080f\22\uffff\1\u07e5\1\u07e6\1\u07e7\5"+
             "\uffff\1\u0816\1\u0817\1\u0818\2\uffff\1\u07fb\1\uffff\1\u07fc"+
-            "\1\u07fd\1\uffff\1\u0820\u009a\uffff\1\u07e4\15\uffff\1\u07ea"+
-            "\1\u081f\1\uffff\1\u07e9\11\uffff\1\u07e0\1\u07e8\1\uffff\1"+
-            "\u07dc\1\u07dd\11\uffff\1\u07df\2\uffff\1\u07e1\5\uffff\1\u07eb"+
-            "\1\u07e2\1\u07e3",
+            "\1\u07fd\1\uffff\1\u0820\u009a\uffff\1\u07e2\15\uffff\1\u07ea"+
+            "\1\u081f\1\uffff\1\u07e9\11\uffff\1\u07de\1\u07e8\1\uffff\1"+
+            "\u07e3\1\u07e4\11\uffff\1\u07dd\2\uffff\1\u07df\5\uffff\1\u07eb"+
+            "\1\u07e0\1\u07e1",
             "",
             "",
             "",
@@ -32660,25 +32709,16 @@ public class EsperEPL2GrammarParser extends Parser {
             "\1\uffff\1\u08d5\1\u08c8\1\u08b3\1\u08d6\32\uffff\1\u08dd\1"+
             "\u08de\1\u08df\2\uffff\1\u08c2\1\uffff\1\u08c3\1\u08c4\u00aa"+
             "\uffff\1\u08b1\43\uffff\1\u08b2",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
             "\1\u08f6\1\u08f7\1\u08f8\1\u08f9\1\uffff\1\u08f3\1\u08f2\1"+
             "\u08f5\34\uffff\1\u08ec\u00fe\uffff\1\u08e0\1\uffff\1\u08f4"+
             "\1\u08eb\3\uffff\1\u08e1\1\u08f0\1\u08e4\4\uffff\1\u08ef\1\u08f1"+
             "\1\u08ed\1\u08ee\1\u08e7\1\u08e8\1\u08e9\1\u08ea\1\u08e6\1\u08e5"+
             "\1\u08e2\1\u08e3",
-            "\1\u0910\1\u0911\1\u0912\1\u0913\1\uffff\1\u090c\1\u090b\1"+
-            "\u090f\34\uffff\1\u0905\u00fe\uffff\1\u090e\1\uffff\1\u090d"+
-            "\1\u0904\3\uffff\1\u08fa\1\u0909\1\u08fd\4\uffff\1\u0908\1\u090a"+
-            "\1\u0906\1\u0907\1\u0900\1\u0901\1\u0902\1\u0903\1\u08ff\1\u08fe"+
-            "\1\u08fb\1\u08fc",
+            "\1\u0910\1\u0911\1\u0912\1\u0913\1\uffff\1\u090d\1\u090c\1"+
+            "\u090f\34\uffff\1\u0906\u00fe\uffff\1\u08fa\1\uffff\1\u090e"+
+            "\1\u0905\3\uffff\1\u08fb\1\u090a\1\u08fe\4\uffff\1\u0909\1\u090b"+
+            "\1\u0907\1\u0908\1\u0901\1\u0902\1\u0903\1\u0904\1\u0900\1\u08ff"+
+            "\1\u08fc\1\u08fd",
             "",
             "",
             "",
@@ -32741,16 +32781,34 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "\1\u092a\1\u092b\1\u092c\1\u092d\1\uffff\1\u0926\1\u0925\1"+
-            "\u0929\34\uffff\1\u091f\u00fe\uffff\1\u0928\1\uffff\1\u0927"+
-            "\1\u091e\3\uffff\1\u0914\1\u0923\1\u0917\4\uffff\1\u0922\1\u0924"+
-            "\1\u0920\1\u0921\1\u091a\1\u091b\1\u091c\1\u091d\1\u0919\1\u0918"+
-            "\1\u0915\1\u0916",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\u092a\1\u092b\1\u092c\1\u092d\1\uffff\1\u0927\1\u0926\1"+
+            "\u0929\34\uffff\1\u0920\u00fe\uffff\1\u0914\1\uffff\1\u0928"+
+            "\1\u091f\3\uffff\1\u0915\1\u0924\1\u0918\4\uffff\1\u0923\1\u0925"+
+            "\1\u0921\1\u0922\1\u091b\1\u091c\1\u091d\1\u091e\1\u091a\1\u0919"+
+            "\1\u0916\1\u0917",
             "\1\u0944\1\u0945\1\u0946\1\u0947\1\uffff\1\u0941\1\u0940\1"+
             "\u0943\34\uffff\1\u093a\u00fe\uffff\1\u092e\1\uffff\1\u0942"+
             "\1\u0939\3\uffff\1\u092f\1\u093e\1\u0932\4\uffff\1\u093d\1\u093f"+
             "\1\u093b\1\u093c\1\u0935\1\u0936\1\u0937\1\u0938\1\u0934\1\u0933"+
             "\1\u0930\1\u0931",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "",
             "",
             "",
@@ -32892,27 +32950,11 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\u0992\1\u0993\1\u0994\1\u0995\1\uffff\1\u098f\1\u098e\1"+
-            "\u0991\34\uffff\1\u0988\u00fe\uffff\1\16\1\uffff\1\u0990\1\u0987"+
-            "\3\uffff\1\u097d\1\u098c\1\u0980\4\uffff\1\u098b\1\u098d\1\u0989"+
-            "\1\u098a\1\u0983\1\u0984\1\u0985\1\u0986\1\u0982\1\u0981\1\u097e"+
-            "\1\u097f",
+            "\1\u0991\1\u0992\1\u0993\1\u0994\1\uffff\1\u098e\1\u098d\1"+
+            "\u0990\34\uffff\1\u0987\u00fe\uffff\1\16\1\uffff\1\u098f\1\u0986"+
+            "\3\uffff\1\u097c\1\u098b\1\u097f\4\uffff\1\u098a\1\u098c\1\u0988"+
+            "\1\u0989\1\u0982\1\u0983\1\u0984\1\u0985\1\u0981\1\u0980\1\u097d"+
+            "\1\u097e",
             "\1\u09ac\1\u09ad\1\u09ae\1\u09af\1\uffff\1\u09a9\1\u09a8\1"+
             "\u09ab\34\uffff\1\u09a2\u00fe\uffff\1\16\1\uffff\1\u09aa\1\u09a1"+
             "\3\uffff\1\u0997\1\u09a6\1\u099a\4\uffff\1\u09a5\1\u09a7\1\u09a3"+
@@ -32988,16 +33030,23 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "\1\u09c6\1\u09c7\1\u09c8\1\u09c9\1\uffff\1\u09c2\1\u09c1\1"+
-            "\u09c5\34\uffff\1\u09bb\u00fe\uffff\1\u09c4\1\uffff\1\u09c3"+
-            "\1\u09ba\3\uffff\1\u09b0\1\u09bf\1\u09b3\4\uffff\1\u09be\1\u09c0"+
-            "\1\u09bc\1\u09bd\1\u09b6\1\u09b7\1\u09b8\1\u09b9\1\u09b5\1\u09b4"+
-            "\1\u09b1\1\u09b2",
-            "\1\u09e0\1\u09e1\1\u09e2\1\u09e3\1\uffff\1\u09dc\1\u09db\1"+
-            "\u09df\34\uffff\1\u09d5\u00fe\uffff\1\u09de\1\uffff\1\u09dd"+
-            "\1\u09d4\3\uffff\1\u09ca\1\u09d9\1\u09cd\4\uffff\1\u09d8\1\u09da"+
-            "\1\u09d6\1\u09d7\1\u09d0\1\u09d1\1\u09d2\1\u09d3\1\u09cf\1\u09ce"+
-            "\1\u09cb\1\u09cc",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\u09c6\1\u09c7\1\u09c8\1\u09c9\1\uffff\1\u09c3\1\u09c2\1"+
+            "\u09c5\34\uffff\1\u09bc\u00fe\uffff\1\u09b0\1\uffff\1\u09c4"+
+            "\1\u09bb\3\uffff\1\u09b1\1\u09c0\1\u09b4\4\uffff\1\u09bf\1\u09c1"+
+            "\1\u09bd\1\u09be\1\u09b7\1\u09b8\1\u09b9\1\u09ba\1\u09b6\1\u09b5"+
+            "\1\u09b2\1\u09b3",
+            "\1\u09e0\1\u09e1\1\u09e2\1\u09e3\1\uffff\1\u09dd\1\u09dc\1"+
+            "\u09df\34\uffff\1\u09d6\u00fe\uffff\1\u09ca\1\uffff\1\u09de"+
+            "\1\u09d5\3\uffff\1\u09cb\1\u09da\1\u09ce\4\uffff\1\u09d9\1\u09db"+
+            "\1\u09d7\1\u09d8\1\u09d1\1\u09d2\1\u09d3\1\u09d4\1\u09d0\1\u09cf"+
+            "\1\u09cc\1\u09cd",
             "",
             "",
             "",
@@ -33219,16 +33268,25 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "\1\u0a62\1\u0a63\1\u0a64\1\u0a65\1\uffff\1\u0a5f\1\u0a5e\1"+
             "\u0a61\34\uffff\1\u0a58\u00fe\uffff\1\u0a4c\1\uffff\1\u0a60"+
             "\1\u0a57\3\uffff\1\u0a4d\1\u0a5c\1\u0a50\4\uffff\1\u0a5b\1\u0a5d"+
             "\1\u0a59\1\u0a5a\1\u0a53\1\u0a54\1\u0a55\1\u0a56\1\u0a52\1\u0a51"+
             "\1\u0a4e\1\u0a4f",
-            "\1\u0a7c\1\u0a7d\1\u0a7e\1\u0a7f\1\uffff\1\u0a79\1\u0a78\1"+
-            "\u0a7b\34\uffff\1\u0a72\u00fe\uffff\1\u0a66\1\uffff\1\u0a7a"+
-            "\1\u0a71\3\uffff\1\u0a67\1\u0a76\1\u0a6a\4\uffff\1\u0a75\1\u0a77"+
-            "\1\u0a73\1\u0a74\1\u0a6d\1\u0a6e\1\u0a6f\1\u0a70\1\u0a6c\1\u0a6b"+
-            "\1\u0a68\1\u0a69",
+            "\1\u0a7c\1\u0a7d\1\u0a7e\1\u0a7f\1\uffff\1\u0a78\1\u0a77\1"+
+            "\u0a7b\34\uffff\1\u0a71\u00fe\uffff\1\u0a7a\1\uffff\1\u0a79"+
+            "\1\u0a70\3\uffff\1\u0a66\1\u0a75\1\u0a69\4\uffff\1\u0a74\1\u0a76"+
+            "\1\u0a72\1\u0a73\1\u0a6c\1\u0a6d\1\u0a6e\1\u0a6f\1\u0a6b\1\u0a6a"+
+            "\1\u0a67\1\u0a68",
             "",
             "",
             "",
@@ -33370,6 +33428,16 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
+            "\1\u0aca\1\u0acb\1\u0acc\1\u0acd\1\uffff\1\u0ac7\1\u0ac6\1"+
+            "\u0ac9\34\uffff\1\u0ac0\u00fe\uffff\1\u0ab4\1\uffff\1\u0ac8"+
+            "\1\u0abf\3\uffff\1\u0ab5\1\u0ac4\1\u0ab8\4\uffff\1\u0ac3\1\u0ac5"+
+            "\1\u0ac1\1\u0ac2\1\u0abb\1\u0abc\1\u0abd\1\u0abe\1\u0aba\1\u0ab9"+
+            "\1\u0ab6\1\u0ab7",
+            "\1\u0ae4\1\u0ae5\1\u0ae6\1\u0ae7\1\uffff\1\u0ae0\1\u0adf\1"+
+            "\u0ae3\34\uffff\1\u0ad9\u00fe\uffff\1\u0ae2\1\uffff\1\u0ae1"+
+            "\1\u0ad8\3\uffff\1\u0ace\1\u0add\1\u0ad1\4\uffff\1\u0adc\1\u0ade"+
+            "\1\u0ada\1\u0adb\1\u0ad4\1\u0ad5\1\u0ad6\1\u0ad7\1\u0ad3\1\u0ad2"+
+            "\1\u0acf\1\u0ad0",
             "",
             "",
             "",
@@ -33379,16 +33447,6 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "\1\u0aca\1\u0acb\1\u0acc\1\u0acd\1\uffff\1\u0ac6\1\u0ac5\1"+
-            "\u0ac9\34\uffff\1\u0abf\u00fe\uffff\1\u0ac8\1\uffff\1\u0ac7"+
-            "\1\u0abe\3\uffff\1\u0ab4\1\u0ac3\1\u0ab7\4\uffff\1\u0ac2\1\u0ac4"+
-            "\1\u0ac0\1\u0ac1\1\u0aba\1\u0abb\1\u0abc\1\u0abd\1\u0ab9\1\u0ab8"+
-            "\1\u0ab5\1\u0ab6",
-            "\1\u0ae4\1\u0ae5\1\u0ae6\1\u0ae7\1\uffff\1\u0ae1\1\u0ae0\1"+
-            "\u0ae3\34\uffff\1\u0ada\u00fe\uffff\1\u0ace\1\uffff\1\u0ae2"+
-            "\1\u0ad9\3\uffff\1\u0acf\1\u0ade\1\u0ad2\4\uffff\1\u0add\1\u0adf"+
-            "\1\u0adb\1\u0adc\1\u0ad5\1\u0ad6\1\u0ad7\1\u0ad8\1\u0ad4\1\u0ad3"+
-            "\1\u0ad0\1\u0ad1",
             "",
             "",
             "",
@@ -33448,6 +33506,16 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
+            "\1\u0afe\1\u0aff\1\u0b00\1\u0b01\1\uffff\1\u0afa\1\u0af9\1"+
+            "\u0afd\34\uffff\1\u0af3\u00fe\uffff\1\u0afc\1\uffff\1\u0afb"+
+            "\1\u0af2\3\uffff\1\u0ae8\1\u0af7\1\u0aeb\4\uffff\1\u0af6\1\u0af8"+
+            "\1\u0af4\1\u0af5\1\u0aee\1\u0aef\1\u0af0\1\u0af1\1\u0aed\1\u0aec"+
+            "\1\u0ae9\1\u0aea",
+            "\1\u0b18\1\u0b19\1\u0b1a\1\u0b1b\1\uffff\1\u0b14\1\u0b13\1"+
+            "\u0b17\34\uffff\1\u0b0d\u00fe\uffff\1\u0b16\1\uffff\1\u0b15"+
+            "\1\u0b0c\3\uffff\1\u0b02\1\u0b11\1\u0b05\4\uffff\1\u0b10\1\u0b12"+
+            "\1\u0b0e\1\u0b0f\1\u0b08\1\u0b09\1\u0b0a\1\u0b0b\1\u0b07\1\u0b06"+
+            "\1\u0b03\1\u0b04",
             "",
             "",
             "",
@@ -33457,16 +33525,6 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "\1\u0afe\1\u0aff\1\u0b00\1\u0b01\1\uffff\1\u0afb\1\u0afa\1"+
-            "\u0afd\34\uffff\1\u0af4\u00fe\uffff\1\u0ae8\1\uffff\1\u0afc"+
-            "\1\u0af3\3\uffff\1\u0ae9\1\u0af8\1\u0aec\4\uffff\1\u0af7\1\u0af9"+
-            "\1\u0af5\1\u0af6\1\u0aef\1\u0af0\1\u0af1\1\u0af2\1\u0aee\1\u0aed"+
-            "\1\u0aea\1\u0aeb",
-            "\1\u0b18\1\u0b19\1\u0b1a\1\u0b1b\1\uffff\1\u0b15\1\u0b14\1"+
-            "\u0b17\34\uffff\1\u0b0e\u00fe\uffff\1\u0b02\1\uffff\1\u0b16"+
-            "\1\u0b0d\3\uffff\1\u0b03\1\u0b12\1\u0b06\4\uffff\1\u0b11\1\u0b13"+
-            "\1\u0b0f\1\u0b10\1\u0b09\1\u0b0a\1\u0b0b\1\u0b0c\1\u0b08\1\u0b07"+
-            "\1\u0b04\1\u0b05",
             "",
             "",
             "",
@@ -33529,6 +33587,16 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
+            "\1\u0b32\1\u0b33\1\u0b34\1\u0b35\1\uffff\1\u0b2f\1\u0b2e\1"+
+            "\u0b31\34\uffff\1\u0b28\u00fe\uffff\1\16\1\uffff\1\u0b30\1\u0b27"+
+            "\3\uffff\1\u0b1d\1\u0b2c\1\u0b20\4\uffff\1\u0b2b\1\u0b2d\1\u0b29"+
+            "\1\u0b2a\1\u0b23\1\u0b24\1\u0b25\1\u0b26\1\u0b22\1\u0b21\1\u0b1e"+
+            "\1\u0b1f",
+            "\1\u0b4c\1\u0b4d\1\u0b4e\1\u0b4f\1\uffff\1\u0b49\1\u0b48\1"+
+            "\u0b4b\34\uffff\1\u0b42\u00fe\uffff\1\16\1\uffff\1\u0b4a\1\u0b41"+
+            "\3\uffff\1\u0b37\1\u0b46\1\u0b3a\4\uffff\1\u0b45\1\u0b47\1\u0b43"+
+            "\1\u0b44\1\u0b3d\1\u0b3e\1\u0b3f\1\u0b40\1\u0b3c\1\u0b3b\1\u0b38"+
+            "\1\u0b39",
             "",
             "",
             "",
@@ -33538,16 +33606,6 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "\1\u0b31\1\u0b32\1\u0b33\1\u0b34\1\uffff\1\u0b2e\1\u0b2d\1"+
-            "\u0b30\34\uffff\1\u0b27\u00fe\uffff\1\16\1\uffff\1\u0b2f\1\u0b26"+
-            "\3\uffff\1\u0b1c\1\u0b2b\1\u0b1f\4\uffff\1\u0b2a\1\u0b2c\1\u0b28"+
-            "\1\u0b29\1\u0b22\1\u0b23\1\u0b24\1\u0b25\1\u0b21\1\u0b20\1\u0b1d"+
-            "\1\u0b1e",
-            "\1\u0b4b\1\u0b4c\1\u0b4d\1\u0b4e\1\uffff\1\u0b48\1\u0b47\1"+
-            "\u0b4a\34\uffff\1\u0b41\u00fe\uffff\1\16\1\uffff\1\u0b49\1\u0b40"+
-            "\3\uffff\1\u0b36\1\u0b45\1\u0b39\4\uffff\1\u0b44\1\u0b46\1\u0b42"+
-            "\1\u0b43\1\u0b3c\1\u0b3d\1\u0b3e\1\u0b3f\1\u0b3b\1\u0b3a\1\u0b37"+
-            "\1\u0b38",
             "",
             "",
             "",
@@ -33614,18 +33672,18 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
+            "\1\u0b65\1\u0b66\1\u0b67\1\u0b68\1\uffff\1\u0b62\1\u0b61\1"+
+            "\u0b64\34\uffff\1\u0b5b\u00fe\uffff\1\u0b63\2\uffff\1\u0b5a"+
+            "\3\uffff\1\u0b50\1\u0b5f\1\u0b53\4\uffff\1\u0b5e\1\u0b60\1\u0b5c"+
+            "\1\u0b5d\1\u0b56\1\u0b57\1\u0b58\1\u0b59\1\u0b55\1\u0b54\1\u0b51"+
+            "\1\u0b52",
+            "\1\u0b7e\1\u0b7f\1\u0b80\1\u0b81\1\uffff\1\u0b7b\1\u0b7a\1"+
+            "\u0b7d\34\uffff\1\u0b74\u00fe\uffff\1\u0b7c\2\uffff\1\u0b73"+
+            "\3\uffff\1\u0b69\1\u0b78\1\u0b6c\4\uffff\1\u0b77\1\u0b79\1\u0b75"+
+            "\1\u0b76\1\u0b6f\1\u0b70\1\u0b71\1\u0b72\1\u0b6e\1\u0b6d\1\u0b6a"+
+            "\1\u0b6b",
             "",
             "",
-            "\1\u0b65\1\u0b66\1\u0b67\1\u0b68\1\uffff\1\u0b63\1\u0b62\1"+
-            "\u0b64\34\uffff\1\u0b5c\u00fe\uffff\1\u0b50\2\uffff\1\u0b5b"+
-            "\3\uffff\1\u0b51\1\u0b60\1\u0b54\4\uffff\1\u0b5f\1\u0b61\1\u0b5d"+
-            "\1\u0b5e\1\u0b57\1\u0b58\1\u0b59\1\u0b5a\1\u0b56\1\u0b55\1\u0b52"+
-            "\1\u0b53",
-            "\1\u0b7e\1\u0b7f\1\u0b80\1\u0b81\1\uffff\1\u0b7c\1\u0b7b\1"+
-            "\u0b7d\34\uffff\1\u0b75\u00fe\uffff\1\u0b69\2\uffff\1\u0b74"+
-            "\3\uffff\1\u0b6a\1\u0b79\1\u0b6d\4\uffff\1\u0b78\1\u0b7a\1\u0b76"+
-            "\1\u0b77\1\u0b70\1\u0b71\1\u0b72\1\u0b73\1\u0b6f\1\u0b6e\1\u0b6b"+
-            "\1\u0b6c",
             "",
             "",
             "",
@@ -33685,20 +33743,11 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\u0b98\1\u0b99\1\u0b9a\1\u0b9b\1\uffff\1\u0b94\1\u0b93\1"+
-            "\u0b97\3\uffff\1\u0b96\30\uffff\1\u0b8d\u00fe\uffff\1\16\1\uffff"+
-            "\1\u0b95\1\u0b8c\3\uffff\1\u0b82\1\u0b91\1\u0b85\4\uffff\1\u0b90"+
-            "\1\u0b92\1\u0b8e\1\u0b8f\1\u0b88\1\u0b89\1\u0b8a\1\u0b8b\1\u0b87"+
-            "\1\u0b86\1\u0b83\1\u0b84",
+            "\1\u0b99\1\u0b9a\1\u0b9b\1\u0b9c\1\uffff\1\u0b95\1\u0b94\1"+
+            "\u0b98\3\uffff\1\u0b97\30\uffff\1\u0b8e\u00fe\uffff\1\16\1\uffff"+
+            "\1\u0b96\1\u0b8d\3\uffff\1\u0b83\1\u0b92\1\u0b86\4\uffff\1\u0b91"+
+            "\1\u0b93\1\u0b8f\1\u0b90\1\u0b89\1\u0b8a\1\u0b8b\1\u0b8c\1\u0b88"+
+            "\1\u0b87\1\u0b84\1\u0b85",
             "\1\u0bb4\1\u0bb5\1\u0bb6\1\u0bb7\1\uffff\1\u0bb0\1\u0baf\1"+
             "\u0bb3\3\uffff\1\u0bb2\30\uffff\1\u0ba9\u00fe\uffff\1\16\1\uffff"+
             "\1\u0bb1\1\u0ba8\3\uffff\1\u0b9e\1\u0bad\1\u0ba1\4\uffff\1\u0bac"+
@@ -33926,58 +33975,6 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\uffff",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\uffff",
-            "",
-            "",
-            "",
-            "",
-            "",
             "\1\uffff",
             "",
             "",
@@ -34056,78 +34053,6 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
             "\1\uffff",
             "",
             "",
@@ -34160,7 +34085,53 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "\1\uffff",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "",
             "",
             "",
@@ -34492,6 +34463,103 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
+            "\1\uffff",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\uffff",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\uffff",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "",
             "",
             "",
@@ -34550,25 +34618,6 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "\1\uffff",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
             "",
             "",
             "",
@@ -35049,17 +35098,17 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_191 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_191==ALL) && (synpred3_EsperEPL2Grammar())) {s = 1152;}
-                        else if ( (LA196_191==DISTINCT) && (synpred3_EsperEPL2Grammar())) {s = 1153;}
-                        else if ( (LA196_191==CASE) && (synpred3_EsperEPL2Grammar())) {s = 1154;}
-                        else if ( (LA196_191==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1155;}
-                        else if ( (LA196_191==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1156;}
-                        else if ( (LA196_191==NUM_INT) && (synpred3_EsperEPL2Grammar())) {s = 1157;}
-                        else if ( (LA196_191==NUM_LONG) && (synpred3_EsperEPL2Grammar())) {s = 1158;}
-                        else if ( (LA196_191==NUM_FLOAT) && (synpred3_EsperEPL2Grammar())) {s = 1159;}
-                        else if ( (LA196_191==NUM_DOUBLE) && (synpred3_EsperEPL2Grammar())) {s = 1160;}
-                        else if ( (LA196_191==STRING_LITERAL) ) {s = 1161;}
-                        else if ( (LA196_191==QUOTED_STRING_LITERAL) ) {s = 1162;}
+                        if ( (LA196_191==STRING_LITERAL) ) {s = 1152;}
+                        else if ( (LA196_191==QUOTED_STRING_LITERAL) ) {s = 1153;}
+                        else if ( (LA196_191==ALL) && (synpred3_EsperEPL2Grammar())) {s = 1154;}
+                        else if ( (LA196_191==DISTINCT) && (synpred3_EsperEPL2Grammar())) {s = 1155;}
+                        else if ( (LA196_191==CASE) && (synpred3_EsperEPL2Grammar())) {s = 1156;}
+                        else if ( (LA196_191==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1157;}
+                        else if ( (LA196_191==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1158;}
+                        else if ( (LA196_191==NUM_INT) && (synpred3_EsperEPL2Grammar())) {s = 1159;}
+                        else if ( (LA196_191==NUM_LONG) && (synpred3_EsperEPL2Grammar())) {s = 1160;}
+                        else if ( (LA196_191==NUM_FLOAT) && (synpred3_EsperEPL2Grammar())) {s = 1161;}
+                        else if ( (LA196_191==NUM_DOUBLE) && (synpred3_EsperEPL2Grammar())) {s = 1162;}
                         else if ( (LA196_191==BOOLEAN_TRUE) && (synpred3_EsperEPL2Grammar())) {s = 1163;}
                         else if ( (LA196_191==BOOLEAN_FALSE) && (synpred3_EsperEPL2Grammar())) {s = 1164;}
                         else if ( (LA196_191==VALUE_NULL) && (synpred3_EsperEPL2Grammar())) {s = 1165;}
@@ -35212,17 +35261,17 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_311 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_311==STRING_LITERAL) ) {s = 1297;}
-                        else if ( (LA196_311==QUOTED_STRING_LITERAL) ) {s = 1298;}
-                        else if ( (LA196_311==ALL) && (synpred3_EsperEPL2Grammar())) {s = 1299;}
-                        else if ( (LA196_311==DISTINCT) && (synpred3_EsperEPL2Grammar())) {s = 1300;}
-                        else if ( (LA196_311==CASE) && (synpred3_EsperEPL2Grammar())) {s = 1301;}
-                        else if ( (LA196_311==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1302;}
-                        else if ( (LA196_311==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1303;}
-                        else if ( (LA196_311==NUM_INT) && (synpred3_EsperEPL2Grammar())) {s = 1304;}
-                        else if ( (LA196_311==NUM_LONG) && (synpred3_EsperEPL2Grammar())) {s = 1305;}
-                        else if ( (LA196_311==NUM_FLOAT) && (synpred3_EsperEPL2Grammar())) {s = 1306;}
-                        else if ( (LA196_311==NUM_DOUBLE) && (synpred3_EsperEPL2Grammar())) {s = 1307;}
+                        if ( (LA196_311==ALL) && (synpred3_EsperEPL2Grammar())) {s = 1297;}
+                        else if ( (LA196_311==DISTINCT) && (synpred3_EsperEPL2Grammar())) {s = 1298;}
+                        else if ( (LA196_311==CASE) && (synpred3_EsperEPL2Grammar())) {s = 1299;}
+                        else if ( (LA196_311==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1300;}
+                        else if ( (LA196_311==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1301;}
+                        else if ( (LA196_311==NUM_INT) && (synpred3_EsperEPL2Grammar())) {s = 1302;}
+                        else if ( (LA196_311==NUM_LONG) && (synpred3_EsperEPL2Grammar())) {s = 1303;}
+                        else if ( (LA196_311==NUM_FLOAT) && (synpred3_EsperEPL2Grammar())) {s = 1304;}
+                        else if ( (LA196_311==NUM_DOUBLE) && (synpred3_EsperEPL2Grammar())) {s = 1305;}
+                        else if ( (LA196_311==STRING_LITERAL) ) {s = 1306;}
+                        else if ( (LA196_311==QUOTED_STRING_LITERAL) ) {s = 1307;}
                         else if ( (LA196_311==BOOLEAN_TRUE) && (synpred3_EsperEPL2Grammar())) {s = 1308;}
                         else if ( (LA196_311==BOOLEAN_FALSE) && (synpred3_EsperEPL2Grammar())) {s = 1309;}
                         else if ( (LA196_311==VALUE_NULL) && (synpred3_EsperEPL2Grammar())) {s = 1310;}
@@ -35293,15 +35342,15 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_371 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_371==CASE) && (synpred3_EsperEPL2Grammar())) {s = 1369;}
-                        else if ( (LA196_371==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1370;}
-                        else if ( (LA196_371==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1371;}
-                        else if ( (LA196_371==NUM_INT) && (synpred3_EsperEPL2Grammar())) {s = 1372;}
-                        else if ( (LA196_371==NUM_LONG) && (synpred3_EsperEPL2Grammar())) {s = 1373;}
-                        else if ( (LA196_371==NUM_FLOAT) && (synpred3_EsperEPL2Grammar())) {s = 1374;}
-                        else if ( (LA196_371==NUM_DOUBLE) && (synpred3_EsperEPL2Grammar())) {s = 1375;}
-                        else if ( (LA196_371==STRING_LITERAL) ) {s = 1376;}
-                        else if ( (LA196_371==QUOTED_STRING_LITERAL) ) {s = 1377;}
+                        if ( (LA196_371==STRING_LITERAL) ) {s = 1369;}
+                        else if ( (LA196_371==QUOTED_STRING_LITERAL) ) {s = 1370;}
+                        else if ( (LA196_371==CASE) && (synpred3_EsperEPL2Grammar())) {s = 1371;}
+                        else if ( (LA196_371==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1372;}
+                        else if ( (LA196_371==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1373;}
+                        else if ( (LA196_371==NUM_INT) && (synpred3_EsperEPL2Grammar())) {s = 1374;}
+                        else if ( (LA196_371==NUM_LONG) && (synpred3_EsperEPL2Grammar())) {s = 1375;}
+                        else if ( (LA196_371==NUM_FLOAT) && (synpred3_EsperEPL2Grammar())) {s = 1376;}
+                        else if ( (LA196_371==NUM_DOUBLE) && (synpred3_EsperEPL2Grammar())) {s = 1377;}
                         else if ( (LA196_371==BOOLEAN_TRUE) && (synpred3_EsperEPL2Grammar())) {s = 1378;}
                         else if ( (LA196_371==BOOLEAN_FALSE) && (synpred3_EsperEPL2Grammar())) {s = 1379;}
                         else if ( (LA196_371==VALUE_NULL) && (synpred3_EsperEPL2Grammar())) {s = 1380;}
@@ -35615,17 +35664,17 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_611 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_611==STRING_LITERAL) ) {s = 1655;}
-                        else if ( (LA196_611==QUOTED_STRING_LITERAL) ) {s = 1656;}
-                        else if ( (LA196_611==STAR) && (synpred3_EsperEPL2Grammar())) {s = 1657;}
-                        else if ( (LA196_611==IDENT) && (synpred3_EsperEPL2Grammar())) {s = 1658;}
-                        else if ( (LA196_611==CASE) && (synpred3_EsperEPL2Grammar())) {s = 1659;}
-                        else if ( (LA196_611==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1660;}
-                        else if ( (LA196_611==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1661;}
-                        else if ( (LA196_611==NUM_INT) && (synpred3_EsperEPL2Grammar())) {s = 1662;}
-                        else if ( (LA196_611==NUM_LONG) && (synpred3_EsperEPL2Grammar())) {s = 1663;}
-                        else if ( (LA196_611==NUM_FLOAT) && (synpred3_EsperEPL2Grammar())) {s = 1664;}
-                        else if ( (LA196_611==NUM_DOUBLE) && (synpred3_EsperEPL2Grammar())) {s = 1665;}
+                        if ( (LA196_611==STAR) && (synpred3_EsperEPL2Grammar())) {s = 1655;}
+                        else if ( (LA196_611==IDENT) && (synpred3_EsperEPL2Grammar())) {s = 1656;}
+                        else if ( (LA196_611==CASE) && (synpred3_EsperEPL2Grammar())) {s = 1657;}
+                        else if ( (LA196_611==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1658;}
+                        else if ( (LA196_611==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1659;}
+                        else if ( (LA196_611==NUM_INT) && (synpred3_EsperEPL2Grammar())) {s = 1660;}
+                        else if ( (LA196_611==NUM_LONG) && (synpred3_EsperEPL2Grammar())) {s = 1661;}
+                        else if ( (LA196_611==NUM_FLOAT) && (synpred3_EsperEPL2Grammar())) {s = 1662;}
+                        else if ( (LA196_611==NUM_DOUBLE) && (synpred3_EsperEPL2Grammar())) {s = 1663;}
+                        else if ( (LA196_611==STRING_LITERAL) ) {s = 1664;}
+                        else if ( (LA196_611==QUOTED_STRING_LITERAL) ) {s = 1665;}
                         else if ( (LA196_611==BOOLEAN_TRUE) && (synpred3_EsperEPL2Grammar())) {s = 1666;}
                         else if ( (LA196_611==BOOLEAN_FALSE) && (synpred3_EsperEPL2Grammar())) {s = 1667;}
                         else if ( (LA196_611==VALUE_NULL) && (synpred3_EsperEPL2Grammar())) {s = 1668;}
@@ -35696,17 +35745,17 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_671 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_671==STRING_LITERAL) ) {s = 1727;}
-                        else if ( (LA196_671==QUOTED_STRING_LITERAL) ) {s = 1728;}
-                        else if ( (LA196_671==STAR) && (synpred3_EsperEPL2Grammar())) {s = 1729;}
-                        else if ( (LA196_671==IDENT) && (synpred3_EsperEPL2Grammar())) {s = 1730;}
-                        else if ( (LA196_671==CASE) && (synpred3_EsperEPL2Grammar())) {s = 1731;}
-                        else if ( (LA196_671==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1732;}
-                        else if ( (LA196_671==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1733;}
-                        else if ( (LA196_671==NUM_INT) && (synpred3_EsperEPL2Grammar())) {s = 1734;}
-                        else if ( (LA196_671==NUM_LONG) && (synpred3_EsperEPL2Grammar())) {s = 1735;}
-                        else if ( (LA196_671==NUM_FLOAT) && (synpred3_EsperEPL2Grammar())) {s = 1736;}
-                        else if ( (LA196_671==NUM_DOUBLE) && (synpred3_EsperEPL2Grammar())) {s = 1737;}
+                        if ( (LA196_671==STAR) && (synpred3_EsperEPL2Grammar())) {s = 1727;}
+                        else if ( (LA196_671==IDENT) && (synpred3_EsperEPL2Grammar())) {s = 1728;}
+                        else if ( (LA196_671==CASE) && (synpred3_EsperEPL2Grammar())) {s = 1729;}
+                        else if ( (LA196_671==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1730;}
+                        else if ( (LA196_671==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1731;}
+                        else if ( (LA196_671==NUM_INT) && (synpred3_EsperEPL2Grammar())) {s = 1732;}
+                        else if ( (LA196_671==NUM_LONG) && (synpred3_EsperEPL2Grammar())) {s = 1733;}
+                        else if ( (LA196_671==NUM_FLOAT) && (synpred3_EsperEPL2Grammar())) {s = 1734;}
+                        else if ( (LA196_671==NUM_DOUBLE) && (synpred3_EsperEPL2Grammar())) {s = 1735;}
+                        else if ( (LA196_671==STRING_LITERAL) ) {s = 1736;}
+                        else if ( (LA196_671==QUOTED_STRING_LITERAL) ) {s = 1737;}
                         else if ( (LA196_671==BOOLEAN_TRUE) && (synpred3_EsperEPL2Grammar())) {s = 1738;}
                         else if ( (LA196_671==BOOLEAN_FALSE) && (synpred3_EsperEPL2Grammar())) {s = 1739;}
                         else if ( (LA196_671==VALUE_NULL) && (synpred3_EsperEPL2Grammar())) {s = 1740;}
@@ -36025,15 +36074,15 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_971 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_971==STRING_LITERAL) ) {s = 2012;}
-                        else if ( (LA196_971==QUOTED_STRING_LITERAL) ) {s = 2013;}
-                        else if ( (LA196_971==CASE) && (synpred3_EsperEPL2Grammar())) {s = 2014;}
-                        else if ( (LA196_971==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2015;}
-                        else if ( (LA196_971==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2016;}
-                        else if ( (LA196_971==NUM_INT) && (synpred3_EsperEPL2Grammar())) {s = 2017;}
-                        else if ( (LA196_971==NUM_LONG) && (synpred3_EsperEPL2Grammar())) {s = 2018;}
-                        else if ( (LA196_971==NUM_FLOAT) && (synpred3_EsperEPL2Grammar())) {s = 2019;}
-                        else if ( (LA196_971==NUM_DOUBLE) && (synpred3_EsperEPL2Grammar())) {s = 2020;}
+                        if ( (LA196_971==CASE) && (synpred3_EsperEPL2Grammar())) {s = 2012;}
+                        else if ( (LA196_971==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2013;}
+                        else if ( (LA196_971==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2014;}
+                        else if ( (LA196_971==NUM_INT) && (synpred3_EsperEPL2Grammar())) {s = 2015;}
+                        else if ( (LA196_971==NUM_LONG) && (synpred3_EsperEPL2Grammar())) {s = 2016;}
+                        else if ( (LA196_971==NUM_FLOAT) && (synpred3_EsperEPL2Grammar())) {s = 2017;}
+                        else if ( (LA196_971==NUM_DOUBLE) && (synpred3_EsperEPL2Grammar())) {s = 2018;}
+                        else if ( (LA196_971==STRING_LITERAL) ) {s = 2019;}
+                        else if ( (LA196_971==QUOTED_STRING_LITERAL) ) {s = 2020;}
                         else if ( (LA196_971==BOOLEAN_TRUE) && (synpred3_EsperEPL2Grammar())) {s = 2021;}
                         else if ( (LA196_971==BOOLEAN_FALSE) && (synpred3_EsperEPL2Grammar())) {s = 2022;}
                         else if ( (LA196_971==VALUE_NULL) && (synpred3_EsperEPL2Grammar())) {s = 2023;}
@@ -36317,72 +36366,72 @@ public class EsperEPL2GrammarParser extends Parser {
   }
   private int sst_18() {
     int s = -1;
-                        int LA196_1161 = input.LA(1);
-                        int index196_1161 = input.index();
+                        int LA196_1152 = input.LA(1);
+                        int index196_1152 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1161==RPAREN) ) {s = 2272;}
-                        else if ( (LA196_1161==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2273;}
-                        else if ( (LA196_1161==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2274;}
-                        else if ( (LA196_1161==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2275;}
-                        else if ( (LA196_1161==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2276;}
-                        else if ( (LA196_1161==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2277;}
-                        else if ( (LA196_1161==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2278;}
-                        else if ( (LA196_1161==LT) && (synpred3_EsperEPL2Grammar())) {s = 2279;}
-                        else if ( (LA196_1161==GT) && (synpred3_EsperEPL2Grammar())) {s = 2280;}
-                        else if ( (LA196_1161==LE) && (synpred3_EsperEPL2Grammar())) {s = 2281;}
-                        else if ( (LA196_1161==GE) && (synpred3_EsperEPL2Grammar())) {s = 2282;}
-                        else if ( (LA196_1161==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2283;}
-                        else if ( (LA196_1161==IS) && (synpred3_EsperEPL2Grammar())) {s = 2284;}
-                        else if ( (LA196_1161==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2285;}
-                        else if ( (LA196_1161==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2286;}
-                        else if ( (LA196_1161==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2287;}
-                        else if ( (LA196_1161==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2288;}
-                        else if ( (LA196_1161==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2289;}
-                        else if ( (LA196_1161==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2290;}
-                        else if ( (LA196_1161==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2291;}
-                        else if ( (LA196_1161==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2292;}
-                        else if ( (LA196_1161==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2293;}
-                        else if ( (LA196_1161==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2294;}
-                        else if ( (LA196_1161==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2295;}
-                        else if ( (LA196_1161==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2296;}
-                        else if ( (LA196_1161==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2297;}
-                        input.seek(index196_1161);
+                        if ( (LA196_1152==RPAREN) ) {s = 2272;}
+                        else if ( (LA196_1152==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2273;}
+                        else if ( (LA196_1152==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2274;}
+                        else if ( (LA196_1152==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2275;}
+                        else if ( (LA196_1152==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2276;}
+                        else if ( (LA196_1152==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2277;}
+                        else if ( (LA196_1152==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2278;}
+                        else if ( (LA196_1152==LT) && (synpred3_EsperEPL2Grammar())) {s = 2279;}
+                        else if ( (LA196_1152==GT) && (synpred3_EsperEPL2Grammar())) {s = 2280;}
+                        else if ( (LA196_1152==LE) && (synpred3_EsperEPL2Grammar())) {s = 2281;}
+                        else if ( (LA196_1152==GE) && (synpred3_EsperEPL2Grammar())) {s = 2282;}
+                        else if ( (LA196_1152==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2283;}
+                        else if ( (LA196_1152==IS) && (synpred3_EsperEPL2Grammar())) {s = 2284;}
+                        else if ( (LA196_1152==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2285;}
+                        else if ( (LA196_1152==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2286;}
+                        else if ( (LA196_1152==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2287;}
+                        else if ( (LA196_1152==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2288;}
+                        else if ( (LA196_1152==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2289;}
+                        else if ( (LA196_1152==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2290;}
+                        else if ( (LA196_1152==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2291;}
+                        else if ( (LA196_1152==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2292;}
+                        else if ( (LA196_1152==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2293;}
+                        else if ( (LA196_1152==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2294;}
+                        else if ( (LA196_1152==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2295;}
+                        else if ( (LA196_1152==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2296;}
+                        else if ( (LA196_1152==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2297;}
+                        input.seek(index196_1152);
     return s;
   }
   private int sst_19() {
     int s = -1;
-                        int LA196_1162 = input.LA(1);
-                        int index196_1162 = input.index();
+                        int LA196_1153 = input.LA(1);
+                        int index196_1153 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1162==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2298;}
-                        else if ( (LA196_1162==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2299;}
-                        else if ( (LA196_1162==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2300;}
-                        else if ( (LA196_1162==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2301;}
-                        else if ( (LA196_1162==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2302;}
-                        else if ( (LA196_1162==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2303;}
-                        else if ( (LA196_1162==LT) && (synpred3_EsperEPL2Grammar())) {s = 2304;}
-                        else if ( (LA196_1162==GT) && (synpred3_EsperEPL2Grammar())) {s = 2305;}
-                        else if ( (LA196_1162==LE) && (synpred3_EsperEPL2Grammar())) {s = 2306;}
-                        else if ( (LA196_1162==GE) && (synpred3_EsperEPL2Grammar())) {s = 2307;}
-                        else if ( (LA196_1162==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2308;}
-                        else if ( (LA196_1162==IS) && (synpred3_EsperEPL2Grammar())) {s = 2309;}
-                        else if ( (LA196_1162==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2310;}
-                        else if ( (LA196_1162==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2311;}
-                        else if ( (LA196_1162==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2312;}
-                        else if ( (LA196_1162==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2313;}
-                        else if ( (LA196_1162==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2314;}
-                        else if ( (LA196_1162==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2315;}
-                        else if ( (LA196_1162==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2316;}
-                        else if ( (LA196_1162==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2317;}
-                        else if ( (LA196_1162==RPAREN) ) {s = 2318;}
-                        else if ( (LA196_1162==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2319;}
-                        else if ( (LA196_1162==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2320;}
-                        else if ( (LA196_1162==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2321;}
-                        else if ( (LA196_1162==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2322;}
-                        else if ( (LA196_1162==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2323;}
-                        input.seek(index196_1162);
+                        if ( (LA196_1153==RPAREN) ) {s = 2298;}
+                        else if ( (LA196_1153==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2299;}
+                        else if ( (LA196_1153==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2300;}
+                        else if ( (LA196_1153==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2301;}
+                        else if ( (LA196_1153==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2302;}
+                        else if ( (LA196_1153==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2303;}
+                        else if ( (LA196_1153==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2304;}
+                        else if ( (LA196_1153==LT) && (synpred3_EsperEPL2Grammar())) {s = 2305;}
+                        else if ( (LA196_1153==GT) && (synpred3_EsperEPL2Grammar())) {s = 2306;}
+                        else if ( (LA196_1153==LE) && (synpred3_EsperEPL2Grammar())) {s = 2307;}
+                        else if ( (LA196_1153==GE) && (synpred3_EsperEPL2Grammar())) {s = 2308;}
+                        else if ( (LA196_1153==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2309;}
+                        else if ( (LA196_1153==IS) && (synpred3_EsperEPL2Grammar())) {s = 2310;}
+                        else if ( (LA196_1153==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2311;}
+                        else if ( (LA196_1153==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2312;}
+                        else if ( (LA196_1153==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2313;}
+                        else if ( (LA196_1153==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2314;}
+                        else if ( (LA196_1153==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2315;}
+                        else if ( (LA196_1153==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2316;}
+                        else if ( (LA196_1153==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2317;}
+                        else if ( (LA196_1153==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2318;}
+                        else if ( (LA196_1153==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2319;}
+                        else if ( (LA196_1153==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2320;}
+                        else if ( (LA196_1153==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2321;}
+                        else if ( (LA196_1153==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2322;}
+                        else if ( (LA196_1153==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2323;}
+                        input.seek(index196_1153);
     return s;
   }
   private int sst_20() {
@@ -36391,27 +36440,27 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_1225 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1225==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2324;}
-                        else if ( (LA196_1225==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2325;}
-                        else if ( (LA196_1225==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2326;}
-                        else if ( (LA196_1225==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2327;}
-                        else if ( (LA196_1225==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2328;}
-                        else if ( (LA196_1225==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2329;}
-                        else if ( (LA196_1225==LT) && (synpred3_EsperEPL2Grammar())) {s = 2330;}
-                        else if ( (LA196_1225==GT) && (synpred3_EsperEPL2Grammar())) {s = 2331;}
-                        else if ( (LA196_1225==LE) && (synpred3_EsperEPL2Grammar())) {s = 2332;}
-                        else if ( (LA196_1225==GE) && (synpred3_EsperEPL2Grammar())) {s = 2333;}
-                        else if ( (LA196_1225==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2334;}
-                        else if ( (LA196_1225==IS) && (synpred3_EsperEPL2Grammar())) {s = 2335;}
-                        else if ( (LA196_1225==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2336;}
-                        else if ( (LA196_1225==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2337;}
-                        else if ( (LA196_1225==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2338;}
-                        else if ( (LA196_1225==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2339;}
-                        else if ( (LA196_1225==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2340;}
-                        else if ( (LA196_1225==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2341;}
-                        else if ( (LA196_1225==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2342;}
-                        else if ( (LA196_1225==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2343;}
-                        else if ( (LA196_1225==RPAREN) ) {s = 2344;}
+                        if ( (LA196_1225==RPAREN) ) {s = 2324;}
+                        else if ( (LA196_1225==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2325;}
+                        else if ( (LA196_1225==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2326;}
+                        else if ( (LA196_1225==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2327;}
+                        else if ( (LA196_1225==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2328;}
+                        else if ( (LA196_1225==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2329;}
+                        else if ( (LA196_1225==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2330;}
+                        else if ( (LA196_1225==LT) && (synpred3_EsperEPL2Grammar())) {s = 2331;}
+                        else if ( (LA196_1225==GT) && (synpred3_EsperEPL2Grammar())) {s = 2332;}
+                        else if ( (LA196_1225==LE) && (synpred3_EsperEPL2Grammar())) {s = 2333;}
+                        else if ( (LA196_1225==GE) && (synpred3_EsperEPL2Grammar())) {s = 2334;}
+                        else if ( (LA196_1225==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2335;}
+                        else if ( (LA196_1225==IS) && (synpred3_EsperEPL2Grammar())) {s = 2336;}
+                        else if ( (LA196_1225==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2337;}
+                        else if ( (LA196_1225==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2338;}
+                        else if ( (LA196_1225==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2339;}
+                        else if ( (LA196_1225==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2340;}
+                        else if ( (LA196_1225==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2341;}
+                        else if ( (LA196_1225==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2342;}
+                        else if ( (LA196_1225==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2343;}
+                        else if ( (LA196_1225==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2344;}
                         else if ( (LA196_1225==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2345;}
                         else if ( (LA196_1225==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2346;}
                         else if ( (LA196_1225==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2347;}
@@ -36457,142 +36506,142 @@ public class EsperEPL2GrammarParser extends Parser {
   }
   private int sst_22() {
     int s = -1;
-                        int LA196_1297 = input.LA(1);
-                        int index196_1297 = input.index();
+                        int LA196_1306 = input.LA(1);
+                        int index196_1306 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1297==RPAREN) ) {s = 2376;}
-                        else if ( (LA196_1297==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2377;}
-                        else if ( (LA196_1297==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2378;}
-                        else if ( (LA196_1297==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2379;}
-                        else if ( (LA196_1297==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2380;}
-                        else if ( (LA196_1297==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2381;}
-                        else if ( (LA196_1297==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2382;}
-                        else if ( (LA196_1297==LT) && (synpred3_EsperEPL2Grammar())) {s = 2383;}
-                        else if ( (LA196_1297==GT) && (synpred3_EsperEPL2Grammar())) {s = 2384;}
-                        else if ( (LA196_1297==LE) && (synpred3_EsperEPL2Grammar())) {s = 2385;}
-                        else if ( (LA196_1297==GE) && (synpred3_EsperEPL2Grammar())) {s = 2386;}
-                        else if ( (LA196_1297==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2387;}
-                        else if ( (LA196_1297==IS) && (synpred3_EsperEPL2Grammar())) {s = 2388;}
-                        else if ( (LA196_1297==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2389;}
-                        else if ( (LA196_1297==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2390;}
-                        else if ( (LA196_1297==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2391;}
-                        else if ( (LA196_1297==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2392;}
-                        else if ( (LA196_1297==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2393;}
-                        else if ( (LA196_1297==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2394;}
-                        else if ( (LA196_1297==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2395;}
-                        else if ( (LA196_1297==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2396;}
-                        else if ( (LA196_1297==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2397;}
-                        else if ( (LA196_1297==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2398;}
-                        else if ( (LA196_1297==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2399;}
-                        else if ( (LA196_1297==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2400;}
-                        else if ( (LA196_1297==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2401;}
-                        input.seek(index196_1297);
+                        if ( (LA196_1306==RPAREN) ) {s = 2376;}
+                        else if ( (LA196_1306==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2377;}
+                        else if ( (LA196_1306==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2378;}
+                        else if ( (LA196_1306==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2379;}
+                        else if ( (LA196_1306==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2380;}
+                        else if ( (LA196_1306==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2381;}
+                        else if ( (LA196_1306==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2382;}
+                        else if ( (LA196_1306==LT) && (synpred3_EsperEPL2Grammar())) {s = 2383;}
+                        else if ( (LA196_1306==GT) && (synpred3_EsperEPL2Grammar())) {s = 2384;}
+                        else if ( (LA196_1306==LE) && (synpred3_EsperEPL2Grammar())) {s = 2385;}
+                        else if ( (LA196_1306==GE) && (synpred3_EsperEPL2Grammar())) {s = 2386;}
+                        else if ( (LA196_1306==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2387;}
+                        else if ( (LA196_1306==IS) && (synpred3_EsperEPL2Grammar())) {s = 2388;}
+                        else if ( (LA196_1306==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2389;}
+                        else if ( (LA196_1306==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2390;}
+                        else if ( (LA196_1306==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2391;}
+                        else if ( (LA196_1306==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2392;}
+                        else if ( (LA196_1306==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2393;}
+                        else if ( (LA196_1306==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2394;}
+                        else if ( (LA196_1306==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2395;}
+                        else if ( (LA196_1306==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2396;}
+                        else if ( (LA196_1306==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2397;}
+                        else if ( (LA196_1306==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2398;}
+                        else if ( (LA196_1306==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2399;}
+                        else if ( (LA196_1306==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2400;}
+                        else if ( (LA196_1306==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2401;}
+                        input.seek(index196_1306);
     return s;
   }
   private int sst_23() {
     int s = -1;
-                        int LA196_1298 = input.LA(1);
-                        int index196_1298 = input.index();
+                        int LA196_1307 = input.LA(1);
+                        int index196_1307 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1298==RPAREN) ) {s = 2402;}
-                        else if ( (LA196_1298==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2403;}
-                        else if ( (LA196_1298==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2404;}
-                        else if ( (LA196_1298==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2405;}
-                        else if ( (LA196_1298==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2406;}
-                        else if ( (LA196_1298==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2407;}
-                        else if ( (LA196_1298==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2408;}
-                        else if ( (LA196_1298==LT) && (synpred3_EsperEPL2Grammar())) {s = 2409;}
-                        else if ( (LA196_1298==GT) && (synpred3_EsperEPL2Grammar())) {s = 2410;}
-                        else if ( (LA196_1298==LE) && (synpred3_EsperEPL2Grammar())) {s = 2411;}
-                        else if ( (LA196_1298==GE) && (synpred3_EsperEPL2Grammar())) {s = 2412;}
-                        else if ( (LA196_1298==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2413;}
-                        else if ( (LA196_1298==IS) && (synpred3_EsperEPL2Grammar())) {s = 2414;}
-                        else if ( (LA196_1298==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2415;}
-                        else if ( (LA196_1298==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2416;}
-                        else if ( (LA196_1298==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2417;}
-                        else if ( (LA196_1298==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2418;}
-                        else if ( (LA196_1298==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2419;}
-                        else if ( (LA196_1298==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2420;}
-                        else if ( (LA196_1298==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2421;}
-                        else if ( (LA196_1298==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2422;}
-                        else if ( (LA196_1298==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2423;}
-                        else if ( (LA196_1298==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2424;}
-                        else if ( (LA196_1298==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2425;}
-                        else if ( (LA196_1298==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2426;}
-                        else if ( (LA196_1298==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2427;}
-                        input.seek(index196_1298);
+                        if ( (LA196_1307==RPAREN) ) {s = 2402;}
+                        else if ( (LA196_1307==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2403;}
+                        else if ( (LA196_1307==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2404;}
+                        else if ( (LA196_1307==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2405;}
+                        else if ( (LA196_1307==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2406;}
+                        else if ( (LA196_1307==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2407;}
+                        else if ( (LA196_1307==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2408;}
+                        else if ( (LA196_1307==LT) && (synpred3_EsperEPL2Grammar())) {s = 2409;}
+                        else if ( (LA196_1307==GT) && (synpred3_EsperEPL2Grammar())) {s = 2410;}
+                        else if ( (LA196_1307==LE) && (synpred3_EsperEPL2Grammar())) {s = 2411;}
+                        else if ( (LA196_1307==GE) && (synpred3_EsperEPL2Grammar())) {s = 2412;}
+                        else if ( (LA196_1307==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2413;}
+                        else if ( (LA196_1307==IS) && (synpred3_EsperEPL2Grammar())) {s = 2414;}
+                        else if ( (LA196_1307==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2415;}
+                        else if ( (LA196_1307==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2416;}
+                        else if ( (LA196_1307==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2417;}
+                        else if ( (LA196_1307==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2418;}
+                        else if ( (LA196_1307==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2419;}
+                        else if ( (LA196_1307==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2420;}
+                        else if ( (LA196_1307==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2421;}
+                        else if ( (LA196_1307==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2422;}
+                        else if ( (LA196_1307==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2423;}
+                        else if ( (LA196_1307==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2424;}
+                        else if ( (LA196_1307==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2425;}
+                        else if ( (LA196_1307==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2426;}
+                        else if ( (LA196_1307==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2427;}
+                        input.seek(index196_1307);
     return s;
   }
   private int sst_24() {
     int s = -1;
-                        int LA196_1376 = input.LA(1);
-                        int index196_1376 = input.index();
+                        int LA196_1369 = input.LA(1);
+                        int index196_1369 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1376==RPAREN) ) {s = 14;}
-                        else if ( (LA196_1376==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2429;}
-                        else if ( (LA196_1376==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2430;}
-                        else if ( (LA196_1376==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2431;}
-                        else if ( (LA196_1376==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2432;}
-                        else if ( (LA196_1376==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2433;}
-                        else if ( (LA196_1376==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2434;}
-                        else if ( (LA196_1376==LT) && (synpred3_EsperEPL2Grammar())) {s = 2435;}
-                        else if ( (LA196_1376==GT) && (synpred3_EsperEPL2Grammar())) {s = 2436;}
-                        else if ( (LA196_1376==LE) && (synpred3_EsperEPL2Grammar())) {s = 2437;}
-                        else if ( (LA196_1376==GE) && (synpred3_EsperEPL2Grammar())) {s = 2438;}
-                        else if ( (LA196_1376==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2439;}
-                        else if ( (LA196_1376==IS) && (synpred3_EsperEPL2Grammar())) {s = 2440;}
-                        else if ( (LA196_1376==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2441;}
-                        else if ( (LA196_1376==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2442;}
-                        else if ( (LA196_1376==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2443;}
-                        else if ( (LA196_1376==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2444;}
-                        else if ( (LA196_1376==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2445;}
-                        else if ( (LA196_1376==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2446;}
-                        else if ( (LA196_1376==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2447;}
-                        else if ( (LA196_1376==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2448;}
-                        else if ( (LA196_1376==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2449;}
-                        else if ( (LA196_1376==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2450;}
-                        else if ( (LA196_1376==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2451;}
-                        else if ( (LA196_1376==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2452;}
-                        else if ( (LA196_1376==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2453;}
-                        input.seek(index196_1376);
+                        if ( (LA196_1369==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2428;}
+                        else if ( (LA196_1369==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2429;}
+                        else if ( (LA196_1369==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2430;}
+                        else if ( (LA196_1369==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2431;}
+                        else if ( (LA196_1369==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2432;}
+                        else if ( (LA196_1369==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2433;}
+                        else if ( (LA196_1369==LT) && (synpred3_EsperEPL2Grammar())) {s = 2434;}
+                        else if ( (LA196_1369==GT) && (synpred3_EsperEPL2Grammar())) {s = 2435;}
+                        else if ( (LA196_1369==LE) && (synpred3_EsperEPL2Grammar())) {s = 2436;}
+                        else if ( (LA196_1369==GE) && (synpred3_EsperEPL2Grammar())) {s = 2437;}
+                        else if ( (LA196_1369==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2438;}
+                        else if ( (LA196_1369==IS) && (synpred3_EsperEPL2Grammar())) {s = 2439;}
+                        else if ( (LA196_1369==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2440;}
+                        else if ( (LA196_1369==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2441;}
+                        else if ( (LA196_1369==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2442;}
+                        else if ( (LA196_1369==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2443;}
+                        else if ( (LA196_1369==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2444;}
+                        else if ( (LA196_1369==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2445;}
+                        else if ( (LA196_1369==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2446;}
+                        else if ( (LA196_1369==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2447;}
+                        else if ( (LA196_1369==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2448;}
+                        else if ( (LA196_1369==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2449;}
+                        else if ( (LA196_1369==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2450;}
+                        else if ( (LA196_1369==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2451;}
+                        else if ( (LA196_1369==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2452;}
+                        else if ( (LA196_1369==RPAREN) ) {s = 14;}
+                        input.seek(index196_1369);
     return s;
   }
   private int sst_25() {
     int s = -1;
-                        int LA196_1377 = input.LA(1);
-                        int index196_1377 = input.index();
+                        int LA196_1370 = input.LA(1);
+                        int index196_1370 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1377==RPAREN) ) {s = 14;}
-                        else if ( (LA196_1377==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2455;}
-                        else if ( (LA196_1377==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2456;}
-                        else if ( (LA196_1377==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2457;}
-                        else if ( (LA196_1377==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2458;}
-                        else if ( (LA196_1377==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2459;}
-                        else if ( (LA196_1377==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2460;}
-                        else if ( (LA196_1377==LT) && (synpred3_EsperEPL2Grammar())) {s = 2461;}
-                        else if ( (LA196_1377==GT) && (synpred3_EsperEPL2Grammar())) {s = 2462;}
-                        else if ( (LA196_1377==LE) && (synpred3_EsperEPL2Grammar())) {s = 2463;}
-                        else if ( (LA196_1377==GE) && (synpred3_EsperEPL2Grammar())) {s = 2464;}
-                        else if ( (LA196_1377==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2465;}
-                        else if ( (LA196_1377==IS) && (synpred3_EsperEPL2Grammar())) {s = 2466;}
-                        else if ( (LA196_1377==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2467;}
-                        else if ( (LA196_1377==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2468;}
-                        else if ( (LA196_1377==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2469;}
-                        else if ( (LA196_1377==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2470;}
-                        else if ( (LA196_1377==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2471;}
-                        else if ( (LA196_1377==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2472;}
-                        else if ( (LA196_1377==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2473;}
-                        else if ( (LA196_1377==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2474;}
-                        else if ( (LA196_1377==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2475;}
-                        else if ( (LA196_1377==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2476;}
-                        else if ( (LA196_1377==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2477;}
-                        else if ( (LA196_1377==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2478;}
-                        else if ( (LA196_1377==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2479;}
-                        input.seek(index196_1377);
+                        if ( (LA196_1370==RPAREN) ) {s = 14;}
+                        else if ( (LA196_1370==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2455;}
+                        else if ( (LA196_1370==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2456;}
+                        else if ( (LA196_1370==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2457;}
+                        else if ( (LA196_1370==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2458;}
+                        else if ( (LA196_1370==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2459;}
+                        else if ( (LA196_1370==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2460;}
+                        else if ( (LA196_1370==LT) && (synpred3_EsperEPL2Grammar())) {s = 2461;}
+                        else if ( (LA196_1370==GT) && (synpred3_EsperEPL2Grammar())) {s = 2462;}
+                        else if ( (LA196_1370==LE) && (synpred3_EsperEPL2Grammar())) {s = 2463;}
+                        else if ( (LA196_1370==GE) && (synpred3_EsperEPL2Grammar())) {s = 2464;}
+                        else if ( (LA196_1370==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2465;}
+                        else if ( (LA196_1370==IS) && (synpred3_EsperEPL2Grammar())) {s = 2466;}
+                        else if ( (LA196_1370==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2467;}
+                        else if ( (LA196_1370==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2468;}
+                        else if ( (LA196_1370==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2469;}
+                        else if ( (LA196_1370==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2470;}
+                        else if ( (LA196_1370==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2471;}
+                        else if ( (LA196_1370==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2472;}
+                        else if ( (LA196_1370==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2473;}
+                        else if ( (LA196_1370==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2474;}
+                        else if ( (LA196_1370==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2475;}
+                        else if ( (LA196_1370==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2476;}
+                        else if ( (LA196_1370==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2477;}
+                        else if ( (LA196_1370==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2478;}
+                        else if ( (LA196_1370==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2479;}
+                        input.seek(index196_1370);
     return s;
   }
   private int sst_26() {
@@ -36601,27 +36650,27 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_1448 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1448==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2480;}
-                        else if ( (LA196_1448==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2481;}
-                        else if ( (LA196_1448==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2482;}
-                        else if ( (LA196_1448==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2483;}
-                        else if ( (LA196_1448==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2484;}
-                        else if ( (LA196_1448==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2485;}
-                        else if ( (LA196_1448==LT) && (synpred3_EsperEPL2Grammar())) {s = 2486;}
-                        else if ( (LA196_1448==GT) && (synpred3_EsperEPL2Grammar())) {s = 2487;}
-                        else if ( (LA196_1448==LE) && (synpred3_EsperEPL2Grammar())) {s = 2488;}
-                        else if ( (LA196_1448==GE) && (synpred3_EsperEPL2Grammar())) {s = 2489;}
-                        else if ( (LA196_1448==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2490;}
-                        else if ( (LA196_1448==IS) && (synpred3_EsperEPL2Grammar())) {s = 2491;}
-                        else if ( (LA196_1448==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2492;}
-                        else if ( (LA196_1448==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2493;}
-                        else if ( (LA196_1448==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2494;}
-                        else if ( (LA196_1448==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2495;}
-                        else if ( (LA196_1448==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2496;}
-                        else if ( (LA196_1448==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2497;}
-                        else if ( (LA196_1448==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2498;}
-                        else if ( (LA196_1448==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2499;}
-                        else if ( (LA196_1448==RPAREN) ) {s = 2500;}
+                        if ( (LA196_1448==RPAREN) ) {s = 2480;}
+                        else if ( (LA196_1448==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2481;}
+                        else if ( (LA196_1448==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2482;}
+                        else if ( (LA196_1448==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2483;}
+                        else if ( (LA196_1448==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2484;}
+                        else if ( (LA196_1448==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2485;}
+                        else if ( (LA196_1448==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2486;}
+                        else if ( (LA196_1448==LT) && (synpred3_EsperEPL2Grammar())) {s = 2487;}
+                        else if ( (LA196_1448==GT) && (synpred3_EsperEPL2Grammar())) {s = 2488;}
+                        else if ( (LA196_1448==LE) && (synpred3_EsperEPL2Grammar())) {s = 2489;}
+                        else if ( (LA196_1448==GE) && (synpred3_EsperEPL2Grammar())) {s = 2490;}
+                        else if ( (LA196_1448==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2491;}
+                        else if ( (LA196_1448==IS) && (synpred3_EsperEPL2Grammar())) {s = 2492;}
+                        else if ( (LA196_1448==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2493;}
+                        else if ( (LA196_1448==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2494;}
+                        else if ( (LA196_1448==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2495;}
+                        else if ( (LA196_1448==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2496;}
+                        else if ( (LA196_1448==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2497;}
+                        else if ( (LA196_1448==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2498;}
+                        else if ( (LA196_1448==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2499;}
+                        else if ( (LA196_1448==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2500;}
                         else if ( (LA196_1448==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2501;}
                         else if ( (LA196_1448==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2502;}
                         else if ( (LA196_1448==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2503;}
@@ -36636,27 +36685,27 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_1449 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1449==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2506;}
-                        else if ( (LA196_1449==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2507;}
-                        else if ( (LA196_1449==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2508;}
-                        else if ( (LA196_1449==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2509;}
-                        else if ( (LA196_1449==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2510;}
-                        else if ( (LA196_1449==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2511;}
-                        else if ( (LA196_1449==LT) && (synpred3_EsperEPL2Grammar())) {s = 2512;}
-                        else if ( (LA196_1449==GT) && (synpred3_EsperEPL2Grammar())) {s = 2513;}
-                        else if ( (LA196_1449==LE) && (synpred3_EsperEPL2Grammar())) {s = 2514;}
-                        else if ( (LA196_1449==GE) && (synpred3_EsperEPL2Grammar())) {s = 2515;}
-                        else if ( (LA196_1449==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2516;}
-                        else if ( (LA196_1449==IS) && (synpred3_EsperEPL2Grammar())) {s = 2517;}
-                        else if ( (LA196_1449==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2518;}
-                        else if ( (LA196_1449==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2519;}
-                        else if ( (LA196_1449==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2520;}
-                        else if ( (LA196_1449==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2521;}
-                        else if ( (LA196_1449==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2522;}
-                        else if ( (LA196_1449==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2523;}
-                        else if ( (LA196_1449==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2524;}
-                        else if ( (LA196_1449==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2525;}
-                        else if ( (LA196_1449==RPAREN) ) {s = 2526;}
+                        if ( (LA196_1449==RPAREN) ) {s = 2506;}
+                        else if ( (LA196_1449==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2507;}
+                        else if ( (LA196_1449==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2508;}
+                        else if ( (LA196_1449==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2509;}
+                        else if ( (LA196_1449==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2510;}
+                        else if ( (LA196_1449==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2511;}
+                        else if ( (LA196_1449==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2512;}
+                        else if ( (LA196_1449==LT) && (synpred3_EsperEPL2Grammar())) {s = 2513;}
+                        else if ( (LA196_1449==GT) && (synpred3_EsperEPL2Grammar())) {s = 2514;}
+                        else if ( (LA196_1449==LE) && (synpred3_EsperEPL2Grammar())) {s = 2515;}
+                        else if ( (LA196_1449==GE) && (synpred3_EsperEPL2Grammar())) {s = 2516;}
+                        else if ( (LA196_1449==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2517;}
+                        else if ( (LA196_1449==IS) && (synpred3_EsperEPL2Grammar())) {s = 2518;}
+                        else if ( (LA196_1449==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2519;}
+                        else if ( (LA196_1449==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2520;}
+                        else if ( (LA196_1449==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2521;}
+                        else if ( (LA196_1449==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2522;}
+                        else if ( (LA196_1449==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2523;}
+                        else if ( (LA196_1449==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2524;}
+                        else if ( (LA196_1449==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2525;}
+                        else if ( (LA196_1449==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2526;}
                         else if ( (LA196_1449==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2527;}
                         else if ( (LA196_1449==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2528;}
                         else if ( (LA196_1449==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2529;}
@@ -36807,142 +36856,142 @@ public class EsperEPL2GrammarParser extends Parser {
   }
   private int sst_32() {
     int s = -1;
-                        int LA196_1655 = input.LA(1);
-                        int index196_1655 = input.index();
+                        int LA196_1664 = input.LA(1);
+                        int index196_1664 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1655==RPAREN) ) {s = 2636;}
-                        else if ( (LA196_1655==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2637;}
-                        else if ( (LA196_1655==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2638;}
-                        else if ( (LA196_1655==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2639;}
-                        else if ( (LA196_1655==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2640;}
-                        else if ( (LA196_1655==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2641;}
-                        else if ( (LA196_1655==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2642;}
-                        else if ( (LA196_1655==LT) && (synpred3_EsperEPL2Grammar())) {s = 2643;}
-                        else if ( (LA196_1655==GT) && (synpred3_EsperEPL2Grammar())) {s = 2644;}
-                        else if ( (LA196_1655==LE) && (synpred3_EsperEPL2Grammar())) {s = 2645;}
-                        else if ( (LA196_1655==GE) && (synpred3_EsperEPL2Grammar())) {s = 2646;}
-                        else if ( (LA196_1655==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2647;}
-                        else if ( (LA196_1655==IS) && (synpred3_EsperEPL2Grammar())) {s = 2648;}
-                        else if ( (LA196_1655==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2649;}
-                        else if ( (LA196_1655==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2650;}
-                        else if ( (LA196_1655==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2651;}
-                        else if ( (LA196_1655==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2652;}
-                        else if ( (LA196_1655==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2653;}
-                        else if ( (LA196_1655==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2654;}
-                        else if ( (LA196_1655==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2655;}
-                        else if ( (LA196_1655==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2656;}
-                        else if ( (LA196_1655==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2657;}
-                        else if ( (LA196_1655==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2658;}
-                        else if ( (LA196_1655==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2659;}
-                        else if ( (LA196_1655==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2660;}
-                        else if ( (LA196_1655==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2661;}
-                        input.seek(index196_1655);
+                        if ( (LA196_1664==RPAREN) ) {s = 2636;}
+                        else if ( (LA196_1664==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2637;}
+                        else if ( (LA196_1664==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2638;}
+                        else if ( (LA196_1664==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2639;}
+                        else if ( (LA196_1664==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2640;}
+                        else if ( (LA196_1664==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2641;}
+                        else if ( (LA196_1664==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2642;}
+                        else if ( (LA196_1664==LT) && (synpred3_EsperEPL2Grammar())) {s = 2643;}
+                        else if ( (LA196_1664==GT) && (synpred3_EsperEPL2Grammar())) {s = 2644;}
+                        else if ( (LA196_1664==LE) && (synpred3_EsperEPL2Grammar())) {s = 2645;}
+                        else if ( (LA196_1664==GE) && (synpred3_EsperEPL2Grammar())) {s = 2646;}
+                        else if ( (LA196_1664==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2647;}
+                        else if ( (LA196_1664==IS) && (synpred3_EsperEPL2Grammar())) {s = 2648;}
+                        else if ( (LA196_1664==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2649;}
+                        else if ( (LA196_1664==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2650;}
+                        else if ( (LA196_1664==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2651;}
+                        else if ( (LA196_1664==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2652;}
+                        else if ( (LA196_1664==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2653;}
+                        else if ( (LA196_1664==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2654;}
+                        else if ( (LA196_1664==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2655;}
+                        else if ( (LA196_1664==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2656;}
+                        else if ( (LA196_1664==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2657;}
+                        else if ( (LA196_1664==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2658;}
+                        else if ( (LA196_1664==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2659;}
+                        else if ( (LA196_1664==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2660;}
+                        else if ( (LA196_1664==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2661;}
+                        input.seek(index196_1664);
     return s;
   }
   private int sst_33() {
     int s = -1;
-                        int LA196_1656 = input.LA(1);
-                        int index196_1656 = input.index();
+                        int LA196_1665 = input.LA(1);
+                        int index196_1665 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1656==RPAREN) ) {s = 2662;}
-                        else if ( (LA196_1656==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2663;}
-                        else if ( (LA196_1656==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2664;}
-                        else if ( (LA196_1656==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2665;}
-                        else if ( (LA196_1656==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2666;}
-                        else if ( (LA196_1656==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2667;}
-                        else if ( (LA196_1656==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2668;}
-                        else if ( (LA196_1656==LT) && (synpred3_EsperEPL2Grammar())) {s = 2669;}
-                        else if ( (LA196_1656==GT) && (synpred3_EsperEPL2Grammar())) {s = 2670;}
-                        else if ( (LA196_1656==LE) && (synpred3_EsperEPL2Grammar())) {s = 2671;}
-                        else if ( (LA196_1656==GE) && (synpred3_EsperEPL2Grammar())) {s = 2672;}
-                        else if ( (LA196_1656==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2673;}
-                        else if ( (LA196_1656==IS) && (synpred3_EsperEPL2Grammar())) {s = 2674;}
-                        else if ( (LA196_1656==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2675;}
-                        else if ( (LA196_1656==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2676;}
-                        else if ( (LA196_1656==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2677;}
-                        else if ( (LA196_1656==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2678;}
-                        else if ( (LA196_1656==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2679;}
-                        else if ( (LA196_1656==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2680;}
-                        else if ( (LA196_1656==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2681;}
-                        else if ( (LA196_1656==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2682;}
-                        else if ( (LA196_1656==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2683;}
-                        else if ( (LA196_1656==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2684;}
-                        else if ( (LA196_1656==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2685;}
-                        else if ( (LA196_1656==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2686;}
-                        else if ( (LA196_1656==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2687;}
-                        input.seek(index196_1656);
+                        if ( (LA196_1665==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2662;}
+                        else if ( (LA196_1665==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2663;}
+                        else if ( (LA196_1665==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2664;}
+                        else if ( (LA196_1665==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2665;}
+                        else if ( (LA196_1665==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2666;}
+                        else if ( (LA196_1665==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2667;}
+                        else if ( (LA196_1665==LT) && (synpred3_EsperEPL2Grammar())) {s = 2668;}
+                        else if ( (LA196_1665==GT) && (synpred3_EsperEPL2Grammar())) {s = 2669;}
+                        else if ( (LA196_1665==LE) && (synpred3_EsperEPL2Grammar())) {s = 2670;}
+                        else if ( (LA196_1665==GE) && (synpred3_EsperEPL2Grammar())) {s = 2671;}
+                        else if ( (LA196_1665==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2672;}
+                        else if ( (LA196_1665==IS) && (synpred3_EsperEPL2Grammar())) {s = 2673;}
+                        else if ( (LA196_1665==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2674;}
+                        else if ( (LA196_1665==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2675;}
+                        else if ( (LA196_1665==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2676;}
+                        else if ( (LA196_1665==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2677;}
+                        else if ( (LA196_1665==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2678;}
+                        else if ( (LA196_1665==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2679;}
+                        else if ( (LA196_1665==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2680;}
+                        else if ( (LA196_1665==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2681;}
+                        else if ( (LA196_1665==RPAREN) ) {s = 2682;}
+                        else if ( (LA196_1665==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2683;}
+                        else if ( (LA196_1665==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2684;}
+                        else if ( (LA196_1665==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2685;}
+                        else if ( (LA196_1665==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2686;}
+                        else if ( (LA196_1665==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2687;}
+                        input.seek(index196_1665);
     return s;
   }
   private int sst_34() {
     int s = -1;
-                        int LA196_1727 = input.LA(1);
-                        int index196_1727 = input.index();
+                        int LA196_1736 = input.LA(1);
+                        int index196_1736 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1727==RPAREN) ) {s = 2688;}
-                        else if ( (LA196_1727==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2689;}
-                        else if ( (LA196_1727==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2690;}
-                        else if ( (LA196_1727==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2691;}
-                        else if ( (LA196_1727==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2692;}
-                        else if ( (LA196_1727==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2693;}
-                        else if ( (LA196_1727==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2694;}
-                        else if ( (LA196_1727==LT) && (synpred3_EsperEPL2Grammar())) {s = 2695;}
-                        else if ( (LA196_1727==GT) && (synpred3_EsperEPL2Grammar())) {s = 2696;}
-                        else if ( (LA196_1727==LE) && (synpred3_EsperEPL2Grammar())) {s = 2697;}
-                        else if ( (LA196_1727==GE) && (synpred3_EsperEPL2Grammar())) {s = 2698;}
-                        else if ( (LA196_1727==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2699;}
-                        else if ( (LA196_1727==IS) && (synpred3_EsperEPL2Grammar())) {s = 2700;}
-                        else if ( (LA196_1727==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2701;}
-                        else if ( (LA196_1727==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2702;}
-                        else if ( (LA196_1727==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2703;}
-                        else if ( (LA196_1727==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2704;}
-                        else if ( (LA196_1727==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2705;}
-                        else if ( (LA196_1727==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2706;}
-                        else if ( (LA196_1727==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2707;}
-                        else if ( (LA196_1727==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2708;}
-                        else if ( (LA196_1727==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2709;}
-                        else if ( (LA196_1727==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2710;}
-                        else if ( (LA196_1727==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2711;}
-                        else if ( (LA196_1727==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2712;}
-                        else if ( (LA196_1727==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2713;}
-                        input.seek(index196_1727);
+                        if ( (LA196_1736==RPAREN) ) {s = 2688;}
+                        else if ( (LA196_1736==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2689;}
+                        else if ( (LA196_1736==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2690;}
+                        else if ( (LA196_1736==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2691;}
+                        else if ( (LA196_1736==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2692;}
+                        else if ( (LA196_1736==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2693;}
+                        else if ( (LA196_1736==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2694;}
+                        else if ( (LA196_1736==LT) && (synpred3_EsperEPL2Grammar())) {s = 2695;}
+                        else if ( (LA196_1736==GT) && (synpred3_EsperEPL2Grammar())) {s = 2696;}
+                        else if ( (LA196_1736==LE) && (synpred3_EsperEPL2Grammar())) {s = 2697;}
+                        else if ( (LA196_1736==GE) && (synpred3_EsperEPL2Grammar())) {s = 2698;}
+                        else if ( (LA196_1736==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2699;}
+                        else if ( (LA196_1736==IS) && (synpred3_EsperEPL2Grammar())) {s = 2700;}
+                        else if ( (LA196_1736==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2701;}
+                        else if ( (LA196_1736==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2702;}
+                        else if ( (LA196_1736==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2703;}
+                        else if ( (LA196_1736==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2704;}
+                        else if ( (LA196_1736==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2705;}
+                        else if ( (LA196_1736==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2706;}
+                        else if ( (LA196_1736==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2707;}
+                        else if ( (LA196_1736==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2708;}
+                        else if ( (LA196_1736==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2709;}
+                        else if ( (LA196_1736==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2710;}
+                        else if ( (LA196_1736==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2711;}
+                        else if ( (LA196_1736==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2712;}
+                        else if ( (LA196_1736==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2713;}
+                        input.seek(index196_1736);
     return s;
   }
   private int sst_35() {
     int s = -1;
-                        int LA196_1728 = input.LA(1);
-                        int index196_1728 = input.index();
+                        int LA196_1737 = input.LA(1);
+                        int index196_1737 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1728==RPAREN) ) {s = 2714;}
-                        else if ( (LA196_1728==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2715;}
-                        else if ( (LA196_1728==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2716;}
-                        else if ( (LA196_1728==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2717;}
-                        else if ( (LA196_1728==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2718;}
-                        else if ( (LA196_1728==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2719;}
-                        else if ( (LA196_1728==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2720;}
-                        else if ( (LA196_1728==LT) && (synpred3_EsperEPL2Grammar())) {s = 2721;}
-                        else if ( (LA196_1728==GT) && (synpred3_EsperEPL2Grammar())) {s = 2722;}
-                        else if ( (LA196_1728==LE) && (synpred3_EsperEPL2Grammar())) {s = 2723;}
-                        else if ( (LA196_1728==GE) && (synpred3_EsperEPL2Grammar())) {s = 2724;}
-                        else if ( (LA196_1728==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2725;}
-                        else if ( (LA196_1728==IS) && (synpred3_EsperEPL2Grammar())) {s = 2726;}
-                        else if ( (LA196_1728==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2727;}
-                        else if ( (LA196_1728==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2728;}
-                        else if ( (LA196_1728==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2729;}
-                        else if ( (LA196_1728==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2730;}
-                        else if ( (LA196_1728==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2731;}
-                        else if ( (LA196_1728==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2732;}
-                        else if ( (LA196_1728==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2733;}
-                        else if ( (LA196_1728==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2734;}
-                        else if ( (LA196_1728==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2735;}
-                        else if ( (LA196_1728==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2736;}
-                        else if ( (LA196_1728==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2737;}
-                        else if ( (LA196_1728==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2738;}
-                        else if ( (LA196_1728==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2739;}
-                        input.seek(index196_1728);
+                        if ( (LA196_1737==RPAREN) ) {s = 2714;}
+                        else if ( (LA196_1737==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2715;}
+                        else if ( (LA196_1737==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2716;}
+                        else if ( (LA196_1737==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2717;}
+                        else if ( (LA196_1737==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2718;}
+                        else if ( (LA196_1737==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2719;}
+                        else if ( (LA196_1737==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2720;}
+                        else if ( (LA196_1737==LT) && (synpred3_EsperEPL2Grammar())) {s = 2721;}
+                        else if ( (LA196_1737==GT) && (synpred3_EsperEPL2Grammar())) {s = 2722;}
+                        else if ( (LA196_1737==LE) && (synpred3_EsperEPL2Grammar())) {s = 2723;}
+                        else if ( (LA196_1737==GE) && (synpred3_EsperEPL2Grammar())) {s = 2724;}
+                        else if ( (LA196_1737==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2725;}
+                        else if ( (LA196_1737==IS) && (synpred3_EsperEPL2Grammar())) {s = 2726;}
+                        else if ( (LA196_1737==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2727;}
+                        else if ( (LA196_1737==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2728;}
+                        else if ( (LA196_1737==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2729;}
+                        else if ( (LA196_1737==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2730;}
+                        else if ( (LA196_1737==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2731;}
+                        else if ( (LA196_1737==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2732;}
+                        else if ( (LA196_1737==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2733;}
+                        else if ( (LA196_1737==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2734;}
+                        else if ( (LA196_1737==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2735;}
+                        else if ( (LA196_1737==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2736;}
+                        else if ( (LA196_1737==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2737;}
+                        else if ( (LA196_1737==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2738;}
+                        else if ( (LA196_1737==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2739;}
+                        input.seek(index196_1737);
     return s;
   }
   private int sst_36() {
@@ -36951,27 +37000,27 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_1799 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1799==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2740;}
-                        else if ( (LA196_1799==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2741;}
-                        else if ( (LA196_1799==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2742;}
-                        else if ( (LA196_1799==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2743;}
-                        else if ( (LA196_1799==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2744;}
-                        else if ( (LA196_1799==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2745;}
-                        else if ( (LA196_1799==LT) && (synpred3_EsperEPL2Grammar())) {s = 2746;}
-                        else if ( (LA196_1799==GT) && (synpred3_EsperEPL2Grammar())) {s = 2747;}
-                        else if ( (LA196_1799==LE) && (synpred3_EsperEPL2Grammar())) {s = 2748;}
-                        else if ( (LA196_1799==GE) && (synpred3_EsperEPL2Grammar())) {s = 2749;}
-                        else if ( (LA196_1799==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2750;}
-                        else if ( (LA196_1799==IS) && (synpred3_EsperEPL2Grammar())) {s = 2751;}
-                        else if ( (LA196_1799==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2752;}
-                        else if ( (LA196_1799==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2753;}
-                        else if ( (LA196_1799==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2754;}
-                        else if ( (LA196_1799==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2755;}
-                        else if ( (LA196_1799==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2756;}
-                        else if ( (LA196_1799==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2757;}
-                        else if ( (LA196_1799==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2758;}
-                        else if ( (LA196_1799==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2759;}
-                        else if ( (LA196_1799==RPAREN) ) {s = 2760;}
+                        if ( (LA196_1799==RPAREN) ) {s = 2740;}
+                        else if ( (LA196_1799==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2741;}
+                        else if ( (LA196_1799==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2742;}
+                        else if ( (LA196_1799==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2743;}
+                        else if ( (LA196_1799==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2744;}
+                        else if ( (LA196_1799==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2745;}
+                        else if ( (LA196_1799==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2746;}
+                        else if ( (LA196_1799==LT) && (synpred3_EsperEPL2Grammar())) {s = 2747;}
+                        else if ( (LA196_1799==GT) && (synpred3_EsperEPL2Grammar())) {s = 2748;}
+                        else if ( (LA196_1799==LE) && (synpred3_EsperEPL2Grammar())) {s = 2749;}
+                        else if ( (LA196_1799==GE) && (synpred3_EsperEPL2Grammar())) {s = 2750;}
+                        else if ( (LA196_1799==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2751;}
+                        else if ( (LA196_1799==IS) && (synpred3_EsperEPL2Grammar())) {s = 2752;}
+                        else if ( (LA196_1799==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2753;}
+                        else if ( (LA196_1799==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2754;}
+                        else if ( (LA196_1799==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2755;}
+                        else if ( (LA196_1799==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2756;}
+                        else if ( (LA196_1799==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2757;}
+                        else if ( (LA196_1799==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2758;}
+                        else if ( (LA196_1799==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2759;}
+                        else if ( (LA196_1799==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2760;}
                         else if ( (LA196_1799==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2761;}
                         else if ( (LA196_1799==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2762;}
                         else if ( (LA196_1799==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2763;}
@@ -36986,27 +37035,27 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_1800 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1800==RPAREN) ) {s = 2766;}
-                        else if ( (LA196_1800==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2767;}
-                        else if ( (LA196_1800==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2768;}
-                        else if ( (LA196_1800==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2769;}
-                        else if ( (LA196_1800==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2770;}
-                        else if ( (LA196_1800==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2771;}
-                        else if ( (LA196_1800==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2772;}
-                        else if ( (LA196_1800==LT) && (synpred3_EsperEPL2Grammar())) {s = 2773;}
-                        else if ( (LA196_1800==GT) && (synpred3_EsperEPL2Grammar())) {s = 2774;}
-                        else if ( (LA196_1800==LE) && (synpred3_EsperEPL2Grammar())) {s = 2775;}
-                        else if ( (LA196_1800==GE) && (synpred3_EsperEPL2Grammar())) {s = 2776;}
-                        else if ( (LA196_1800==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2777;}
-                        else if ( (LA196_1800==IS) && (synpred3_EsperEPL2Grammar())) {s = 2778;}
-                        else if ( (LA196_1800==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2779;}
-                        else if ( (LA196_1800==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2780;}
-                        else if ( (LA196_1800==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2781;}
-                        else if ( (LA196_1800==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2782;}
-                        else if ( (LA196_1800==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2783;}
-                        else if ( (LA196_1800==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2784;}
-                        else if ( (LA196_1800==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2785;}
-                        else if ( (LA196_1800==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2786;}
+                        if ( (LA196_1800==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2766;}
+                        else if ( (LA196_1800==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2767;}
+                        else if ( (LA196_1800==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2768;}
+                        else if ( (LA196_1800==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2769;}
+                        else if ( (LA196_1800==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2770;}
+                        else if ( (LA196_1800==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2771;}
+                        else if ( (LA196_1800==LT) && (synpred3_EsperEPL2Grammar())) {s = 2772;}
+                        else if ( (LA196_1800==GT) && (synpred3_EsperEPL2Grammar())) {s = 2773;}
+                        else if ( (LA196_1800==LE) && (synpred3_EsperEPL2Grammar())) {s = 2774;}
+                        else if ( (LA196_1800==GE) && (synpred3_EsperEPL2Grammar())) {s = 2775;}
+                        else if ( (LA196_1800==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2776;}
+                        else if ( (LA196_1800==IS) && (synpred3_EsperEPL2Grammar())) {s = 2777;}
+                        else if ( (LA196_1800==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2778;}
+                        else if ( (LA196_1800==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2779;}
+                        else if ( (LA196_1800==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2780;}
+                        else if ( (LA196_1800==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2781;}
+                        else if ( (LA196_1800==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2782;}
+                        else if ( (LA196_1800==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2783;}
+                        else if ( (LA196_1800==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2784;}
+                        else if ( (LA196_1800==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2785;}
+                        else if ( (LA196_1800==RPAREN) ) {s = 2786;}
                         else if ( (LA196_1800==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2787;}
                         else if ( (LA196_1800==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2788;}
                         else if ( (LA196_1800==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2789;}
@@ -37021,27 +37070,27 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_1869 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1869==RPAREN) ) {s = 2792;}
-                        else if ( (LA196_1869==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2793;}
-                        else if ( (LA196_1869==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2794;}
-                        else if ( (LA196_1869==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2795;}
-                        else if ( (LA196_1869==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2796;}
-                        else if ( (LA196_1869==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2797;}
-                        else if ( (LA196_1869==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2798;}
-                        else if ( (LA196_1869==LT) && (synpred3_EsperEPL2Grammar())) {s = 2799;}
-                        else if ( (LA196_1869==GT) && (synpred3_EsperEPL2Grammar())) {s = 2800;}
-                        else if ( (LA196_1869==LE) && (synpred3_EsperEPL2Grammar())) {s = 2801;}
-                        else if ( (LA196_1869==GE) && (synpred3_EsperEPL2Grammar())) {s = 2802;}
-                        else if ( (LA196_1869==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2803;}
-                        else if ( (LA196_1869==IS) && (synpred3_EsperEPL2Grammar())) {s = 2804;}
-                        else if ( (LA196_1869==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2805;}
-                        else if ( (LA196_1869==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2806;}
-                        else if ( (LA196_1869==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2807;}
-                        else if ( (LA196_1869==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2808;}
-                        else if ( (LA196_1869==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2809;}
-                        else if ( (LA196_1869==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2810;}
-                        else if ( (LA196_1869==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2811;}
-                        else if ( (LA196_1869==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2812;}
+                        if ( (LA196_1869==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2792;}
+                        else if ( (LA196_1869==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2793;}
+                        else if ( (LA196_1869==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2794;}
+                        else if ( (LA196_1869==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2795;}
+                        else if ( (LA196_1869==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2796;}
+                        else if ( (LA196_1869==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2797;}
+                        else if ( (LA196_1869==LT) && (synpred3_EsperEPL2Grammar())) {s = 2798;}
+                        else if ( (LA196_1869==GT) && (synpred3_EsperEPL2Grammar())) {s = 2799;}
+                        else if ( (LA196_1869==LE) && (synpred3_EsperEPL2Grammar())) {s = 2800;}
+                        else if ( (LA196_1869==GE) && (synpred3_EsperEPL2Grammar())) {s = 2801;}
+                        else if ( (LA196_1869==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2802;}
+                        else if ( (LA196_1869==IS) && (synpred3_EsperEPL2Grammar())) {s = 2803;}
+                        else if ( (LA196_1869==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2804;}
+                        else if ( (LA196_1869==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2805;}
+                        else if ( (LA196_1869==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2806;}
+                        else if ( (LA196_1869==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2807;}
+                        else if ( (LA196_1869==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2808;}
+                        else if ( (LA196_1869==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2809;}
+                        else if ( (LA196_1869==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2810;}
+                        else if ( (LA196_1869==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2811;}
+                        else if ( (LA196_1869==RPAREN) ) {s = 2812;}
                         else if ( (LA196_1869==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2813;}
                         else if ( (LA196_1869==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2814;}
                         else if ( (LA196_1869==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2815;}
@@ -37056,27 +37105,27 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_1870 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1870==RPAREN) ) {s = 2818;}
-                        else if ( (LA196_1870==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2819;}
-                        else if ( (LA196_1870==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2820;}
-                        else if ( (LA196_1870==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2821;}
-                        else if ( (LA196_1870==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2822;}
-                        else if ( (LA196_1870==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2823;}
-                        else if ( (LA196_1870==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2824;}
-                        else if ( (LA196_1870==LT) && (synpred3_EsperEPL2Grammar())) {s = 2825;}
-                        else if ( (LA196_1870==GT) && (synpred3_EsperEPL2Grammar())) {s = 2826;}
-                        else if ( (LA196_1870==LE) && (synpred3_EsperEPL2Grammar())) {s = 2827;}
-                        else if ( (LA196_1870==GE) && (synpred3_EsperEPL2Grammar())) {s = 2828;}
-                        else if ( (LA196_1870==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2829;}
-                        else if ( (LA196_1870==IS) && (synpred3_EsperEPL2Grammar())) {s = 2830;}
-                        else if ( (LA196_1870==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2831;}
-                        else if ( (LA196_1870==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2832;}
-                        else if ( (LA196_1870==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2833;}
-                        else if ( (LA196_1870==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2834;}
-                        else if ( (LA196_1870==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2835;}
-                        else if ( (LA196_1870==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2836;}
-                        else if ( (LA196_1870==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2837;}
-                        else if ( (LA196_1870==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2838;}
+                        if ( (LA196_1870==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2818;}
+                        else if ( (LA196_1870==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2819;}
+                        else if ( (LA196_1870==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2820;}
+                        else if ( (LA196_1870==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2821;}
+                        else if ( (LA196_1870==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2822;}
+                        else if ( (LA196_1870==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2823;}
+                        else if ( (LA196_1870==LT) && (synpred3_EsperEPL2Grammar())) {s = 2824;}
+                        else if ( (LA196_1870==GT) && (synpred3_EsperEPL2Grammar())) {s = 2825;}
+                        else if ( (LA196_1870==LE) && (synpred3_EsperEPL2Grammar())) {s = 2826;}
+                        else if ( (LA196_1870==GE) && (synpred3_EsperEPL2Grammar())) {s = 2827;}
+                        else if ( (LA196_1870==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2828;}
+                        else if ( (LA196_1870==IS) && (synpred3_EsperEPL2Grammar())) {s = 2829;}
+                        else if ( (LA196_1870==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2830;}
+                        else if ( (LA196_1870==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2831;}
+                        else if ( (LA196_1870==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2832;}
+                        else if ( (LA196_1870==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2833;}
+                        else if ( (LA196_1870==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2834;}
+                        else if ( (LA196_1870==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2835;}
+                        else if ( (LA196_1870==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2836;}
+                        else if ( (LA196_1870==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2837;}
+                        else if ( (LA196_1870==RPAREN) ) {s = 2838;}
                         else if ( (LA196_1870==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2839;}
                         else if ( (LA196_1870==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2840;}
                         else if ( (LA196_1870==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2841;}
@@ -37091,32 +37140,32 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_1942 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1942==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2844;}
-                        else if ( (LA196_1942==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2845;}
-                        else if ( (LA196_1942==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2846;}
-                        else if ( (LA196_1942==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2847;}
-                        else if ( (LA196_1942==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2848;}
-                        else if ( (LA196_1942==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2849;}
-                        else if ( (LA196_1942==LT) && (synpred3_EsperEPL2Grammar())) {s = 2850;}
-                        else if ( (LA196_1942==GT) && (synpred3_EsperEPL2Grammar())) {s = 2851;}
-                        else if ( (LA196_1942==LE) && (synpred3_EsperEPL2Grammar())) {s = 2852;}
-                        else if ( (LA196_1942==GE) && (synpred3_EsperEPL2Grammar())) {s = 2853;}
-                        else if ( (LA196_1942==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2854;}
-                        else if ( (LA196_1942==IS) && (synpred3_EsperEPL2Grammar())) {s = 2855;}
-                        else if ( (LA196_1942==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2856;}
-                        else if ( (LA196_1942==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2857;}
-                        else if ( (LA196_1942==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2858;}
-                        else if ( (LA196_1942==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2859;}
-                        else if ( (LA196_1942==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2860;}
-                        else if ( (LA196_1942==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2861;}
-                        else if ( (LA196_1942==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2862;}
-                        else if ( (LA196_1942==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2863;}
-                        else if ( (LA196_1942==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2864;}
-                        else if ( (LA196_1942==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2865;}
-                        else if ( (LA196_1942==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2866;}
-                        else if ( (LA196_1942==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2867;}
-                        else if ( (LA196_1942==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2868;}
-                        else if ( (LA196_1942==RPAREN) ) {s = 14;}
+                        if ( (LA196_1942==RPAREN) ) {s = 14;}
+                        else if ( (LA196_1942==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2845;}
+                        else if ( (LA196_1942==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2846;}
+                        else if ( (LA196_1942==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2847;}
+                        else if ( (LA196_1942==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2848;}
+                        else if ( (LA196_1942==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2849;}
+                        else if ( (LA196_1942==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2850;}
+                        else if ( (LA196_1942==LT) && (synpred3_EsperEPL2Grammar())) {s = 2851;}
+                        else if ( (LA196_1942==GT) && (synpred3_EsperEPL2Grammar())) {s = 2852;}
+                        else if ( (LA196_1942==LE) && (synpred3_EsperEPL2Grammar())) {s = 2853;}
+                        else if ( (LA196_1942==GE) && (synpred3_EsperEPL2Grammar())) {s = 2854;}
+                        else if ( (LA196_1942==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2855;}
+                        else if ( (LA196_1942==IS) && (synpred3_EsperEPL2Grammar())) {s = 2856;}
+                        else if ( (LA196_1942==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2857;}
+                        else if ( (LA196_1942==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2858;}
+                        else if ( (LA196_1942==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2859;}
+                        else if ( (LA196_1942==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2860;}
+                        else if ( (LA196_1942==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2861;}
+                        else if ( (LA196_1942==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2862;}
+                        else if ( (LA196_1942==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2863;}
+                        else if ( (LA196_1942==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2864;}
+                        else if ( (LA196_1942==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2865;}
+                        else if ( (LA196_1942==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2866;}
+                        else if ( (LA196_1942==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2867;}
+                        else if ( (LA196_1942==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2868;}
+                        else if ( (LA196_1942==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2869;}
                         input.seek(index196_1942);
     return s;
   }
@@ -37126,101 +37175,101 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_1943 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_1943==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2870;}
-                        else if ( (LA196_1943==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2871;}
-                        else if ( (LA196_1943==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2872;}
-                        else if ( (LA196_1943==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2873;}
-                        else if ( (LA196_1943==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2874;}
-                        else if ( (LA196_1943==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2875;}
-                        else if ( (LA196_1943==LT) && (synpred3_EsperEPL2Grammar())) {s = 2876;}
-                        else if ( (LA196_1943==GT) && (synpred3_EsperEPL2Grammar())) {s = 2877;}
-                        else if ( (LA196_1943==LE) && (synpred3_EsperEPL2Grammar())) {s = 2878;}
-                        else if ( (LA196_1943==GE) && (synpred3_EsperEPL2Grammar())) {s = 2879;}
-                        else if ( (LA196_1943==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2880;}
-                        else if ( (LA196_1943==IS) && (synpred3_EsperEPL2Grammar())) {s = 2881;}
-                        else if ( (LA196_1943==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2882;}
-                        else if ( (LA196_1943==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2883;}
-                        else if ( (LA196_1943==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2884;}
-                        else if ( (LA196_1943==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2885;}
-                        else if ( (LA196_1943==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2886;}
-                        else if ( (LA196_1943==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2887;}
-                        else if ( (LA196_1943==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2888;}
-                        else if ( (LA196_1943==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2889;}
-                        else if ( (LA196_1943==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2890;}
-                        else if ( (LA196_1943==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2891;}
-                        else if ( (LA196_1943==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2892;}
-                        else if ( (LA196_1943==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2893;}
-                        else if ( (LA196_1943==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2894;}
-                        else if ( (LA196_1943==RPAREN) ) {s = 14;}
+                        if ( (LA196_1943==RPAREN) ) {s = 14;}
+                        else if ( (LA196_1943==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2871;}
+                        else if ( (LA196_1943==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2872;}
+                        else if ( (LA196_1943==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2873;}
+                        else if ( (LA196_1943==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2874;}
+                        else if ( (LA196_1943==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2875;}
+                        else if ( (LA196_1943==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2876;}
+                        else if ( (LA196_1943==LT) && (synpred3_EsperEPL2Grammar())) {s = 2877;}
+                        else if ( (LA196_1943==GT) && (synpred3_EsperEPL2Grammar())) {s = 2878;}
+                        else if ( (LA196_1943==LE) && (synpred3_EsperEPL2Grammar())) {s = 2879;}
+                        else if ( (LA196_1943==GE) && (synpred3_EsperEPL2Grammar())) {s = 2880;}
+                        else if ( (LA196_1943==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2881;}
+                        else if ( (LA196_1943==IS) && (synpred3_EsperEPL2Grammar())) {s = 2882;}
+                        else if ( (LA196_1943==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2883;}
+                        else if ( (LA196_1943==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2884;}
+                        else if ( (LA196_1943==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2885;}
+                        else if ( (LA196_1943==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2886;}
+                        else if ( (LA196_1943==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2887;}
+                        else if ( (LA196_1943==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2888;}
+                        else if ( (LA196_1943==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2889;}
+                        else if ( (LA196_1943==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2890;}
+                        else if ( (LA196_1943==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2891;}
+                        else if ( (LA196_1943==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2892;}
+                        else if ( (LA196_1943==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2893;}
+                        else if ( (LA196_1943==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2894;}
+                        else if ( (LA196_1943==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2895;}
                         input.seek(index196_1943);
     return s;
   }
   private int sst_42() {
     int s = -1;
-                        int LA196_2012 = input.LA(1);
-                        int index196_2012 = input.index();
+                        int LA196_2019 = input.LA(1);
+                        int index196_2019 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_2012==RPAREN) ) {s = 2896;}
-                        else if ( (LA196_2012==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2897;}
-                        else if ( (LA196_2012==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2898;}
-                        else if ( (LA196_2012==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2899;}
-                        else if ( (LA196_2012==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2900;}
-                        else if ( (LA196_2012==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2901;}
-                        else if ( (LA196_2012==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2902;}
-                        else if ( (LA196_2012==LT) && (synpred3_EsperEPL2Grammar())) {s = 2903;}
-                        else if ( (LA196_2012==GT) && (synpred3_EsperEPL2Grammar())) {s = 2904;}
-                        else if ( (LA196_2012==LE) && (synpred3_EsperEPL2Grammar())) {s = 2905;}
-                        else if ( (LA196_2012==GE) && (synpred3_EsperEPL2Grammar())) {s = 2906;}
-                        else if ( (LA196_2012==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2907;}
-                        else if ( (LA196_2012==IS) && (synpred3_EsperEPL2Grammar())) {s = 2908;}
-                        else if ( (LA196_2012==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2909;}
-                        else if ( (LA196_2012==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2910;}
-                        else if ( (LA196_2012==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2911;}
-                        else if ( (LA196_2012==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2912;}
-                        else if ( (LA196_2012==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2913;}
-                        else if ( (LA196_2012==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2914;}
-                        else if ( (LA196_2012==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2915;}
-                        else if ( (LA196_2012==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2916;}
-                        else if ( (LA196_2012==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2917;}
-                        else if ( (LA196_2012==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2918;}
-                        else if ( (LA196_2012==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2919;}
-                        else if ( (LA196_2012==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2920;}
-                        input.seek(index196_2012);
+                        if ( (LA196_2019==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2896;}
+                        else if ( (LA196_2019==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2897;}
+                        else if ( (LA196_2019==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2898;}
+                        else if ( (LA196_2019==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2899;}
+                        else if ( (LA196_2019==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2900;}
+                        else if ( (LA196_2019==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2901;}
+                        else if ( (LA196_2019==LT) && (synpred3_EsperEPL2Grammar())) {s = 2902;}
+                        else if ( (LA196_2019==GT) && (synpred3_EsperEPL2Grammar())) {s = 2903;}
+                        else if ( (LA196_2019==LE) && (synpred3_EsperEPL2Grammar())) {s = 2904;}
+                        else if ( (LA196_2019==GE) && (synpred3_EsperEPL2Grammar())) {s = 2905;}
+                        else if ( (LA196_2019==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2906;}
+                        else if ( (LA196_2019==IS) && (synpred3_EsperEPL2Grammar())) {s = 2907;}
+                        else if ( (LA196_2019==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2908;}
+                        else if ( (LA196_2019==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2909;}
+                        else if ( (LA196_2019==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2910;}
+                        else if ( (LA196_2019==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2911;}
+                        else if ( (LA196_2019==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2912;}
+                        else if ( (LA196_2019==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2913;}
+                        else if ( (LA196_2019==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2914;}
+                        else if ( (LA196_2019==RPAREN) ) {s = 2915;}
+                        else if ( (LA196_2019==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2916;}
+                        else if ( (LA196_2019==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2917;}
+                        else if ( (LA196_2019==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2918;}
+                        else if ( (LA196_2019==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2919;}
+                        else if ( (LA196_2019==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2920;}
+                        input.seek(index196_2019);
     return s;
   }
   private int sst_43() {
     int s = -1;
-                        int LA196_2013 = input.LA(1);
-                        int index196_2013 = input.index();
+                        int LA196_2020 = input.LA(1);
+                        int index196_2020 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_2013==RPAREN) ) {s = 2921;}
-                        else if ( (LA196_2013==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2922;}
-                        else if ( (LA196_2013==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2923;}
-                        else if ( (LA196_2013==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2924;}
-                        else if ( (LA196_2013==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2925;}
-                        else if ( (LA196_2013==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2926;}
-                        else if ( (LA196_2013==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2927;}
-                        else if ( (LA196_2013==LT) && (synpred3_EsperEPL2Grammar())) {s = 2928;}
-                        else if ( (LA196_2013==GT) && (synpred3_EsperEPL2Grammar())) {s = 2929;}
-                        else if ( (LA196_2013==LE) && (synpred3_EsperEPL2Grammar())) {s = 2930;}
-                        else if ( (LA196_2013==GE) && (synpred3_EsperEPL2Grammar())) {s = 2931;}
-                        else if ( (LA196_2013==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2932;}
-                        else if ( (LA196_2013==IS) && (synpred3_EsperEPL2Grammar())) {s = 2933;}
-                        else if ( (LA196_2013==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2934;}
-                        else if ( (LA196_2013==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2935;}
-                        else if ( (LA196_2013==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2936;}
-                        else if ( (LA196_2013==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2937;}
-                        else if ( (LA196_2013==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2938;}
-                        else if ( (LA196_2013==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2939;}
-                        else if ( (LA196_2013==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2940;}
-                        else if ( (LA196_2013==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2941;}
-                        else if ( (LA196_2013==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2942;}
-                        else if ( (LA196_2013==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2943;}
-                        else if ( (LA196_2013==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2944;}
-                        else if ( (LA196_2013==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2945;}
-                        input.seek(index196_2013);
+                        if ( (LA196_2020==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2921;}
+                        else if ( (LA196_2020==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2922;}
+                        else if ( (LA196_2020==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2923;}
+                        else if ( (LA196_2020==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2924;}
+                        else if ( (LA196_2020==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2925;}
+                        else if ( (LA196_2020==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2926;}
+                        else if ( (LA196_2020==LT) && (synpred3_EsperEPL2Grammar())) {s = 2927;}
+                        else if ( (LA196_2020==GT) && (synpred3_EsperEPL2Grammar())) {s = 2928;}
+                        else if ( (LA196_2020==LE) && (synpred3_EsperEPL2Grammar())) {s = 2929;}
+                        else if ( (LA196_2020==GE) && (synpred3_EsperEPL2Grammar())) {s = 2930;}
+                        else if ( (LA196_2020==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2931;}
+                        else if ( (LA196_2020==IS) && (synpred3_EsperEPL2Grammar())) {s = 2932;}
+                        else if ( (LA196_2020==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2933;}
+                        else if ( (LA196_2020==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2934;}
+                        else if ( (LA196_2020==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2935;}
+                        else if ( (LA196_2020==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2936;}
+                        else if ( (LA196_2020==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2937;}
+                        else if ( (LA196_2020==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2938;}
+                        else if ( (LA196_2020==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2939;}
+                        else if ( (LA196_2020==RPAREN) ) {s = 2940;}
+                        else if ( (LA196_2020==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2941;}
+                        else if ( (LA196_2020==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2942;}
+                        else if ( (LA196_2020==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2943;}
+                        else if ( (LA196_2020==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2944;}
+                        else if ( (LA196_2020==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2945;}
+                        input.seek(index196_2020);
     return s;
   }
   private int sst_44() {
@@ -37229,33 +37278,33 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index196_2082 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA196_2082==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2946;}
-                        else if ( (LA196_2082==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2947;}
-                        else if ( (LA196_2082==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2948;}
-                        else if ( (LA196_2082==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2949;}
-                        else if ( (LA196_2082==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2950;}
-                        else if ( (LA196_2082==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2951;}
-                        else if ( (LA196_2082==LT) && (synpred3_EsperEPL2Grammar())) {s = 2952;}
-                        else if ( (LA196_2082==GT) && (synpred3_EsperEPL2Grammar())) {s = 2953;}
-                        else if ( (LA196_2082==LE) && (synpred3_EsperEPL2Grammar())) {s = 2954;}
-                        else if ( (LA196_2082==GE) && (synpred3_EsperEPL2Grammar())) {s = 2955;}
-                        else if ( (LA196_2082==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2956;}
-                        else if ( (LA196_2082==IS) && (synpred3_EsperEPL2Grammar())) {s = 2957;}
-                        else if ( (LA196_2082==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2958;}
-                        else if ( (LA196_2082==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2959;}
-                        else if ( (LA196_2082==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2960;}
-                        else if ( (LA196_2082==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2961;}
-                        else if ( (LA196_2082==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2962;}
-                        else if ( (LA196_2082==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2963;}
-                        else if ( (LA196_2082==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2964;}
-                        else if ( (LA196_2082==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2965;}
-                        else if ( (LA196_2082==AS) && (synpred3_EsperEPL2Grammar())) {s = 2966;}
-                        else if ( (LA196_2082==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2967;}
-                        else if ( (LA196_2082==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2968;}
-                        else if ( (LA196_2082==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2969;}
-                        else if ( (LA196_2082==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2970;}
-                        else if ( (LA196_2082==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2971;}
-                        else if ( (LA196_2082==RPAREN) ) {s = 14;}
+                        if ( (LA196_2082==RPAREN) ) {s = 14;}
+                        else if ( (LA196_2082==STAR) && (synpred3_EsperEPL2Grammar())) {s = 2947;}
+                        else if ( (LA196_2082==DIV) && (synpred3_EsperEPL2Grammar())) {s = 2948;}
+                        else if ( (LA196_2082==MOD) && (synpred3_EsperEPL2Grammar())) {s = 2949;}
+                        else if ( (LA196_2082==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 2950;}
+                        else if ( (LA196_2082==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 2951;}
+                        else if ( (LA196_2082==LOR) && (synpred3_EsperEPL2Grammar())) {s = 2952;}
+                        else if ( (LA196_2082==LT) && (synpred3_EsperEPL2Grammar())) {s = 2953;}
+                        else if ( (LA196_2082==GT) && (synpred3_EsperEPL2Grammar())) {s = 2954;}
+                        else if ( (LA196_2082==LE) && (synpred3_EsperEPL2Grammar())) {s = 2955;}
+                        else if ( (LA196_2082==GE) && (synpred3_EsperEPL2Grammar())) {s = 2956;}
+                        else if ( (LA196_2082==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 2957;}
+                        else if ( (LA196_2082==IS) && (synpred3_EsperEPL2Grammar())) {s = 2958;}
+                        else if ( (LA196_2082==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 2959;}
+                        else if ( (LA196_2082==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 2960;}
+                        else if ( (LA196_2082==BAND) && (synpred3_EsperEPL2Grammar())) {s = 2961;}
+                        else if ( (LA196_2082==BOR) && (synpred3_EsperEPL2Grammar())) {s = 2962;}
+                        else if ( (LA196_2082==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 2963;}
+                        else if ( (LA196_2082==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2964;}
+                        else if ( (LA196_2082==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2965;}
+                        else if ( (LA196_2082==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 2966;}
+                        else if ( (LA196_2082==AS) && (synpred3_EsperEPL2Grammar())) {s = 2967;}
+                        else if ( (LA196_2082==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 2968;}
+                        else if ( (LA196_2082==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 2969;}
+                        else if ( (LA196_2082==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 2970;}
+                        else if ( (LA196_2082==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 2971;}
+                        else if ( (LA196_2082==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 2972;}
                         input.seek(index196_2082);
     return s;
   }
@@ -37376,24 +37425,24 @@ public class EsperEPL2GrammarParser extends Parser {
   }
   private int sst_49() {
     int s = -1;
-                        int LA196_2318 = input.LA(1);
-                        int index196_2318 = input.index();
+                        int LA196_2298 = input.LA(1);
+                        int index196_2298 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (true) ) {s = 14;}
                         else if ( (synpred3_EsperEPL2Grammar()) ) {s = 3049;}
-                        input.seek(index196_2318);
+                        input.seek(index196_2298);
     return s;
   }
   private int sst_50() {
     int s = -1;
-                        int LA196_2344 = input.LA(1);
-                        int index196_2344 = input.index();
+                        int LA196_2324 = input.LA(1);
+                        int index196_2324 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (true) ) {s = 14;}
                         else if ( (synpred3_EsperEPL2Grammar()) ) {s = 3049;}
-                        input.seek(index196_2344);
+                        input.seek(index196_2324);
     return s;
   }
   private int sst_51() {
@@ -37431,24 +37480,24 @@ public class EsperEPL2GrammarParser extends Parser {
   }
   private int sst_54() {
     int s = -1;
-                        int LA196_2500 = input.LA(1);
-                        int index196_2500 = input.index();
+                        int LA196_2480 = input.LA(1);
+                        int index196_2480 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (true) ) {s = 14;}
                         else if ( (synpred3_EsperEPL2Grammar()) ) {s = 3049;}
-                        input.seek(index196_2500);
+                        input.seek(index196_2480);
     return s;
   }
   private int sst_55() {
     int s = -1;
-                        int LA196_2526 = input.LA(1);
-                        int index196_2526 = input.index();
+                        int LA196_2506 = input.LA(1);
+                        int index196_2506 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (true) ) {s = 14;}
                         else if ( (synpred3_EsperEPL2Grammar()) ) {s = 3049;}
-                        input.seek(index196_2526);
+                        input.seek(index196_2506);
     return s;
   }
   private int sst_56() {
@@ -37508,13 +37557,13 @@ public class EsperEPL2GrammarParser extends Parser {
   }
   private int sst_61() {
     int s = -1;
-                        int LA196_2662 = input.LA(1);
-                        int index196_2662 = input.index();
+                        int LA196_2682 = input.LA(1);
+                        int index196_2682 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (true) ) {s = 14;}
                         else if ( (synpred3_EsperEPL2Grammar()) ) {s = 3049;}
-                        input.seek(index196_2662);
+                        input.seek(index196_2682);
     return s;
   }
   private int sst_62() {
@@ -37541,68 +37590,68 @@ public class EsperEPL2GrammarParser extends Parser {
   }
   private int sst_64() {
     int s = -1;
-                        int LA196_2760 = input.LA(1);
-                        int index196_2760 = input.index();
+                        int LA196_2740 = input.LA(1);
+                        int index196_2740 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (true) ) {s = 14;}
                         else if ( (synpred3_EsperEPL2Grammar()) ) {s = 3049;}
-                        input.seek(index196_2760);
+                        input.seek(index196_2740);
     return s;
   }
   private int sst_65() {
     int s = -1;
-                        int LA196_2766 = input.LA(1);
-                        int index196_2766 = input.index();
+                        int LA196_2786 = input.LA(1);
+                        int index196_2786 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (true) ) {s = 14;}
                         else if ( (synpred3_EsperEPL2Grammar()) ) {s = 3049;}
-                        input.seek(index196_2766);
+                        input.seek(index196_2786);
     return s;
   }
   private int sst_66() {
     int s = -1;
-                        int LA196_2792 = input.LA(1);
-                        int index196_2792 = input.index();
+                        int LA196_2812 = input.LA(1);
+                        int index196_2812 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (true) ) {s = 14;}
                         else if ( (synpred3_EsperEPL2Grammar()) ) {s = 3049;}
-                        input.seek(index196_2792);
+                        input.seek(index196_2812);
     return s;
   }
   private int sst_67() {
     int s = -1;
-                        int LA196_2818 = input.LA(1);
-                        int index196_2818 = input.index();
+                        int LA196_2838 = input.LA(1);
+                        int index196_2838 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (true) ) {s = 14;}
                         else if ( (synpred3_EsperEPL2Grammar()) ) {s = 3049;}
-                        input.seek(index196_2818);
+                        input.seek(index196_2838);
     return s;
   }
   private int sst_68() {
     int s = -1;
-                        int LA196_2896 = input.LA(1);
-                        int index196_2896 = input.index();
+                        int LA196_2915 = input.LA(1);
+                        int index196_2915 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (true) ) {s = 14;}
                         else if ( (synpred3_EsperEPL2Grammar()) ) {s = 3049;}
-                        input.seek(index196_2896);
+                        input.seek(index196_2915);
     return s;
   }
   private int sst_69() {
     int s = -1;
-                        int LA196_2921 = input.LA(1);
-                        int index196_2921 = input.index();
+                        int LA196_2940 = input.LA(1);
+                        int index196_2940 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (true) ) {s = 14;}
                         else if ( (synpred3_EsperEPL2Grammar()) ) {s = 3049;}
-                        input.seek(index196_2921);
+                        input.seek(index196_2940);
     return s;
   }
   private int sst_70() {
@@ -38584,232 +38633,233 @@ public class EsperEPL2GrammarParser extends Parser {
     public static final BitSet FOLLOW_expression_in_expressionList11291 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000080000000000L});
     public static final BitSet FOLLOW_COMMA_in_expressionList11294 = new BitSet(new long[]{0x803801E817FD6420L,0x169C1C0000FDFFFFL,0x0000000000000000L,0x0000000000000000L,0x006C016000800000L,0x0000000000000E09L});
     public static final BitSet FOLLOW_expression_in_expressionList11297 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000080000000000L});
-    public static final BitSet FOLLOW_expressionWithTime_in_expressionWithTimeList11325 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000080000000000L});
+    public static final BitSet FOLLOW_expressionWithTimeInclLast_in_expressionWithTimeList11325 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000080000000000L});
     public static final BitSet FOLLOW_COMMA_in_expressionWithTimeList11328 = new BitSet(new long[]{0x803801E817FD6420L,0x169C1C0000FDFFFFL,0x0000000000000000L,0x0000000000000000L,0x006D416000800000L,0x0000000000000E09L});
-    public static final BitSet FOLLOW_expressionWithTime_in_expressionWithTimeList11331 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000080000000000L});
-    public static final BitSet FOLLOW_lastOperand_in_expressionWithTime11357 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastWeekdayOperand_in_expressionWithTime11368 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_timePeriod_in_expressionWithTime11379 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expressionQualifyable_in_expressionWithTime11390 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rangeOperand_in_expressionWithTime11401 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_frequencyOperand_in_expressionWithTime11413 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastOperator_in_expressionWithTime11424 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_weekDayOperator_in_expressionWithTime11436 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numericParameterList_in_expressionWithTime11448 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numberSetStar_in_expressionWithTime11453 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expression_in_expressionQualifyable11464 = new BitSet(new long[]{0x0600000000000002L,0x0000007000000000L});
-    public static final BitSet FOLLOW_ASC_in_expressionQualifyable11469 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DESC_in_expressionQualifyable11473 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SECONDS_in_expressionQualifyable11477 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SECOND_in_expressionQualifyable11481 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SEC_in_expressionQualifyable11485 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STAR_in_numberSetStar11542 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LW_in_lastWeekdayOperand11562 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LAST_in_lastOperand11575 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STAR_in_frequencyOperand11587 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000002L});
-    public static final BitSet FOLLOW_DIV_in_frequencyOperand11589 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_number_in_frequencyOperand11592 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_frequencyOperand11596 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_substitution_in_frequencyOperand11598 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_rangeOperand11647 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0010000000000000L});
-    public static final BitSet FOLLOW_IDENT_in_rangeOperand11651 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0010000000000000L});
-    public static final BitSet FOLLOW_substitution_in_rangeOperand11653 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0010000000000000L});
-    public static final BitSet FOLLOW_COLON_in_rangeOperand11656 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_number_in_rangeOperand11659 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_rangeOperand11663 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_substitution_in_rangeOperand11665 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_lastOperator11779 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_IDENT_in_lastOperator11783 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_substitution_in_lastOperator11785 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_LAST_in_lastOperator11788 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_weekDayOperator11836 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
-    public static final BitSet FOLLOW_IDENT_in_weekDayOperator11840 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
-    public static final BitSet FOLLOW_substitution_in_weekDayOperator11842 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
-    public static final BitSet FOLLOW_WEEKDAY_in_weekDayOperator11845 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LBRACK_in_numericParameterList11892 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000D002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_numericListParameter_in_numericParameterList11894 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000880000000000L});
-    public static final BitSet FOLLOW_COMMA_in_numericParameterList11897 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000D002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_numericListParameter_in_numericParameterList11899 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000880000000000L});
-    public static final BitSet FOLLOW_RBRACK_in_numericParameterList11903 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rangeOperand_in_numericListParameter11925 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_frequencyOperand_in_numericListParameter11931 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numberconstant_in_numericListParameter11936 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventProperty11952 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000200000000000L});
-    public static final BitSet FOLLOW_DOT_in_eventProperty11955 = new BitSet(new long[]{0x803801E807FC4420L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x0000002000000000L,0x0000000000000200L});
-    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventProperty11957 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000200000000000L});
-    public static final BitSet FOLLOW_eventPropertyIdent_in_eventPropertyAtomic11983 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0008410000000000L});
-    public static final BitSet FOLLOW_LBRACK_in_eventPropertyAtomic11992 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000008L});
-    public static final BitSet FOLLOW_NUM_INT_in_eventPropertyAtomic11996 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000800000000000L});
-    public static final BitSet FOLLOW_RBRACK_in_eventPropertyAtomic11998 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0008000000000000L});
-    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic12003 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LPAREN_in_eventPropertyAtomic12017 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0060000000000000L});
-    public static final BitSet FOLLOW_STRING_LITERAL_in_eventPropertyAtomic12022 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000020000000000L});
-    public static final BitSet FOLLOW_QUOTED_STRING_LITERAL_in_eventPropertyAtomic12028 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000020000000000L});
-    public static final BitSet FOLLOW_RPAREN_in_eventPropertyAtomic12031 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0008000000000000L});
-    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic12036 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic12050 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_keywordAllowedIdent_in_eventPropertyIdent12173 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000100L});
-    public static final BitSet FOLLOW_ESCAPECHAR_in_eventPropertyIdent12185 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000200000000000L});
-    public static final BitSet FOLLOW_DOT_in_eventPropertyIdent12187 = new BitSet(new long[]{0x803801E807FC4422L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x0000002000000000L,0x0000000000000300L});
-    public static final BitSet FOLLOW_keywordAllowedIdent_in_eventPropertyIdent12191 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000100L});
-    public static final BitSet FOLLOW_IDENT_in_keywordAllowedIdent12230 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_keywordAllowedIdent12239 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_AT_in_keywordAllowedIdent12246 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_COUNT_in_keywordAllowedIdent12253 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ESCAPE_in_keywordAllowedIdent12260 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EVERY_EXPR_in_keywordAllowedIdent12271 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SUM_in_keywordAllowedIdent12278 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_AVG_in_keywordAllowedIdent12285 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MAX_in_keywordAllowedIdent12292 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MIN_in_keywordAllowedIdent12299 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_COALESCE_in_keywordAllowedIdent12306 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MEDIAN_in_keywordAllowedIdent12313 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STDDEV_in_keywordAllowedIdent12320 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_AVEDEV_in_keywordAllowedIdent12327 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EVENTS_in_keywordAllowedIdent12334 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FIRST_in_keywordAllowedIdent12341 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LAST_in_keywordAllowedIdent12348 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WHILE_in_keywordAllowedIdent12355 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MERGE_in_keywordAllowedIdent12362 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MATCHED_in_keywordAllowedIdent12369 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_UNIDIRECTIONAL_in_keywordAllowedIdent12376 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RETAINUNION_in_keywordAllowedIdent12383 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RETAININTERSECTION_in_keywordAllowedIdent12390 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_UNTIL_in_keywordAllowedIdent12397 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PATTERN_in_keywordAllowedIdent12404 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SQL_in_keywordAllowedIdent12411 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_METADATASQL_in_keywordAllowedIdent12418 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PREVIOUS_in_keywordAllowedIdent12425 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PREVIOUSTAIL_in_keywordAllowedIdent12432 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PRIOR_in_keywordAllowedIdent12439 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WEEKDAY_in_keywordAllowedIdent12446 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LW_in_keywordAllowedIdent12453 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INSTANCEOF_in_keywordAllowedIdent12460 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TYPEOF_in_keywordAllowedIdent12467 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CAST_in_keywordAllowedIdent12474 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SNAPSHOT_in_keywordAllowedIdent12481 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VARIABLE_in_keywordAllowedIdent12488 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INDEX_in_keywordAllowedIdent12497 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WINDOW_in_keywordAllowedIdent12506 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_in_keywordAllowedIdent12513 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RIGHT_in_keywordAllowedIdent12520 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_OUTER_in_keywordAllowedIdent12527 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FULL_in_keywordAllowedIdent12534 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_JOIN_in_keywordAllowedIdent12541 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DEFINE_in_keywordAllowedIdent12548 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PARTITION_in_keywordAllowedIdent12555 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MATCHES_in_keywordAllowedIdent12562 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_escapableStr12583 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_escapableStr12592 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_escapableIdent12606 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_escapableIdent12614 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_yearPart_in_timePeriod12639 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_monthPart_in_timePeriod12641 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_weekPart_in_timePeriod12644 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_dayPart_in_timePeriod12647 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_hourPart_in_timePeriod12650 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod12653 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod12656 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12659 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_monthPart_in_timePeriod12665 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_weekPart_in_timePeriod12667 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_dayPart_in_timePeriod12670 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_hourPart_in_timePeriod12673 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod12676 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod12679 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12682 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_weekPart_in_timePeriod12688 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_dayPart_in_timePeriod12690 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_hourPart_in_timePeriod12693 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod12696 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod12699 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12702 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_dayPart_in_timePeriod12708 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_expressionWithTimeInclLast_in_expressionWithTimeList11331 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000080000000000L});
+    public static final BitSet FOLLOW_lastWeekdayOperand_in_expressionWithTime11360 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_timePeriod_in_expressionWithTime11371 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expressionQualifyable_in_expressionWithTime11382 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rangeOperand_in_expressionWithTime11393 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_frequencyOperand_in_expressionWithTime11405 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastOperator_in_expressionWithTime11416 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_weekDayOperator_in_expressionWithTime11428 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numericParameterList_in_expressionWithTime11440 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numberSetStar_in_expressionWithTime11445 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastOperand_in_expressionWithTimeInclLast11465 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expressionWithTime_in_expressionWithTimeInclLast11470 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expression_in_expressionQualifyable11481 = new BitSet(new long[]{0x0600000000000002L,0x0000007000000000L});
+    public static final BitSet FOLLOW_ASC_in_expressionQualifyable11486 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DESC_in_expressionQualifyable11490 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SECONDS_in_expressionQualifyable11494 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SECOND_in_expressionQualifyable11498 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SEC_in_expressionQualifyable11502 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STAR_in_numberSetStar11559 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LW_in_lastWeekdayOperand11579 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LAST_in_lastOperand11592 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STAR_in_frequencyOperand11604 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000002L});
+    public static final BitSet FOLLOW_DIV_in_frequencyOperand11606 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_number_in_frequencyOperand11609 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_frequencyOperand11613 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_substitution_in_frequencyOperand11615 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_rangeOperand11664 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0010000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_rangeOperand11668 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0010000000000000L});
+    public static final BitSet FOLLOW_substitution_in_rangeOperand11670 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0010000000000000L});
+    public static final BitSet FOLLOW_COLON_in_rangeOperand11673 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_number_in_rangeOperand11676 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_rangeOperand11680 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_substitution_in_rangeOperand11682 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_lastOperator11796 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_lastOperator11800 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_substitution_in_lastOperator11802 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_LAST_in_lastOperator11805 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_weekDayOperator11853 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_IDENT_in_weekDayOperator11857 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_substitution_in_weekDayOperator11859 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_WEEKDAY_in_weekDayOperator11862 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LBRACK_in_numericParameterList11909 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000D002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_numericListParameter_in_numericParameterList11911 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000880000000000L});
+    public static final BitSet FOLLOW_COMMA_in_numericParameterList11914 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000D002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_numericListParameter_in_numericParameterList11916 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000880000000000L});
+    public static final BitSet FOLLOW_RBRACK_in_numericParameterList11920 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rangeOperand_in_numericListParameter11942 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_frequencyOperand_in_numericListParameter11948 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numberconstant_in_numericListParameter11953 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventProperty11969 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000200000000000L});
+    public static final BitSet FOLLOW_DOT_in_eventProperty11972 = new BitSet(new long[]{0x803801E807FC4420L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x0000002000000000L,0x0000000000000200L});
+    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventProperty11974 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000200000000000L});
+    public static final BitSet FOLLOW_eventPropertyIdent_in_eventPropertyAtomic12000 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0008410000000000L});
+    public static final BitSet FOLLOW_LBRACK_in_eventPropertyAtomic12009 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000008L});
+    public static final BitSet FOLLOW_NUM_INT_in_eventPropertyAtomic12013 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000800000000000L});
+    public static final BitSet FOLLOW_RBRACK_in_eventPropertyAtomic12015 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0008000000000000L});
+    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic12020 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LPAREN_in_eventPropertyAtomic12034 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0060000000000000L});
+    public static final BitSet FOLLOW_STRING_LITERAL_in_eventPropertyAtomic12039 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000020000000000L});
+    public static final BitSet FOLLOW_QUOTED_STRING_LITERAL_in_eventPropertyAtomic12045 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000020000000000L});
+    public static final BitSet FOLLOW_RPAREN_in_eventPropertyAtomic12048 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0008000000000000L});
+    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic12053 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic12067 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_keywordAllowedIdent_in_eventPropertyIdent12190 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000100L});
+    public static final BitSet FOLLOW_ESCAPECHAR_in_eventPropertyIdent12202 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000200000000000L});
+    public static final BitSet FOLLOW_DOT_in_eventPropertyIdent12204 = new BitSet(new long[]{0x803801E807FC4422L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x0000002000000000L,0x0000000000000300L});
+    public static final BitSet FOLLOW_keywordAllowedIdent_in_eventPropertyIdent12208 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000100L});
+    public static final BitSet FOLLOW_IDENT_in_keywordAllowedIdent12247 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_keywordAllowedIdent12256 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_AT_in_keywordAllowedIdent12263 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_COUNT_in_keywordAllowedIdent12270 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ESCAPE_in_keywordAllowedIdent12277 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EVERY_EXPR_in_keywordAllowedIdent12288 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SUM_in_keywordAllowedIdent12295 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_AVG_in_keywordAllowedIdent12302 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MAX_in_keywordAllowedIdent12309 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MIN_in_keywordAllowedIdent12316 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_COALESCE_in_keywordAllowedIdent12323 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MEDIAN_in_keywordAllowedIdent12330 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STDDEV_in_keywordAllowedIdent12337 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_AVEDEV_in_keywordAllowedIdent12344 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EVENTS_in_keywordAllowedIdent12351 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FIRST_in_keywordAllowedIdent12358 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LAST_in_keywordAllowedIdent12365 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WHILE_in_keywordAllowedIdent12372 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MERGE_in_keywordAllowedIdent12379 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MATCHED_in_keywordAllowedIdent12386 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_UNIDIRECTIONAL_in_keywordAllowedIdent12393 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RETAINUNION_in_keywordAllowedIdent12400 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RETAININTERSECTION_in_keywordAllowedIdent12407 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_UNTIL_in_keywordAllowedIdent12414 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PATTERN_in_keywordAllowedIdent12421 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SQL_in_keywordAllowedIdent12428 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_METADATASQL_in_keywordAllowedIdent12435 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PREVIOUS_in_keywordAllowedIdent12442 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PREVIOUSTAIL_in_keywordAllowedIdent12449 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PRIOR_in_keywordAllowedIdent12456 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WEEKDAY_in_keywordAllowedIdent12463 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LW_in_keywordAllowedIdent12470 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INSTANCEOF_in_keywordAllowedIdent12477 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TYPEOF_in_keywordAllowedIdent12484 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CAST_in_keywordAllowedIdent12491 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SNAPSHOT_in_keywordAllowedIdent12498 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VARIABLE_in_keywordAllowedIdent12505 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INDEX_in_keywordAllowedIdent12514 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WINDOW_in_keywordAllowedIdent12523 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_in_keywordAllowedIdent12530 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RIGHT_in_keywordAllowedIdent12537 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_OUTER_in_keywordAllowedIdent12544 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FULL_in_keywordAllowedIdent12551 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_JOIN_in_keywordAllowedIdent12558 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DEFINE_in_keywordAllowedIdent12565 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PARTITION_in_keywordAllowedIdent12572 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MATCHES_in_keywordAllowedIdent12579 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_escapableStr12600 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_escapableStr12609 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_escapableIdent12623 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_escapableIdent12631 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_yearPart_in_timePeriod12656 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_monthPart_in_timePeriod12658 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_weekPart_in_timePeriod12661 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_dayPart_in_timePeriod12664 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriod12667 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod12670 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod12673 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12676 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_monthPart_in_timePeriod12682 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_weekPart_in_timePeriod12684 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_dayPart_in_timePeriod12687 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriod12690 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod12693 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod12696 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12699 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_weekPart_in_timePeriod12705 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_dayPart_in_timePeriod12707 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
     public static final BitSet FOLLOW_hourPart_in_timePeriod12710 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
     public static final BitSet FOLLOW_minutePart_in_timePeriod12713 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
     public static final BitSet FOLLOW_secondPart_in_timePeriod12716 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
     public static final BitSet FOLLOW_millisecondPart_in_timePeriod12719 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_hourPart_in_timePeriod12725 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod12727 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod12730 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12733 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod12739 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod12741 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12744 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod12750 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12752 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12758 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_yearPart12805 = new BitSet(new long[]{0x0000000000000000L,0x0000000003000000L});
-    public static final BitSet FOLLOW_IDENT_in_yearPart12809 = new BitSet(new long[]{0x0000000000000000L,0x0000000003000000L});
-    public static final BitSet FOLLOW_substitution_in_yearPart12811 = new BitSet(new long[]{0x0000000000000000L,0x0000000003000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_YEARS_in_yearPart12815 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_YEAR_in_yearPart12819 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_monthPart12867 = new BitSet(new long[]{0x0000000000000000L,0x000000000C000000L});
-    public static final BitSet FOLLOW_IDENT_in_monthPart12871 = new BitSet(new long[]{0x0000000000000000L,0x000000000C000000L});
-    public static final BitSet FOLLOW_substitution_in_monthPart12873 = new BitSet(new long[]{0x0000000000000000L,0x000000000C000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MONTHS_in_monthPart12877 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MONTH_in_monthPart12881 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_weekPart12929 = new BitSet(new long[]{0x0000000000000000L,0x0000000030000000L});
-    public static final BitSet FOLLOW_IDENT_in_weekPart12933 = new BitSet(new long[]{0x0000000000000000L,0x0000000030000000L});
-    public static final BitSet FOLLOW_substitution_in_weekPart12935 = new BitSet(new long[]{0x0000000000000000L,0x0000000030000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_WEEKS_in_weekPart12939 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_WEEK_in_weekPart12943 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_dayPart12991 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
-    public static final BitSet FOLLOW_IDENT_in_dayPart12995 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
-    public static final BitSet FOLLOW_substitution_in_dayPart12997 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_DAYS_in_dayPart13001 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_DAY_in_dayPart13005 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_hourPart13054 = new BitSet(new long[]{0x0000000000000000L,0x0000000300000000L});
-    public static final BitSet FOLLOW_IDENT_in_hourPart13058 = new BitSet(new long[]{0x0000000000000000L,0x0000000300000000L});
-    public static final BitSet FOLLOW_substitution_in_hourPart13060 = new BitSet(new long[]{0x0000000000000000L,0x0000000300000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_HOURS_in_hourPart13064 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_HOUR_in_hourPart13068 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_minutePart13117 = new BitSet(new long[]{0x0000000000200000L,0x0000000C00000000L});
-    public static final BitSet FOLLOW_IDENT_in_minutePart13121 = new BitSet(new long[]{0x0000000000200000L,0x0000000C00000000L});
-    public static final BitSet FOLLOW_substitution_in_minutePart13123 = new BitSet(new long[]{0x0000000000200000L,0x0000000C00000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MINUTES_in_minutePart13127 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MINUTE_in_minutePart13131 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MIN_in_minutePart13135 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_secondPart13185 = new BitSet(new long[]{0x0000000000000000L,0x0000007000000000L});
-    public static final BitSet FOLLOW_IDENT_in_secondPart13189 = new BitSet(new long[]{0x0000000000000000L,0x0000007000000000L});
-    public static final BitSet FOLLOW_substitution_in_secondPart13191 = new BitSet(new long[]{0x0000000000000000L,0x0000007000000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SECONDS_in_secondPart13195 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SECOND_in_secondPart13199 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SEC_in_secondPart13203 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_millisecondPart13253 = new BitSet(new long[]{0x0000000000000000L,0x0000038000000000L});
-    public static final BitSet FOLLOW_IDENT_in_millisecondPart13257 = new BitSet(new long[]{0x0000000000000000L,0x0000038000000000L});
-    public static final BitSet FOLLOW_substitution_in_millisecondPart13259 = new BitSet(new long[]{0x0000000000000000L,0x0000038000000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MILLISECONDS_in_millisecondPart13263 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MILLISECOND_in_millisecondPart13267 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MILLISEC_in_millisecondPart13271 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_INT_in_number13326 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_LONG_in_number13343 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_FLOAT_in_number13360 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_DOUBLE_in_number13377 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_QUESTION_in_substitution13398 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numberconstant_in_constant13417 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_stringconstant_in_constant13424 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BOOLEAN_TRUE_in_constant13437 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BOOLEAN_FALSE_in_constant13457 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_NULL_in_constant13477 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_numberconstant13499 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0004000000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_PLUS_in_numberconstant13505 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0004000000800000L,0x0000000000000C09L});
-    public static final BitSet FOLLOW_number_in_numberconstant13509 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRING_LITERAL_in_stringconstant13538 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_QUOTED_STRING_LITERAL_in_stringconstant13554 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_dayPart_in_timePeriod12725 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriod12727 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod12730 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod12733 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12736 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriod12742 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod12744 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod12747 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12750 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod12756 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod12758 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12761 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod12767 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000C002000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12769 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod12775 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_yearPart12822 = new BitSet(new long[]{0x0000000000000000L,0x0000000003000000L});
+    public static final BitSet FOLLOW_IDENT_in_yearPart12826 = new BitSet(new long[]{0x0000000000000000L,0x0000000003000000L});
+    public static final BitSet FOLLOW_substitution_in_yearPart12828 = new BitSet(new long[]{0x0000000000000000L,0x0000000003000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_YEARS_in_yearPart12832 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_YEAR_in_yearPart12836 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_monthPart12884 = new BitSet(new long[]{0x0000000000000000L,0x000000000C000000L});
+    public static final BitSet FOLLOW_IDENT_in_monthPart12888 = new BitSet(new long[]{0x0000000000000000L,0x000000000C000000L});
+    public static final BitSet FOLLOW_substitution_in_monthPart12890 = new BitSet(new long[]{0x0000000000000000L,0x000000000C000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MONTHS_in_monthPart12894 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MONTH_in_monthPart12898 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_weekPart12946 = new BitSet(new long[]{0x0000000000000000L,0x0000000030000000L});
+    public static final BitSet FOLLOW_IDENT_in_weekPart12950 = new BitSet(new long[]{0x0000000000000000L,0x0000000030000000L});
+    public static final BitSet FOLLOW_substitution_in_weekPart12952 = new BitSet(new long[]{0x0000000000000000L,0x0000000030000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_WEEKS_in_weekPart12956 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_WEEK_in_weekPart12960 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_dayPart13008 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
+    public static final BitSet FOLLOW_IDENT_in_dayPart13012 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
+    public static final BitSet FOLLOW_substitution_in_dayPart13014 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_DAYS_in_dayPart13018 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_DAY_in_dayPart13022 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_hourPart13071 = new BitSet(new long[]{0x0000000000000000L,0x0000000300000000L});
+    public static final BitSet FOLLOW_IDENT_in_hourPart13075 = new BitSet(new long[]{0x0000000000000000L,0x0000000300000000L});
+    public static final BitSet FOLLOW_substitution_in_hourPart13077 = new BitSet(new long[]{0x0000000000000000L,0x0000000300000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_HOURS_in_hourPart13081 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_HOUR_in_hourPart13085 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_minutePart13134 = new BitSet(new long[]{0x0000000000200000L,0x0000000C00000000L});
+    public static final BitSet FOLLOW_IDENT_in_minutePart13138 = new BitSet(new long[]{0x0000000000200000L,0x0000000C00000000L});
+    public static final BitSet FOLLOW_substitution_in_minutePart13140 = new BitSet(new long[]{0x0000000000200000L,0x0000000C00000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MINUTES_in_minutePart13144 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MINUTE_in_minutePart13148 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MIN_in_minutePart13152 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_secondPart13202 = new BitSet(new long[]{0x0000000000000000L,0x0000007000000000L});
+    public static final BitSet FOLLOW_IDENT_in_secondPart13206 = new BitSet(new long[]{0x0000000000000000L,0x0000007000000000L});
+    public static final BitSet FOLLOW_substitution_in_secondPart13208 = new BitSet(new long[]{0x0000000000000000L,0x0000007000000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SECONDS_in_secondPart13212 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SECOND_in_secondPart13216 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SEC_in_secondPart13220 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_millisecondPart13270 = new BitSet(new long[]{0x0000000000000000L,0x0000038000000000L});
+    public static final BitSet FOLLOW_IDENT_in_millisecondPart13274 = new BitSet(new long[]{0x0000000000000000L,0x0000038000000000L});
+    public static final BitSet FOLLOW_substitution_in_millisecondPart13276 = new BitSet(new long[]{0x0000000000000000L,0x0000038000000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MILLISECONDS_in_millisecondPart13280 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MILLISECOND_in_millisecondPart13284 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MILLISEC_in_millisecondPart13288 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_INT_in_number13343 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_LONG_in_number13360 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_FLOAT_in_number13377 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_DOUBLE_in_number13394 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_QUESTION_in_substitution13415 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numberconstant_in_constant13434 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_stringconstant_in_constant13441 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BOOLEAN_TRUE_in_constant13454 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BOOLEAN_FALSE_in_constant13474 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_NULL_in_constant13494 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_numberconstant13516 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0004000000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_PLUS_in_numberconstant13522 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0004000000800000L,0x0000000000000C09L});
+    public static final BitSet FOLLOW_number_in_numberconstant13526 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRING_LITERAL_in_stringconstant13555 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_QUOTED_STRING_LITERAL_in_stringconstant13571 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_streamSelector_in_synpred1_EsperEPL2Grammar4840 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_timePeriod_in_synpred2_EsperEPL2Grammar6240 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_builtinFunc_in_synpred3_EsperEPL2Grammar8104 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_propertyStreamSelector_in_synpred4_EsperEPL2Grammar9449 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_eventProperty_in_synpred5_EsperEPL2Grammar9511 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_propertyStreamSelector_in_synpred6_EsperEPL2Grammar10874 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastOperand_in_synpred7_EsperEPL2Grammar11352 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastWeekdayOperand_in_synpred8_EsperEPL2Grammar11363 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_timePeriod_in_synpred9_EsperEPL2Grammar11374 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expressionQualifyable_in_synpred10_EsperEPL2Grammar11385 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rangeOperand_in_synpred11_EsperEPL2Grammar11396 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_frequencyOperand_in_synpred12_EsperEPL2Grammar11408 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastOperator_in_synpred13_EsperEPL2Grammar11419 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_weekDayOperator_in_synpred14_EsperEPL2Grammar11430 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numericParameterList_in_synpred15_EsperEPL2Grammar11443 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastWeekdayOperand_in_synpred7_EsperEPL2Grammar11355 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_timePeriod_in_synpred8_EsperEPL2Grammar11366 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expressionQualifyable_in_synpred9_EsperEPL2Grammar11377 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rangeOperand_in_synpred10_EsperEPL2Grammar11388 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_frequencyOperand_in_synpred11_EsperEPL2Grammar11400 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastOperator_in_synpred12_EsperEPL2Grammar11411 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_weekDayOperator_in_synpred13_EsperEPL2Grammar11422 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numericParameterList_in_synpred14_EsperEPL2Grammar11435 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastOperand_in_synpred15_EsperEPL2Grammar11460 = new BitSet(new long[]{0x0000000000000002L});
 }

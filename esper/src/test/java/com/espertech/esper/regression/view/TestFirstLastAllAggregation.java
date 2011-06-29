@@ -138,6 +138,10 @@ public class TestFirstLastAllAggregation extends TestCase {
         epService.getEPRuntime().setVariableValue("indexvar", 0);
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 13));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {10});
+        stmt.destroy();
+        
+        // test as part of function
+        epService.getEPAdministrator().createEPL("select Math.abs(last(intPrimitive)) from SupportBean");
     }
 
     private void runAssertionFirstLastIndexed() {
