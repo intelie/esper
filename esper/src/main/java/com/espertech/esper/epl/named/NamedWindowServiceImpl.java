@@ -162,6 +162,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
         {
             processor.destroy();
             processors.remove(name);
+            windowStatementLocks.remove(name);
 
             if (!observers.isEmpty())
             {

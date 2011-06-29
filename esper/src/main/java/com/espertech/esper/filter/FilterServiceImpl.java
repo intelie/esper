@@ -9,6 +9,7 @@
 package com.espertech.esper.filter;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.util.AuditPath;
 import org.apache.commons.logging.Log;
@@ -136,5 +137,13 @@ public final class FilterServiceImpl implements FilterServiceSPI
     {
         filtersVersion++;
         indexBuilder.apply(filterSet);
+    }
+
+    public int getCountTypes() {
+        return eventTypeIndex.size();
+    }
+
+    public void removeType(EventType type) {
+        eventTypeIndex.removeType(type);
     }
 }

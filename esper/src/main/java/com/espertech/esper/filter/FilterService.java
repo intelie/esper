@@ -9,6 +9,7 @@
 package com.espertech.esper.filter;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Collection;
@@ -80,4 +81,6 @@ public interface FilterService
      * @return filter version
      */
     public long getFiltersVersion();
+
+    void removeType(EventType type);
 }

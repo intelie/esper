@@ -227,6 +227,7 @@ public class EPStatementStartMethod
                 services.getStatementEventTypeRefService().removeReferencesStatement(statementContext.getStatementName());
                 if (services.getStatementEventTypeRefService().getStatementNamesForType(spec.getSchemaName()).isEmpty()) {
                     services.getEventAdapterService().removeType(allocatedEventType.getName());
+                    services.getFilterService().removeType(allocatedEventType);
                 }
             }
         };

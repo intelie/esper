@@ -18,6 +18,7 @@ import com.espertech.esper.core.StatementEventTypeRef;
 import com.espertech.esper.core.StatementIsolationService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.util.DependencyGraph;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,6 +44,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
     private final StatementEventTypeRef statementEventTypeRef;
     private final EventAdapterService eventAdapterService;
     private final StatementIsolationService statementIsolationService;
+    private final FilterService filterService;
 
     /**
      * Ctor.
@@ -52,13 +54,14 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
      * @param eventAdapterService event wrap service
      * @param statementIsolationService for isolated statement execution
      */
-    public EPDeploymentAdminImpl(EPAdministratorSPI epService, DeploymentStateService deploymentStateService, StatementEventTypeRef statementEventTypeRef, EventAdapterService eventAdapterService, StatementIsolationService statementIsolationService)
+    public EPDeploymentAdminImpl(EPAdministratorSPI epService, DeploymentStateService deploymentStateService, StatementEventTypeRef statementEventTypeRef, EventAdapterService eventAdapterService, StatementIsolationService statementIsolationService, FilterService filterService)
     {
         this.epService = epService;
         this.deploymentStateService = deploymentStateService;
         this.statementEventTypeRef = statementEventTypeRef;
         this.eventAdapterService = eventAdapterService;
         this.statementIsolationService = statementIsolationService;
+        this.filterService = filterService;
     }
 
     public Module read(InputStream stream, String uri) throws IOException, ParseException
@@ -681,6 +684,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                 EventTypeSPI spi = (EventTypeSPI) type;
                 if (!spi.getMetadata().isApplicationPreConfigured()) {
                     eventAdapterService.removeType(typeName);
+                    filterService.removeType(type);
                 }
             }
         }

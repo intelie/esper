@@ -75,6 +75,19 @@ public class EventTypeIndex implements EventEvaluator
         }
     }
 
+
+    public void removeType(EventType type) {
+        eventTypesRWLock.writeLock().lock();
+        try
+        {
+            eventTypes.remove(type);
+        }
+        finally
+        {
+            eventTypesRWLock.writeLock().unlock();
+        }
+    }
+
     /**
      * Returns the root node for the given event type, or null if this event type has not been seen before.
      * @param eventType is an event type

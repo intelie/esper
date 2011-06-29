@@ -1,5 +1,6 @@
 package com.espertech.esper.support.filter;
 
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.filter.FilterHandle;
 import com.espertech.esper.filter.FilterValueSet;
@@ -62,5 +63,9 @@ public class SupportFilterServiceImpl implements FilterService
 
     public long getFiltersVersion() {
         return Long.MIN_VALUE;  
+    }
+
+    public void removeType(EventType type) {
+
     }
 }

@@ -4,6 +4,9 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.deploy.DeploymentResult;
 import com.espertech.esper.client.deploy.EPDeploymentAdmin;
+import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.filter.FilterService;
+import com.espertech.esper.filter.FilterServiceSPI;
 import junit.framework.TestCase;
 
 import java.util.HashMap;
@@ -41,6 +44,10 @@ public class TestDeployRedefinition extends TestCase
 
         DeploymentResult resultThree = deploySvc.parseDeploy(text, "uri1", "arch1", null);
         deploySvc.undeployRemove(resultThree.getDeploymentId());
+
+        FilterService filterService = ((EPServiceProviderSPI) epService).getFilterService();
+        FilterServiceSPI filterSPI = (FilterServiceSPI) filterService;
+        assertEquals(0, filterSPI.getCountTypes());
     }
 
     public void testNamedWindow() throws Exception {
