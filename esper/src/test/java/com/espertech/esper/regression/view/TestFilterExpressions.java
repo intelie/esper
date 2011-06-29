@@ -26,6 +26,32 @@ public class TestFilterExpressions extends TestCase
         epService.initialize();
     }
 
+    public void testRelationalOpConstantFirst() {
+        epService.getEPAdministrator().getConfiguration().addEventType(TestEvent.class);
+
+        epService.getEPAdministrator().createEPL("@Name('A') select * from TestEvent where 4 < x").addListener(listener);
+        assertSendReceive(new int[]{3, 4, 5}, new boolean[]{false, false, true});
+
+        epService.getEPAdministrator().getStatement("A").destroy();
+        epService.getEPAdministrator().createEPL("@Name('A') select * from TestEvent where 4 <= x").addListener(listener);
+        assertSendReceive(new int[]{3, 4, 5}, new boolean[]{false, true, true});
+
+        epService.getEPAdministrator().getStatement("A").destroy();
+        epService.getEPAdministrator().createEPL("@Name('A') select * from TestEvent where 4 > x").addListener(listener);
+        assertSendReceive(new int[]{3, 4, 5}, new boolean[]{true, false, false});
+
+        epService.getEPAdministrator().getStatement("A").destroy();
+        epService.getEPAdministrator().createEPL("@Name('A') select * from TestEvent where 4 >= x").addListener(listener);
+        assertSendReceive(new int[]{3, 4, 5}, new boolean[]{true, true, false});
+    }
+
+    private void assertSendReceive(int[] ints, boolean[] booleans) {
+        for (int i = 0; i < ints.length; i++) {
+            epService.getEPRuntime().sendEvent(new TestEvent(ints[i]));
+            assertEquals(booleans[i], listener.getAndClearIsInvoked());
+        }
+    }
+
     public void testInSet() {
 
         // Esper-484
@@ -919,5 +945,17 @@ public class TestFilterExpressions extends TestCase
             throw new IllegalArgumentException("field name not known");
         }
         epService.getEPRuntime().sendEvent(event);
+    }
+
+    public static class TestEvent {
+        private final int x;
+
+        public TestEvent(int x) {
+            this.x = x;
+        }
+
+        public int getX() {
+            return x;
+        }
     }
 }

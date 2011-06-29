@@ -261,4 +261,20 @@ public enum FilterOperator
     public String getTextualOp() {
         return textualOp;
     }
+
+    public FilterOperator reversedRelationalOp() {
+        if (this == LESS) {
+            return GREATER;
+        }
+        else if (this == LESS_OR_EQUAL) {
+            return GREATER_OR_EQUAL;
+        }
+        else if (this == GREATER) {
+            return LESS;
+        }
+        else if (this == GREATER_OR_EQUAL) {
+            return LESS_OR_EQUAL;
+        }
+        throw new IllegalArgumentException("Not a relational operator: " + this);
+    }
 }
