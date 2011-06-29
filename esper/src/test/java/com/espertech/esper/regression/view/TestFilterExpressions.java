@@ -26,6 +26,23 @@ public class TestFilterExpressions extends TestCase
         epService.initialize();
     }
 
+    public void testShortCircuitEvalAndOverspecified() {
+        epService.getEPAdministrator().getConfiguration().addEventType(MyEvent.class);
+        
+		EPStatement stmt = epService.getEPAdministrator().createEPL("select * from MyEvent(MyEvent.property2 = '4' and MyEvent.property1 = '1')");
+		stmt.addListener(listener);
+
+		epService.getEPRuntime().sendEvent(new MyEvent());
+		assertFalse("Subscriber should not have received result(s)", listener.isInvoked());
+        stmt.destroy();
+
+		stmt = epService.getEPAdministrator().createEPL("select * from SupportBean(string='A' and string='B')");
+		stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A", 0));
+        assertFalse(listener.isInvoked());
+    }
+
     public void testInSet() {
 
         // Esper-484
@@ -919,5 +936,16 @@ public class TestFilterExpressions extends TestCase
             throw new IllegalArgumentException("field name not known");
         }
         epService.getEPRuntime().sendEvent(event);
+    }
+
+    public class MyEvent {
+
+        public String getProperty1() {
+            throw new RuntimeException("I should not have been called!");
+        }
+
+        public String getProperty2() {
+            return "2";
+        }
     }
 }

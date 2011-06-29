@@ -10,6 +10,7 @@ package com.espertech.esper.filter;
 
 import com.espertech.esper.client.EventType;
 
+import java.util.ArrayDeque;
 import java.util.List;
 
 /**
@@ -18,14 +19,14 @@ import java.util.List;
 public class FilterValueSetImpl implements FilterValueSet
 {
     private final EventType eventType;
-    private final List<FilterValueSetParam> parameters;
+    private final ArrayDeque<FilterValueSetParam> parameters;
 
     /**
      * Ctor.
      * @param eventType - type of event to filter for
      * @param parameters - list of filter parameters
      */
-    public FilterValueSetImpl(EventType eventType, List<FilterValueSetParam> parameters)
+    public FilterValueSetImpl(EventType eventType, ArrayDeque<FilterValueSetParam> parameters)
     {
         this.eventType = eventType;
         this.parameters = parameters;
@@ -44,7 +45,7 @@ public class FilterValueSetImpl implements FilterValueSet
      * Returns list of filter parameters.
      * @return list of filter parameters
      */
-    public List<FilterValueSetParam> getParameters()
+    public ArrayDeque<FilterValueSetParam> getParameters()
     {
         return parameters;
     }

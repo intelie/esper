@@ -550,7 +550,7 @@ public class NamedWindowRootView extends ViewSupport
         return Collections.EMPTY_LIST;
     }
 
-    private RangeIndexLookupValue[] compileRangeLookupValues(String[] rangeIndexProps, List<FilterSpecParam> parameters) {
+    private RangeIndexLookupValue[] compileRangeLookupValues(String[] rangeIndexProps, ArrayDeque<FilterSpecParam> parameters) {
         RangeIndexLookupValue[] result = new RangeIndexLookupValue[rangeIndexProps.length];
 
         for (int rangeIndex = 0; rangeIndex < rangeIndexProps.length; rangeIndex++) {

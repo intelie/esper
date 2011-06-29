@@ -12,7 +12,9 @@ import com.espertech.esper.util.SimpleNumberCoercer;
 import com.espertech.esper.util.SimpleNumberCoercerFactory;
 import junit.framework.TestCase;
 
+import java.util.ArrayDeque;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.Vector;
 
 public class TestFilterSpecCompiled extends TestCase
@@ -91,15 +93,40 @@ public class TestFilterSpecCompiled extends TestCase
         assertEquals(2, valueSet.getParameters().size());
 
         // Assert the first param
-        FilterValueSetParam param = valueSet.getParameters().get(0);
+        FilterValueSetParam param = valueSet.getParameters().getFirst();
         assertEquals("intPrimitive", param.getPropertyName());
         assertEquals(FilterOperator.EQUAL, param.getFilterOperator());
         assertEquals(2, param.getFilterForValue());
 
         // Assert the second param
-        param = valueSet.getParameters().get(1);
+        param = (FilterValueSetParam) valueSet.getParameters().toArray()[1];
         assertEquals("doubleBoxed", param.getPropertyName());
         assertEquals(FilterOperator.EQUAL, param.getFilterOperator());
         assertEquals(999.999, param.getFilterForValue());
+    }
+
+    public void testPresortParameters()
+    {
+        FilterSpecCompiled spec = makeFilterValues(
+                "doublePrimitive", FilterOperator.LESS, 1.1,
+                "doubleBoxed", FilterOperator.LESS, 1.1,
+                "intPrimitive", FilterOperator.EQUAL, 1,
+                "string", FilterOperator.EQUAL, "jack",
+                "intBoxed", FilterOperator.EQUAL, 2,
+                "floatBoxed", FilterOperator.RANGE_CLOSED, 1.1d, 2.2d);
+
+        ArrayDeque<FilterSpecParam> copy = spec.getParameters();
+
+        assertEquals("intPrimitive", copy.remove().getPropertyName());
+        assertEquals("string", copy.remove().getPropertyName());
+        assertEquals("intBoxed", copy.remove().getPropertyName());
+        assertEquals("floatBoxed", copy.remove().getPropertyName());
+        assertEquals("doublePrimitive", copy.remove().getPropertyName());
+        assertEquals("doubleBoxed", copy.remove().getPropertyName());
+    }
+
+    private FilterSpecCompiled makeFilterValues(Object ... filterSpecArgs)
+    {
+        return SupportFilterSpecBuilder.build(eventType, filterSpecArgs);
     }
 }

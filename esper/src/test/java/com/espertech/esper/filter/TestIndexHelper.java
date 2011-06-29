@@ -1,9 +1,6 @@
 package com.espertech.esper.filter;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import junit.framework.TestCase;
 import com.espertech.esper.collection.Pair;
@@ -14,7 +11,7 @@ import com.espertech.esper.support.event.SupportEventTypeFactory;
 public class TestIndexHelper extends TestCase
 {
     private EventType eventType;
-    private SortedSet<FilterValueSetParam> parameters;
+    private ArrayDeque<FilterValueSetParam> parameters;
     private FilterValueSetParam parameterOne;
     private FilterValueSetParam parameterTwo;
     private FilterValueSetParam parameterThree;
@@ -22,7 +19,7 @@ public class TestIndexHelper extends TestCase
     public void setUp()
     {
         eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
-        parameters = new TreeSet<FilterValueSetParam>(new FilterValueSetParamComparator());
+        parameters = new ArrayDeque<FilterValueSetParam>();
 
         // Create parameter test list
         parameterOne = new FilterValueSetParamImpl("intPrimitive", FilterOperator.GREATER, 10);
@@ -60,8 +57,8 @@ public class TestIndexHelper extends TestCase
         FilterParamIndexBase indexThree = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);
         indexes.add(indexThree);
         pair = IndexHelper.findIndex(parameters, indexes);
-        assertEquals(parameterTwo, pair.getFirst());
-        assertEquals(indexTwo, pair.getSecond());
+        assertEquals(parameterOne, pair.getFirst());
+        assertEquals(indexThree, pair.getSecond());
 
         // Try again removing one index
         indexes.remove(indexTwo);

@@ -43,37 +43,6 @@ public class TestIndexTreeBuilder extends TestCase
         }
     }
 
-    public void testCopyParameters()
-    {
-        FilterValueSet spec = makeFilterValues(
-                "doublePrimitive", FilterOperator.LESS, 1.1,
-                "doubleBoxed", FilterOperator.LESS, 1.1,
-                "intPrimitive", FilterOperator.EQUAL, 1,
-                "string", FilterOperator.EQUAL, "jack",
-                "intBoxed", FilterOperator.EQUAL, 2,
-                "floatBoxed", FilterOperator.RANGE_CLOSED, 1.1d, 2.2d);
-
-        SortedSet<FilterValueSetParam> copy = IndexTreeBuilder.copySortParameters(spec.getParameters());
-
-        assertTrue(copy.first().getPropertyName().equals("intBoxed"));
-        copy.remove(copy.first());
-
-        assertTrue(copy.first().getPropertyName().equals("intPrimitive"));
-        copy.remove(copy.first());
-
-        assertTrue(copy.first().getPropertyName().equals("string"));
-        copy.remove(copy.first());
-
-        assertTrue(copy.first().getPropertyName().equals("floatBoxed"));
-        copy.remove(copy.first());
-
-        assertTrue(copy.first().getPropertyName().equals("doubleBoxed"));
-        copy.remove(copy.first());
-
-        assertTrue(copy.first().getPropertyName().equals("doublePrimitive"));
-        copy.remove(copy.first());
-    }
-
     public void testBuildWithMatch()
     {
         FilterHandleSetNode topNode = new FilterHandleSetNode();

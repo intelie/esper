@@ -9,6 +9,8 @@
 package com.espertech.esper.filter;
 
 import com.espertech.esper.client.EventType;
+
+import java.util.ArrayDeque;
 import java.util.List;
 
 /**
@@ -27,5 +29,5 @@ public interface FilterValueSet
      * Returns list of filter parameters.
      * @return list of filter params
      */
-    public List<FilterValueSetParam> getParameters();
+    public ArrayDeque<FilterValueSetParam> getParameters();
 }

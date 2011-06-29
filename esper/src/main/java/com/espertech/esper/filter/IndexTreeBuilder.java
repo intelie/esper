@@ -8,15 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.List;
-
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.Pair;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.espertech.esper.collection.Pair;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.util.ExecutionPathDebugLog;
+
+import java.util.ArrayDeque;
 
 /**
  * Builder manipulates a tree structure consisting of {@link FilterHandleSetNode} and {@link FilterParamIndexBase} instances.
@@ -28,7 +26,7 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
 public final class IndexTreeBuilder
 {
     private EventType eventType;
-    private SortedSet<FilterValueSetParam> remainingParameters;
+    private ArrayDeque<FilterValueSetParam> remainingParameters;
     private FilterHandle filterCallback;
     private long currentThreadId;
 
@@ -52,7 +50,7 @@ public final class IndexTreeBuilder
                                     FilterHandleSetNode topNode)
     {
         this.eventType = filterValueSet.getEventType();
-        this.remainingParameters = copySortParameters(filterValueSet.getParameters());
+        this.remainingParameters = new ArrayDeque(filterValueSet.getParameters());
         this.filterCallback = filterCallback;
         this.currentThreadId = Thread.currentThread().getId();
 
@@ -172,8 +170,7 @@ public final class IndexTreeBuilder
 
             // No index found that matches any parameters, create a new one
             // Pick the next parameter for an index
-            FilterValueSetParam parameterPickedForIndex = remainingParameters.first();
-            remainingParameters.remove(parameterPickedForIndex);
+            FilterValueSetParam parameterPickedForIndex = remainingParameters.removeFirst();
 
             FilterParamIndexBase index = IndexFactory.createIndex(eventType, parameterPickedForIndex.getPropertyName(),
                     parameterPickedForIndex.getFilterOperator());
@@ -398,8 +395,7 @@ public final class IndexTreeBuilder
             }
 
             // If there are remaining parameters, create a new index for the next parameter
-            FilterValueSetParam parameterPickedForIndex = remainingParameters.first();
-            remainingParameters.remove(parameterPickedForIndex);
+            FilterValueSetParam parameterPickedForIndex = remainingParameters.removeFirst();
 
             FilterParamIndexBase nextIndex = IndexFactory.createIndex(eventType, parameterPickedForIndex.getPropertyName(),
                     parameterPickedForIndex.getFilterOperator());
@@ -445,26 +441,6 @@ public final class IndexTreeBuilder
         return false;
     }
 
-    /**
-     * Copy the parameter list - this also sorts the parameter list.
-     * @param parameters is a list of filter parameters
-     * @return sorted set of filter parameters
-     */
-    protected static SortedSet<FilterValueSetParam> copySortParameters(List<FilterValueSetParam> parameters)
-    {
-        SortedSet<FilterValueSetParam> copy = new TreeSet<FilterValueSetParam>(new FilterValueSetParamComparator());
-
-        for (FilterValueSetParam parameter : parameters)
-        {
-            copy.add(parameter);
-        }
-
-        if (copy.size() != parameters.size())
-        {
-            throw new IllegalArgumentException("Filter parameters not unique by property name and filter operator");
-        }
-        return copy;
-    }
 
     private String printRemainingParameters()
     {

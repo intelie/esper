@@ -1,7 +1,6 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.collection.Pair;
-import junit.framework.TestCase;
 import com.espertech.esper.epl.expression.ExprAndNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.parse.EPLTreeWalker;
@@ -10,11 +9,11 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.epl.parse.SupportEPLTreeWalkerFactory;
 import com.espertech.esper.support.epl.parse.SupportParserHelper;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
-
-import java.util.*;
-
+import junit.framework.TestCase;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.Tree;
+
+import java.util.*;
 
 public class TestFilterStreamSpecRaw extends TestCase
 {
@@ -35,7 +34,7 @@ public class TestFilterStreamSpecRaw extends TestCase
         assertEquals(1, spec.getParameters().size());
         // expecting unoptimized expressions to condense to a single boolean expression, more efficient this way
 
-        FilterSpecParamExprNode exprNode = (FilterSpecParamExprNode) spec.getParameters().get(0);
+        FilterSpecParamExprNode exprNode = (FilterSpecParamExprNode) spec.getParameters().getFirst();
         assertEquals(FilterSpecCompiler.PROPERTY_NAME_BOOLEAN_EXPRESSION, exprNode.getPropertyName());
         assertEquals(FilterOperator.BOOLEAN_EXPRESSION, exprNode.getFilterOperator());
         assertTrue(exprNode.getExprNode() instanceof ExprAndNode);
@@ -68,9 +67,9 @@ public class TestFilterStreamSpecRaw extends TestCase
         FilterStreamSpecRaw raw = makeSpec("select * from " + SupportBean.class.getName() + "(intPrimitive=5)");
         FilterSpecCompiled spec = compile(raw);
         assertEquals(1, spec.getParameters().size());
-        assertEquals("intPrimitive", spec.getParameters().get(0).getPropertyName());
-        assertEquals(FilterOperator.EQUAL, spec.getParameters().get(0).getFilterOperator());
-        assertEquals(5, getConstant(spec.getParameters().get(0)));
+        assertEquals("intPrimitive", spec.getParameters().getFirst().getPropertyName());
+        assertEquals(FilterOperator.EQUAL, spec.getParameters().getFirst().getFilterOperator());
+        assertEquals(5, getConstant(spec.getParameters().getFirst()));
     }
 
     public void testEqualsAndLess() throws Exception
@@ -87,7 +86,7 @@ public class TestFilterStreamSpecRaw extends TestCase
         assertEquals(9, getConstant(params.get("intPrimitive")));
     }
 
-    private Map<String, FilterSpecParam> mapParameters(List<FilterSpecParam> params)
+    private Map<String, FilterSpecParam> mapParameters(ArrayDeque<FilterSpecParam> params)
     {
         Map<String, FilterSpecParam> map = new HashMap<String, FilterSpecParam>();
         for (FilterSpecParam param : params)
@@ -148,9 +147,9 @@ public class TestFilterStreamSpecRaw extends TestCase
         FilterSpecCompiled spec = compile(raw);
         assertEquals(1, spec.getParameters().size());
 
-        assertEquals("doubleBoxed", spec.getParameters().get(0).getPropertyName());
-        assertEquals(FilterOperator.IN_LIST_OF_VALUES, spec.getParameters().get(0).getFilterOperator());
-        FilterSpecParamIn inParam = (FilterSpecParamIn) spec.getParameters().get(0);
+        assertEquals("doubleBoxed", spec.getParameters().getFirst().getPropertyName());
+        assertEquals(FilterOperator.IN_LIST_OF_VALUES, spec.getParameters().getFirst().getFilterOperator());
+        FilterSpecParamIn inParam = (FilterSpecParamIn) spec.getParameters().getFirst();
         assertEquals(3, inParam.getListOfValues().size());
         assertEquals(1.0, getConstant(inParam.getListOfValues().get(0)));
         assertEquals(2.0, getConstant(inParam.getListOfValues().get(1)));
@@ -163,9 +162,9 @@ public class TestFilterStreamSpecRaw extends TestCase
         FilterSpecCompiled spec = compile(raw);
         assertEquals(1, spec.getParameters().size());
 
-        assertEquals("string", spec.getParameters().get(0).getPropertyName());
-        assertEquals(FilterOperator.NOT_IN_LIST_OF_VALUES, spec.getParameters().get(0).getFilterOperator());
-        FilterSpecParamIn inParam = (FilterSpecParamIn) spec.getParameters().get(0);
+        assertEquals("string", spec.getParameters().getFirst().getPropertyName());
+        assertEquals(FilterOperator.NOT_IN_LIST_OF_VALUES, spec.getParameters().getFirst().getFilterOperator());
+        FilterSpecParamIn inParam = (FilterSpecParamIn) spec.getParameters().getFirst();
         assertEquals(1, inParam.getListOfValues().size());
         assertEquals("a", getConstant(inParam.getListOfValues().get(0)));
     }

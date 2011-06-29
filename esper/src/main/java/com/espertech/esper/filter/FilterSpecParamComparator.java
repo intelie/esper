@@ -8,16 +8,16 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.util.MetaDefItem;
 
-import java.util.Comparator;
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
- * Sort comparator for filter parameters that sorts filter parameters according to filter operator type, and
- * within the same filter operator sorts by event property name.
+ * Sort comparator for filter parameters that sorts filter parameters according to filter operator type.
  */
-public class FilterValueSetParamComparator implements Comparator<FilterValueSetParam>, MetaDefItem, Serializable
+public class FilterSpecParamComparator implements Comparator<FilterOperator>, MetaDefItem, Serializable
 {
     /**
      * Defines the sort order among filter operator types. The idea is to sort EQUAL-type operators first
@@ -57,17 +57,16 @@ public class FilterValueSetParamComparator implements Comparator<FilterValueSetP
         }
     }
 
-    public final int compare(FilterValueSetParam param1, FilterValueSetParam param2)
-    {
+    public int compare(FilterOperator param1, FilterOperator param2) {
         // Within the same filter operator type sort by attribute name
-        if (param1.getFilterOperator() == param2.getFilterOperator())
+        if (param1 == param2)
         {
-            return param1.getPropertyName().compareTo(param2.getPropertyName());
+            return 0;
         }
 
         // Within different filter operator types sort by the table above
-        int opIndex1 = filterSortOrder[param1.getFilterOperator().ordinal()];
-        int opIndex2 = filterSortOrder[param2.getFilterOperator().ordinal()];
+        int opIndex1 = filterSortOrder[param1.ordinal()];
+        int opIndex2 = filterSortOrder[param2.ordinal()];
 
         if (opIndex1 < opIndex2)
         {

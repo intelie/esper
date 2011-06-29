@@ -9,13 +9,10 @@
 package com.espertech.esper.filter;
 
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.epl.property.PropertyEvaluator;
+import com.espertech.esper.pattern.MatchedEventMap;
 
-import java.util.List;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Contains the filter criteria to sift through events. The filter criteria are the event class to look for and
@@ -23,26 +20,29 @@ import java.util.LinkedList;
  */
 public final class FilterSpecCompiled
 {
+    private final static ArrayDeque<FilterSpecParam> EMPTY_LIST = new ArrayDeque<FilterSpecParam>();
+    private final static FilterSpecParamComparator COMPARATOR_PARAMETERS = new FilterSpecParamComparator();
+
     private final EventType filterForEventType;
     private final String filterForEventTypeName;
-    private final List<FilterSpecParam> parameters;
+    private final ArrayDeque<FilterSpecParam> parameters;
     private final PropertyEvaluator optionalPropertyEvaluator;
 
     /**
      * Constructor - validates parameter list against event type, throws exception if invalid
      * property names or mismatcing filter operators are found.
      * @param eventType is the event type
-     * @param parameters is a list of filter parameters
+     * @param filterParameters is a list of filter parameters
      * @param eventTypeName is the name of the event type
      * @param optionalPropertyEvaluator optional if evaluating properties returned by filtered events
      * @throws IllegalArgumentException if validation invalid
      */
-    public FilterSpecCompiled(EventType eventType, String eventTypeName, List<FilterSpecParam> parameters,
+    public FilterSpecCompiled(EventType eventType, String eventTypeName, List<FilterSpecParam> filterParameters,
                               PropertyEvaluator optionalPropertyEvaluator)
     {
         this.filterForEventType = eventType;
         this.filterForEventTypeName = eventTypeName;
-        this.parameters = parameters;
+        this.parameters = sortRemoveDups(filterParameters);
         this.optionalPropertyEvaluator = optionalPropertyEvaluator;
     }
 
@@ -59,7 +59,7 @@ public final class FilterSpecCompiled
      * Returns list of filter parameters.
      * @return list of filter params
      */
-    public final List<FilterSpecParam> getParameters()
+    public final ArrayDeque<FilterSpecParam> getParameters()
     {
         return parameters;
     }
@@ -106,7 +106,7 @@ public final class FilterSpecCompiled
      */
     public FilterValueSet getValueSet(MatchedEventMap matchedEvents)
     {
-        List<FilterValueSetParam> valueList = new LinkedList<FilterValueSetParam>();
+        ArrayDeque<FilterValueSetParam> valueList = new ArrayDeque<FilterValueSetParam>(parameters.size());
 
         // Ask each filter specification parameter for the actual value to filter for
         for (FilterSpecParam specParam : parameters)
@@ -202,5 +202,46 @@ public final class FilterSpecCompiled
             hashCode ^= (31 * param.getFilterHash());
         }
         return hashCode;
-    }       
+    }
+
+    protected static ArrayDeque<FilterSpecParam> sortRemoveDups(List<FilterSpecParam> parameters) {
+
+        if (parameters.isEmpty()) {
+            return EMPTY_LIST;
+        }
+
+        ArrayDeque<FilterSpecParam> result = new ArrayDeque<FilterSpecParam>();
+        if (parameters.size() == 1) {
+            result.addAll(parameters);
+            return result;
+        }
+
+        TreeMap<FilterOperator, List<FilterSpecParam>> map = new TreeMap<FilterOperator, List<FilterSpecParam>>(COMPARATOR_PARAMETERS);
+        for (FilterSpecParam parameter : parameters) {
+
+            List<FilterSpecParam> list = map.get(parameter.getFilterOperator());
+            if (list == null) {
+                list = new ArrayList<FilterSpecParam>();
+                map.put(parameter.getFilterOperator(), list);
+            }
+
+            boolean hasDuplicate = false;
+            for (FilterSpecParam existing : list) {
+                if (existing.getPropertyName().equals(parameter.propertyName)) {
+                    hasDuplicate = true;
+                    break;
+                }
+            }
+            if (hasDuplicate) {
+                continue;
+            }
+
+            list.add(parameter);
+        }
+
+        for (Map.Entry<FilterOperator, List<FilterSpecParam>> entry : map.entrySet()) {
+            result.addAll(entry.getValue());
+        }
+        return result;
+    }
 }

@@ -9,7 +9,8 @@
 package com.espertech.esper.filter;
 
 import com.espertech.esper.collection.Pair;
-import java.util.SortedSet;
+
+import java.util.ArrayDeque;
 import java.util.List;
 
 /**
@@ -31,7 +32,7 @@ public class IndexHelper
      * @param indizes is the collection of indexes
      * @return A matching pair of filter parameter and index, if any matches were found. Null if no matches were found.
      */
-    public static Pair<FilterValueSetParam, FilterParamIndexBase> findIndex(SortedSet<FilterValueSetParam> parameters, List<FilterParamIndexBase> indizes)
+    public static Pair<FilterValueSetParam, FilterParamIndexBase> findIndex(ArrayDeque<FilterValueSetParam> parameters, List<FilterParamIndexBase> indizes)
     {
         for (FilterValueSetParam parameter : parameters)
         {
@@ -63,7 +64,7 @@ public class IndexHelper
      * @param index is a filter parameter constant value index
      * @return filter parameter, or null if no matching parameter found.
      */
-    public static FilterValueSetParam findParameter(SortedSet<FilterValueSetParam> parameters,
+    public static FilterValueSetParam findParameter(ArrayDeque<FilterValueSetParam> parameters,
                                                 FilterParamIndexBase index)
     {
         if (index instanceof FilterParamIndexPropBase)

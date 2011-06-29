@@ -684,6 +684,10 @@ select a.symbol, avgA, avgB from StreamAvgA.std:lastevent() a, StreamAvgB.std:la
 			<para>
 				The order of expressions (here: expr1, expr2 and expr3) does not make a difference for the join and subquery query planner.
 			</para>
+			
+			<para>
+				Note that the engine does not guarantee short-circuit evaluation in all cases. The engine may rewrite the where-clause or filter conditions into another order of evaluation so that it can perform index or reverse index lookups.
+			</para>
 		</sect2>
 
     </sect1>
