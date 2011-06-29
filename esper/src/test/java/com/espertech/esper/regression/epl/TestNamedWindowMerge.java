@@ -375,6 +375,10 @@ public class TestNamedWindowMerge extends TestCase {
         epService.getEPAdministrator().createEPL("create schema ABCSchema as (val int)");
         epService.getEPAdministrator().createEPL("create window ABCWindow.win:keepall() as ABCSchema");
 
+        //epl = "on SupportBean_A merge MergeWindow as windowevent where id = string when not matched and cast(1, int)=1 then insert into ABC select '1'";
+        epl = "on SupportBean_A merge MergeWindow as windowevent where id = string when not matched and exists(select * from MergeWindow mw where mw.string = windowevent.string) is not null then insert into ABC select '1'";
+        tryInvalid(epl, "Error starting statement: On-Merge not-matched filter expression may not use properties that are provided by the named window event [on SupportBean_A merge MergeWindow as windowevent where id = string when not matched and exists(select * from MergeWindow mw where mw.string = windowevent.string) is not null then insert into ABC select '1']");
+
         epl = "on SupportBean_A as up merge ABCWindow as mv when not matched then insert (col) select 1";
         tryInvalid(epl, "Error starting statement: Exception encountered in when-not-matched (clause 1): Event type named 'ABCWindow' has already been declared with differing column name or type information: The property 'val' is not provided but required [on SupportBean_A as up merge ABCWindow as mv when not matched then insert (col) select 1]");
 

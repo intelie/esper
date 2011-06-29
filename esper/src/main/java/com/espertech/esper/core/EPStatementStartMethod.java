@@ -524,6 +524,9 @@ public class EPStatementStartMethod
             if (matchedItem.getOptionalMatchCond() != null) {
                 StreamTypeService matchValidStreams = matchedItem.isMatchedUnmatched() ? twoStreamTypeSvc : insertOnlyTypeSvc;
                 matchedItem.setOptionalMatchCond(validateExprNoAgg(matchedItem.getOptionalMatchCond(), matchValidStreams, statementContext, exprNodeErrorMessage));
+                if (!matchedItem.isMatchedUnmatched()) {
+                    validateSubqueryExcludeOuterStream(matchedItem.getOptionalMatchCond());
+                }
             }
 
             for (OnTriggerMergeAction item : matchedItem.getActions()) {
@@ -601,6 +604,27 @@ public class EPStatementStartMethod
         }
     }
 
+    // Special-case validation: When an on-merge query in the not-matched clause uses a subquery then
+    // that subquery should not reference any of the stream's properties which are not-matched
+    private void validateSubqueryExcludeOuterStream(ExprNode matchCondition) throws ExprValidationException {
+        ExprNodeSubselectVisitor visitorSubselects = new ExprNodeSubselectVisitor();
+        matchCondition.accept(visitorSubselects);
+        if (visitorSubselects.getSubselects().isEmpty()) {
+            return;
+        }
+        ExprNodeIdentifierCollectVisitor visitorProps = new ExprNodeIdentifierCollectVisitor();
+        for (ExprSubselectNode node : visitorSubselects.getSubselects()) {
+            if (node.getStatementSpecCompiled().getFilterRootNode() != null) {
+                node.getStatementSpecCompiled().getFilterRootNode().accept(visitorProps);
+            }
+        }
+        for (ExprIdentNode node : visitorProps.getExprProperties()) {
+            if (node.getStreamId() == 1) {
+                throw new ExprValidationException("On-Merge not-matched filter expression may not use properties that are provided by the named window event");
+            }
+        }
+    }
+    
     private EPStatementStartResult startUpdate()
         throws ExprValidationException, ViewProcessingException
     {
