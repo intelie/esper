@@ -66,6 +66,16 @@ public class TestCastExpr extends TestCase
         epService.getEPRuntime().sendEvent(bean);
         event = listener.assertOneGetNewAndReset();
         assertResults(event, new Object[] {null, null, null, null, 100, 100L, 100, null});
+
+        // test cast with chained
+        selectTestCase.destroy();
+        stmtText = "select cast(one as " + SupportBean.class.getName() + ").getString() as t0" +
+                          " from " + SupportBeanObject.class.getName();
+        selectTestCase = epService.getEPAdministrator().createEPL(stmtText);
+        selectTestCase.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBeanObject(new SupportBean("E1", 1)));
+        assertEquals("E1", listener.assertOneGetNewAndReset().get("t0"));
     }
 
     public void testCastAsParse()

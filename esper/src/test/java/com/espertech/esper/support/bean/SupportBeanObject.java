@@ -11,6 +11,13 @@ public class SupportBeanObject implements Serializable
     private Object five;
     private Object six;
 
+    public SupportBeanObject() {
+    }
+
+    public SupportBeanObject(Object one) {
+        this.one = one;
+    }
+
     public Object getFive()
     {
         return five;

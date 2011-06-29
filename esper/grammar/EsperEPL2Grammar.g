@@ -1389,7 +1389,9 @@ builtinFunc
 	// therefore handled in code via libFunction as below
 	| INSTANCEOF^ LPAREN! expression COMMA! classIdentifier (COMMA! classIdentifier)* RPAREN!
 	| TYPEOF^ LPAREN! expression RPAREN!
-	| CAST^ LPAREN! expression (COMMA! | AS!) classIdentifier RPAREN!
+	| CAST LPAREN expression (COMMA | AS) classIdentifier RPAREN (d=DOT libFunctionNoClass (d=DOT libFunctionNoClass)* )?
+	  -> {$d != null}? ^(DOT_EXPR ^(CAST expression classIdentifier) libFunctionNoClass+)
+	  -> ^(CAST expression classIdentifier)
 	| EXISTS^ LPAREN! eventProperty RPAREN!
 	| CURRENT_TIMESTAMP (LPAREN RPAREN)? (d=DOT libFunctionNoClass (d=DOT libFunctionNoClass)* )?
 	  -> {$d != null}? ^(DOT_EXPR ^(CURRENT_TIMESTAMP) libFunctionNoClass+)
