@@ -1123,6 +1123,14 @@ select default.MyEvent.myProperty from MyEvent</programlisting>
 				When selecting nested, indexed, mapped or dynamic properties in a <literal>select</literal> clause with <literal>distinct</literal>, it is relevant to know that the comparison uses hash code and the Java <literal>equals</literal> semantics.
 			</para>
 		</sect2>
+		<sect2 id="epl-transposefunc">
+			<title>Transposing an Expression Result to a Stream</title>
+			
+			<para>
+			   For transposing an instance of a Java object returned by an expression to a stream use the transpose function as described in <xref linkend="functionreference-transpose"/>.
+			</para>
+		</sect2>
+
     </sect1>
 
     <sect1 id="epl-from-clause">
@@ -2618,11 +2626,23 @@ from PurchaseOrder.std:lastevent() as order, ServiceEvent:std:lastevent() as ser
 		</sect2>
 		
 		<sect2 id="insert-into-populate">
-			<title>Populating an Underlying Event Object</title>
+			<title>Instantiating and Populating an Underlying Event Object</title>
 
 			<para>
 				Your <literal>insert into</literal> clause may also directly instantiate and populate application underlying event objects or <literal>Map</literal> event objects. This is described in greater detail in <xref linkend="eventrep-insertinto"/>.
 			</para>
+			
+			<para>
+			    If instead you have an expression that returns an event object, please read on to the next section.
+			</para>
+		</sect2>
+
+		<sect2 id="insert-into-expression">
+			<title>Transposing an Expression Result</title>
+
+			<para>
+				You can transpose an object returned as an expression result into a stream using the <literal>transpose</literal> function as described further in <xref linkend="functionreference-transpose"/>.
+			</para>			
 		</sect2>
 	</sect1>
 	

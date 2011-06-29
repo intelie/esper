@@ -6,6 +6,7 @@ Changes in version 4.3.0
 Major API or EPL changes
   - Support for specifing consumption on pattern filters
   - Support for filter expressions as part of aggregation functions
+  - Support for the transpose(...) function for select-clause transposing an expression result object to a stream
   
 
 Changes in version 4.2.0

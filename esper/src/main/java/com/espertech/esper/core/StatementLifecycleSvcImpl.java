@@ -865,7 +865,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             if (raw instanceof SelectClauseExprRawSpec)
             {
                 SelectClauseExprRawSpec rawExpr = (SelectClauseExprRawSpec) raw;
-                selectElements.add(new SelectClauseExprCompiledSpec(rawExpr.getSelectExpression(), rawExpr.getOptionalAsName()));
+                selectElements.add(new SelectClauseExprCompiledSpec(rawExpr.getSelectExpression(), rawExpr.getOptionalAsName(), rawExpr.getOptionalAsName()));
             }
             else if (raw instanceof SelectClauseStreamRawSpec)
             {
@@ -1074,7 +1074,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             {
                 SelectClauseExprRawSpec rawExpr = (SelectClauseExprRawSpec) raw;
                 rawExpr.getSelectExpression().accept(visitor);
-                selectElements.add(new SelectClauseExprCompiledSpec(rawExpr.getSelectExpression(), rawExpr.getOptionalAsName()));
+                selectElements.add(new SelectClauseExprCompiledSpec(rawExpr.getSelectExpression(), rawExpr.getOptionalAsName(), rawExpr.getOptionalAsName()));
             }
             else if (raw instanceof SelectClauseStreamRawSpec)
             {

@@ -1,5 +1,6 @@
 package com.espertech.esper.support.epl;
 
+import com.espertech.esper.support.bean.SupportBeanNumeric;
 import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
@@ -509,5 +510,13 @@ public class SupportStaticMethodLib
             }
         }
         return sum;
+    }
+
+    public static SupportBean makeSupportBean(String string, Integer intPrimitive) {
+        return new SupportBean(string, intPrimitive);
+    }
+
+    public static SupportBeanNumeric makeSupportBeanNumeric(Integer intOne, Integer intTwo) {
+        return new SupportBeanNumeric(intOne, intTwo);
     }
 }

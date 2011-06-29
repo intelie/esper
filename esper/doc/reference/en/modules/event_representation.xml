@@ -1476,12 +1476,16 @@ such event metadata and event data into one of the built-in event representation
 	</sect1>
 
 	<sect1 id="eventrep-insertinto">
-	   <title>Event Objects Populated by <literal>Insert Into</literal></title>
+	   <title>Event Objects Instantiated and Populated by <literal>Insert Into</literal></title>
 	   
 		<indexterm><primary>event</primary><secondary>insert into</secondary></indexterm>
 
         <para>
-			The <literal>insert into</literal> clause can populate plain-old Java object events and <literal>java.util.Map</literal> events directly from the results of <literal>select</literal> clause expressions. Simply use the event type name as the stream name in the <literal>insert into</literal> clause as described in <xref linkend="epl-insert-into"/>.
+			The <literal>insert into</literal> clause can populate instantiate new instances of Java object events and <literal>java.util.Map</literal> events directly from the results of <literal>select</literal> clause expressions and populate such instances. Simply use the event type name as the stream name in the <literal>insert into</literal> clause as described in <xref linkend="epl-insert-into"/>.
+        </para>
+        
+        <para>
+           If instead you have an existing instance of a Java object returned by an expression, such as a single-row function or static method invocation for example, you can transpose that expression result object to a stream. This is described further in <xref linkend="insert-into-expression"/> and <xref linkend="functionreference-transpose"/>.
         </para>
 
         <para>

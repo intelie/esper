@@ -18,6 +18,7 @@ public class SelectClauseExprCompiledSpec implements SelectClauseElementCompiled
 {
     private ExprNode selectExpression;
     private String assignedName;
+    private String providedName;
 
     /**
      * Ctor.
@@ -25,10 +26,11 @@ public class SelectClauseExprCompiledSpec implements SelectClauseElementCompiled
      * @param assignedName - cannot be null as a name is always assigned or
      * system-determined
      */
-    public SelectClauseExprCompiledSpec(ExprNode selectExpression, String assignedName)
+    public SelectClauseExprCompiledSpec(ExprNode selectExpression, String assignedName, String providedName)
     {
         this.selectExpression = selectExpression;
         this.assignedName = assignedName;
+        this.providedName = providedName;
     }
 
     /**
@@ -65,5 +67,9 @@ public class SelectClauseExprCompiledSpec implements SelectClauseElementCompiled
     public void setAssignedName(String assignedName)
     {
         this.assignedName = assignedName;
+    }
+
+    public String getProvidedName() {
+        return providedName;
     }
 }

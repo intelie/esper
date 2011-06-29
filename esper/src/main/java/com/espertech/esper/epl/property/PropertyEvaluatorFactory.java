@@ -142,7 +142,7 @@ public class PropertyEvaluatorFactory
                         {
                             resultName = exprCompiled.toExpressionString();
                         }
-                        cumulativeSelectClause.add(new SelectClauseExprCompiledSpec(exprCompiled, resultName));
+                        cumulativeSelectClause.add(new SelectClauseExprCompiledSpec(exprCompiled, resultName, exprSpec.getOptionalAsName()));
 
                         String isMinimal = ExprNodeUtility.isMinimalExpression(exprCompiled);
                         if (isMinimal != null)

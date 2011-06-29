@@ -5,13 +5,13 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.SelectExprProcessor;
 import com.espertech.esper.event.MappedEventBean;
 
-public class EvalSelectStreamWUnderlyingRecast implements SelectExprProcessor {
+public class EvalSelectStreamWUnderlyingRecastMap implements SelectExprProcessor {
 
     private final SelectExprContext selectExprContext;
     private final int underlyingStreamNumber;
     private final EventType resultType;
 
-    public EvalSelectStreamWUnderlyingRecast(SelectExprContext selectExprContext, int underlyingStreamNumber, EventType resultType) {
+    public EvalSelectStreamWUnderlyingRecastMap(SelectExprContext selectExprContext, int underlyingStreamNumber, EventType resultType) {
         this.selectExprContext = selectExprContext;
         this.underlyingStreamNumber = underlyingStreamNumber;
         this.resultType = resultType;

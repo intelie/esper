@@ -579,7 +579,7 @@ public class EPStatementStartMethod
                                     resultName = exprCompiled.toExpressionString();
                                 }
                             }
-                            compiledSelect.add(new SelectClauseExprCompiledSpec(exprCompiled, resultName));
+                            compiledSelect.add(new SelectClauseExprCompiledSpec(exprCompiled, resultName, exprSpec.getOptionalAsName()));
                             validateNoAggregations(exprCompiled, "Expression in a merge-selection may not utilize aggregation functions");
                         }
                         else if (raw instanceof SelectClauseElementWildcard)

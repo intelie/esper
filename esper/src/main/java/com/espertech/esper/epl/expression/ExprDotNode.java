@@ -11,6 +11,7 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.client.*;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.PropertyResolutionDescriptor;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.enummethod.dot.*;
@@ -89,9 +90,10 @@ public class ExprDotNode extends ExprNodeBase implements ExprNodeInnerNodeProvid
         // Plug-in aggregation methods are not handled here.
         else if (chainSpec.size() == 1 || (chainSpec.size() == 2 && prefixedStreamName != -1)) {
             ExprChainedSpec spec = chainSpec.size() == 2 ? chainSpec.get(1) : chainSpec.get(0);
-            if (spec.getParameters().size() != 1) {
+            if (spec.getParameters().isEmpty()) {
                 throw new ExprValidationException("Unknown single-row function or aggregation function named '" + spec.getName() + "' could not be resolved");
             }
+
             // single-parameter can resolve to a property
             Pair<PropertyResolutionDescriptor, String> propertyInfoPair = null;
             try {
@@ -106,35 +108,48 @@ public class ExprDotNode extends ExprNodeBase implements ExprNodeInnerNodeProvid
             catch (ExprValidationPropertyException ex) {
                 // fine
             }
-            if (propertyInfoPair == null) {
-                throw new ExprValidationException("Unknown single-row function, aggregation function or mapped or indexed property named '" + spec.getName() + "' could not be resolved");
-            }
-            EventPropertyDescriptor propertyDesc = propertyInfoPair.getFirst().getStreamEventType().getPropertyDescriptor(propertyInfoPair.getFirst().getPropertyName());
-            if (propertyDesc == null || (!propertyDesc.isMapped() && !propertyDesc.isIndexed())) {
-                throw new ExprValidationException("Unknown single-row function, aggregation function or mapped or indexed property named '" + spec.getName() + "' could not be resolved");
-            }
 
-            ExprEvaluator parameterEval = spec.getParameters().get(0).getExprEvaluator();
-            int streamNum = propertyInfoPair.getFirst().getStreamNum();
-            if (propertyDesc.isMapped()) {
-                if (parameterEval.getType() != String.class) {
-                    throw new ExprValidationException("Parameter expression to mapped property '" + propertyDesc.getPropertyName() + "' is expected to return a string-type value but returns " + JavaClassHelper.getClassNameFullyQualPretty(parameterEval.getType()));
+            // if not a property then try built-in single-row non-grammar functions
+            if (propertyInfoPair == null && chainSpec.get(0).getName().toLowerCase().equals(EngineImportService.EXT_SINGLEROW_FUNCTION_TRANSPOSE)) {
+                if (chainSpec.get(0).getParameters().size() != 1) {
+                    throw new ExprValidationException("The " + EngineImportService.EXT_SINGLEROW_FUNCTION_TRANSPOSE + " function requires a single parameter expression");
                 }
-                EventPropertyGetterMapped mappedGetter = propertyInfoPair.getFirst().getStreamEventType().getGetterMapped(propertyInfoPair.getFirst().getPropertyName());
-                if (mappedGetter == null) {
-                    throw new ExprValidationException("Mapped property named '" + spec.getName() + "' failed to obtain getter-object");
-                }
-                exprEvaluator = new ExprDotEvalPropertyExprMapped(validationContext.getStatementName(), propertyDesc.getPropertyName(), streamNum, parameterEval, propertyDesc.getPropertyType(), mappedGetter);
+                exprEvaluator = new ExprDotEvalTransposeAsStream(chainSpec.get(0).getParameters().get(0).getExprEvaluator());
+            }
+            else if (spec.getParameters().size() != 1) {
+                throw new ExprValidationException("Unknown single-row function or aggregation function named '" + spec.getName() + "' could not be resolved");
             }
             else {
-                if (JavaClassHelper.getBoxedType(parameterEval.getType()) != Integer.class) {
-                    throw new ExprValidationException("Parameter expression to mapped property '" + propertyDesc.getPropertyName() + "' is expected to return a Integer-type value but returns " + JavaClassHelper.getClassNameFullyQualPretty(parameterEval.getType()));
+                if (propertyInfoPair == null) {
+                    throw new ExprValidationException("Unknown single-row function, aggregation function or mapped or indexed property named '" + spec.getName() + "' could not be resolved");
                 }
-                EventPropertyGetterIndexed indexedGetter = propertyInfoPair.getFirst().getStreamEventType().getGetterIndexed(propertyInfoPair.getFirst().getPropertyName());
-                if (indexedGetter == null) {
-                    throw new ExprValidationException("Mapped property named '" + spec.getName() + "' failed to obtain getter-object");
+                EventPropertyDescriptor propertyDesc = propertyInfoPair.getFirst().getStreamEventType().getPropertyDescriptor(propertyInfoPair.getFirst().getPropertyName());
+                if (propertyDesc == null || (!propertyDesc.isMapped() && !propertyDesc.isIndexed())) {
+                    throw new ExprValidationException("Unknown single-row function, aggregation function or mapped or indexed property named '" + spec.getName() + "' could not be resolved");
                 }
-                exprEvaluator = new ExprDotEvalPropertyExprIndexed(validationContext.getStatementName(), propertyDesc.getPropertyName(), streamNum, parameterEval, propertyDesc.getPropertyType(), indexedGetter);
+
+                ExprEvaluator parameterEval = spec.getParameters().get(0).getExprEvaluator();
+                int streamNum = propertyInfoPair.getFirst().getStreamNum();
+                if (propertyDesc.isMapped()) {
+                    if (parameterEval.getType() != String.class) {
+                        throw new ExprValidationException("Parameter expression to mapped property '" + propertyDesc.getPropertyName() + "' is expected to return a string-type value but returns " + JavaClassHelper.getClassNameFullyQualPretty(parameterEval.getType()));
+                    }
+                    EventPropertyGetterMapped mappedGetter = propertyInfoPair.getFirst().getStreamEventType().getGetterMapped(propertyInfoPair.getFirst().getPropertyName());
+                    if (mappedGetter == null) {
+                        throw new ExprValidationException("Mapped property named '" + spec.getName() + "' failed to obtain getter-object");
+                    }
+                    exprEvaluator = new ExprDotEvalPropertyExprMapped(validationContext.getStatementName(), propertyDesc.getPropertyName(), streamNum, parameterEval, propertyDesc.getPropertyType(), mappedGetter);
+                }
+                else {
+                    if (JavaClassHelper.getBoxedType(parameterEval.getType()) != Integer.class) {
+                        throw new ExprValidationException("Parameter expression to mapped property '" + propertyDesc.getPropertyName() + "' is expected to return a Integer-type value but returns " + JavaClassHelper.getClassNameFullyQualPretty(parameterEval.getType()));
+                    }
+                    EventPropertyGetterIndexed indexedGetter = propertyInfoPair.getFirst().getStreamEventType().getGetterIndexed(propertyInfoPair.getFirst().getPropertyName());
+                    if (indexedGetter == null) {
+                        throw new ExprValidationException("Mapped property named '" + spec.getName() + "' failed to obtain getter-object");
+                    }
+                    exprEvaluator = new ExprDotEvalPropertyExprIndexed(validationContext.getStatementName(), propertyDesc.getPropertyName(), streamNum, parameterEval, propertyDesc.getPropertyType(), indexedGetter);
+                }
             }
         }
         else {

@@ -21,6 +21,8 @@ import java.lang.reflect.Method;
  */
 public interface EngineImportService
 {
+    public final static String EXT_SINGLEROW_FUNCTION_TRANSPOSE = "transpose";
+
     /**
      * Returns the method invocation caches for the from-clause for a class.
      * @param className the class name providing the method

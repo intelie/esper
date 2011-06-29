@@ -1491,4 +1491,74 @@ from StockTick.win:time(30 sec)]]></programlisting>
 
 	</sect1>
 
+	<sect1 id="functionreference-transpose">
+		<title>Select-Clause <literal>transpose</literal> Function</title>
+		
+		<para>
+		  The <literal>transpose</literal> function is only valid in the select-clause and indicates that the result of the parameter expression should become the underlying event object of the output event.
+		</para>
+		
+		<para>
+		  The <literal>transpose</literal> function takes a single expression as a parameter. The result object of the parameter expression is subject to transposing as described below.
+		</para>
+
+		<para>
+		  The function can be useful with <literal>insert into</literal> to allow an object returned by an expression to become the event itself in the output stream.
+		</para>
+		
+		<para>
+		  Any expression returning a Java object can be used with the <literal>transpose</literal> function. Typical examples for expressions are a static method invocation, the result of an enumeration method, a plug-in single row function or a subquery. 
+		</para>
+
+		<para>
+		  The examples herein assume that a single-row function by name <literal>makeEvent</literal> returns an <literal>OrderEvent</literal> instance (a POJO object, not shown).
+		</para>
+		
+		<para>
+		  The following EPL takes the result object of the invocation of the <literal>makeEvent</literal> method (assumed to be an OrderEvent instance) and returns the OrderEvent instance as the underlying event of the output event:
+		</para>
+		<programlisting><![CDATA[select transpose(makeEvent(oi)) from OrderIndication oi]]></programlisting>
+
+		<para>
+		  Your select-clause can select additional properties or expressions. In this case the output event underlying object is a pair of the expression result object and the additional properties.
+		</para>
+		
+		<para>
+		  The next EPL also selects the <literal>origin</literal> property of the order indication event. The output event is a pair of the OrderEvent instance and a map containing the property name and value of origin:
+		</para>
+		<programlisting><![CDATA[select origin, transpose(makeEvent(oi)) from OrderIndication oi]]></programlisting>
+
+		<para>
+		  If the <literal>transpose</literal> function is not a top-level function, i.e. if it occurs within another expression or within any other clause then the select-clause, the function simple returns the expression result of the parameter expression.
+		</para>
+
+		<sect2 id="functionreference-transpose-insert-into">
+			<title>Transpose with Insert-Into</title>
+
+			<para>
+				  You may insert transposed output events into another stream.
+			</para>
+			
+			<para>
+				  If the stream name in the insert-into clause is already associated to an event type, the engine checks whether the event type associated to the stream name provided in the insert-into clause matches the event type associated to the object returned by the expression. If the stream name in the insert-into clause is not already associated to an existing event type the engine associates a new event type using the stream name provided in the insert-into clause.
+			</para>
+
+			<para>
+				For example, the next statement associates the stream name <literal>OrderEvent</literal> with the class. Alternatively this association can be achieved via static or runtime configuration API:
+			</para>
+			<programlisting><![CDATA[create schema OrderEvent as com.mycompany.OrderEvent]]></programlisting>
+			
+			<para>
+				An EPL statement can insert into the <literal>OrderEvent</literal> stream the <literal>OrderEvent</literal> instance returned by the <literal>makeEvent</literal> method, as follows:
+			</para>
+			<programlisting><![CDATA[insert into OrderEvent select transpose(makeEvent(oi)) from OrderIndication oi]]></programlisting>
+			
+			<para>
+				It is not valid to select additional properties or expressions in this case, as they would not be part of the output event. The following is not valid:
+			</para>
+			<programlisting><![CDATA[// not valid
+insert into OrderEvent select origin, transpose(makeEvent(oi)) from OrderIndication oi]]></programlisting>
+		</sect2>
+	</sect1>
+
 </chapter>
