@@ -884,7 +884,13 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
 
         // Determine Subselects for compilation, and lambda-expression shortcut syntax for named windows
-        ExprNodeSubselectVisitor visitor = StatementLifecycleSvcUtil.walkSubselectAndDeclaredDotExpr(spec);
+        ExprNodeSubselectVisitor visitor;
+        try {
+            visitor = StatementLifecycleSvcUtil.walkSubselectAndDeclaredDotExpr(spec);
+        }
+        catch (ExprValidationException ex) {
+            throw new EPStatementException(ex.getMessage(), eplStatement);
+        }
         List<ExprSubselectNode> subselects = visitor.getSubselects();
         if (!visitor.getChainedExpressionsDot().isEmpty()) {
             rewriteNamedWindowSubselect(visitor.getChainedExpressionsDot(), subselects, statementContext.getNamedWindowService());

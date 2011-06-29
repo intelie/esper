@@ -2,14 +2,13 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeSubselectVisitor;
+import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.*;
-import com.espertech.esper.pattern.EvalFilterNode;
-import com.espertech.esper.pattern.EvalNodeAnalysisResult;
-import com.espertech.esper.pattern.EvalNodeUtil;
+import com.espertech.esper.pattern.*;
 
 public class StatementLifecycleSvcUtil {
 
-    public static ExprNodeSubselectVisitor walkSubselectAndDeclaredDotExpr(StatementSpecRaw spec) {
+    public static ExprNodeSubselectVisitor walkSubselectAndDeclaredDotExpr(StatementSpecRaw spec) throws ExprValidationException {
 
         // Look for expressions with sub-selects in select expression list and filter expression
         // Recursively compile the statement within the statement.
@@ -49,9 +48,22 @@ public class StatementLifecycleSvcUtil {
             if (streamSpecRaw instanceof PatternStreamSpecRaw) {
                 PatternStreamSpecRaw patternStreamSpecRaw = (PatternStreamSpecRaw) streamSpecRaw;
                 EvalNodeAnalysisResult analysisResult = EvalNodeUtil.recursiveAnalyzeChildNodes(patternStreamSpecRaw.getEvalNode());
-                for (EvalFilterNode filterNode : analysisResult.getFilterNodes()) {
-                    for (ExprNode filterExpr : filterNode.getRawFilterSpec().getFilterExpressions()) {
-                        filterExpr.accept(visitor);
+                for (EvalNode evalNode : analysisResult.getActiveNodes()) {
+                    if (evalNode instanceof EvalFilterNode) {
+                        EvalFilterNode filterNode = (EvalFilterNode) evalNode;
+                        for (ExprNode filterExpr : filterNode.getRawFilterSpec().getFilterExpressions()) {
+                            filterExpr.accept(visitor);
+                        }
+                    }
+                    else if (evalNode instanceof EvalObserverNode) {
+                        int beforeCount = visitor.getSubselects().size();
+                        EvalObserverNode observerNode = (EvalObserverNode) evalNode;
+                        for (ExprNode param : observerNode.getPatternObserverSpec().getObjectParameters()) {
+                            param.accept(visitor);
+                        }
+                        if (visitor.getSubselects().size() != beforeCount) {
+                            throw new ExprValidationException("Subselects are not allowed within pattern observer parameters, please consider using a variable instead");
+                        }
                     }
                 }
             }
