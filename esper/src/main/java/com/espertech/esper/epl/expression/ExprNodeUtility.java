@@ -95,6 +95,15 @@ public class ExprNodeUtility {
         // For top-level expressions check if we perform audit
         if (isTopLevel) {
             Audit audit = AuditEnum.EXPRESSION.getAudit(validationContext.getAnnotations());
+            if (audit == null) {
+                audit = AuditEnum.EXPRESSION_NESTED.getAudit(validationContext.getAnnotations());
+            }
+            if (audit != null) {
+                return (ExprNode) ExprNodeProxy.newInstance(validationContext.getStatementName(), result);
+            }
+        }
+        else {
+            Audit audit = AuditEnum.EXPRESSION_NESTED.getAudit(validationContext.getAnnotations());
             if (audit != null) {
                 return (ExprNode) ExprNodeProxy.newInstance(validationContext.getStatementName(), result);
             }

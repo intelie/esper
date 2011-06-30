@@ -21,6 +21,11 @@ public enum AuditEnum
     EXPRESSION("EXPRESSION"),
 
     /**
+     * For use with expression audit.
+     */
+    EXPRESSION_NESTED("EXPRESSION-NESTED"),
+
+    /**
      * For use with expression-definition audit.
      */
     EXPRDEF("EXPRDEF"),

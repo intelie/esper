@@ -125,6 +125,14 @@ public class TestAudit extends TestCase {
         assertEquals(50, listener.assertOneGetNewAndReset().get("val1"));
         stmtExpr.destroy();
 
+        // expression-detail
+        auditLog.info("*** Expression-Nested: ");
+        EPStatement stmtExprNested = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('expression-nested') select ('A'||string)||'X' as val0 from SupportBean");
+        stmtExprNested.addListener(listener);
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 50));
+        assertEquals("AE1X", listener.assertOneGetNew().get("val0"));
+        stmtExprNested.destroy();
+
         // property
         auditLog.info("*** Property: ");
         EPStatement stmtProp = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('property') select intPrimitive from SupportBean");

@@ -109,7 +109,11 @@ INFO  [audit] Statement All-Order-Events property price value 100.0]]></programl
 						</row>
 						<row>
 							<entry>Expression</entry>
-							<entry>Each expression string and its return value.</entry>
+							<entry>Each top-level expression and its return value.</entry>
+						</row>
+						<row>
+							<entry>Expression-nested</entry>
+							<entry>Each expression including child or nested expressions and their return value.</entry>
 						</row>
 						<row>
 							<entry>Pattern</entry>
