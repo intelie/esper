@@ -67,18 +67,18 @@ public class TestEnumReverse extends TestCase {
         LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{Collection.class, Collection.class});
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString("E2,E1,E5,E4"));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E4", "E5", "E1", "E2");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E4", "E5", "E1", "E2");
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1"));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E1");
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString(null));
-        LambdaAssertionUtil.assertValues(listener, "val0", null);
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", null);
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString(""));
-        LambdaAssertionUtil.assertValues(listener, "val0");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0");
     }
 }

@@ -120,6 +120,17 @@
 						</entry>
 					</row>
 					<row>
+						<entry>except(source)</entry>
+						<entry>
+							<para>
+								Produces the set difference of the two collections.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-except"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry>firstof()</entry>
 						<entry>
 							<para>
@@ -160,6 +171,17 @@
 							</para>
 							<para>
 								<xref linkend="enumeration-method-groupby"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>intersect(source)</entry>
+						<entry>
+							<para>
+								Produces the set intersection of the two collections.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-intersect"/>.
 							</para>
 						</entry>
 					</row>
@@ -1207,6 +1229,28 @@ from LocationReport</programlisting>
 			</para>
 		</sect2>
 
+		<sect2 id="enumeration-method-except">
+			<title>Except</title>
+
+			<para>
+				The <literal>except</literal> enumeration method forms a set difference of the input elements with the elements that the parameter expression yields.
+			</para>
+
+			<para>
+				The enumeration method takes a single parameter that must itself return a collection of events, objects or scalar values. The method returns the elements of the first collection that do not appear in the second collection.
+			</para>
+
+			<para>
+				The following statement compares the items of the last location report against all items in the previous 10 location reports, and reports for each combination only those items in the current item report that are not also in the location report compared to:
+			</para>
+			<programlisting>select za.items.except(zb.items) as itemsCompared 
+from LocationReport as za unidirectional, LocationReport.win:length(10) as zb</programlisting>
+			
+			<para>
+				If the input is null the method returns null. For scalar values and objects equals-semantics apply.
+			</para>
+		</sect2>
+
 		<sect2 id="enumeration-method-firstof">
 			<title>FirstOf</title>
 
@@ -1265,6 +1309,28 @@ from LocationReport</programlisting>
 
 			<para>
 				If the input is null the method returns null. Null values as key and value are allowed.
+			</para>
+		</sect2>
+
+		<sect2 id="enumeration-method-intersect">
+			<title>Intersect</title>
+
+			<para>
+				The <literal>intersect</literal> enumeration method forms a set intersection of the input elements with the elements that the parameter expression yields.
+			</para>
+
+			<para>
+				The enumeration method takes a single parameter that must itself return a collection of events, objects or scalar values. The method returns the elements of the first collection that also appear in the second collection.
+			</para>
+
+			<para>
+				The following statement compares the items of the last location report against all items in the previous 10 location reports, and reports for each combination all items in the current item report that also occur in the other location report:
+			</para>
+			<programlisting>select za.items.intersect(zb.items) as itemsCompared 
+from LocationReport as za unidirectional, LocationReport.win:length(10) as zb</programlisting>
+			
+			<para>
+				If the input is null the method returns null. For scalar values and objects equals-semantics apply.
 			</para>
 		</sect2>
 
@@ -1704,7 +1770,7 @@ from LocationReport</programlisting>
 			</para>
 
 			<para>
-				The enumeration method takes a single parameter that must itself return a collection of events (input). It appends the collection to the input elements and returns the appended collection of elements.
+				The enumeration method takes a single parameter that must itself return a collection of events (input), objects or scalar values. It appends the collection to the input elements and returns the appended collection of elements.
 			</para>
 
 			<para>

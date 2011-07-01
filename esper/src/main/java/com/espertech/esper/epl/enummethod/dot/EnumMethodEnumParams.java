@@ -71,7 +71,7 @@ public class EnumMethodEnumParams {
                     new DotMethodFP(DotMethodFPInputEnum.ANY, new DotMethodFPParam(2, "(predictate, index)", DotMethodFPParamTypeEnum.BOOLEAN))
             };
 
-    public static final DotMethodFP[] UNION_FP = new DotMethodFP[] {
+    public static final DotMethodFP[] SET_LOGIC_FP = new DotMethodFP[] {
                     new DotMethodFP(DotMethodFPInputEnum.ANY, new DotMethodFPParam(0, "collection", DotMethodFPParamTypeEnum.ANY)),
             };
 

@@ -36,7 +36,9 @@ public enum EnumMethodEnum {
     ORDERBY("orderBy", ExprDotEvalOrderByAscDesc.class, EnumMethodEnumParams.ORDERBY),
     ORDERBYDESC("orderByDesc", ExprDotEvalOrderByAscDesc.class, EnumMethodEnumParams.ORDERBY),
     WHERE("where", ExprDotEvalWhere.class, EnumMethodEnumParams.WHERE_FP),
-    UNION("union", ExprDotEvalUnion.class, EnumMethodEnumParams.UNION_FP),
+    UNION("union", ExprDotEvalSetExceptUnionIntersect.class, EnumMethodEnumParams.SET_LOGIC_FP),
+    EXCEPT("except", ExprDotEvalSetExceptUnionIntersect.class, EnumMethodEnumParams.SET_LOGIC_FP),
+    INTERSECT("intersect", ExprDotEvalSetExceptUnionIntersect.class, EnumMethodEnumParams.SET_LOGIC_FP),
     REVERSE("reverse", ExprDotEvalReverse.class, EnumMethodEnumParams.NOOP_REVERSE),
     NOOP("esperInternalNoop", ExprDotEvalNoOp.class, EnumMethodEnumParams.NOOP_REVERSE),
 

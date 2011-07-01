@@ -1,0 +1,81 @@
+package com.espertech.esper.epl.enummethod.eval;
+
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprEvaluatorEnumeration;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+public class EnumEvalIntersect implements EnumEval {
+
+    private final EventBean[] events;
+    private final ExprEvaluatorEnumeration evaluator;
+    private final boolean scalar;
+
+    public EnumEvalIntersect(int numStreams, ExprEvaluatorEnumeration evaluator, boolean scalar) {
+        this.events = new EventBean[numStreams];
+        this.evaluator = evaluator;
+        this.scalar = scalar;
+    }
+
+    public EventBean[] getEventsPrototype() {
+        return events;
+    }
+
+    public Object evaluateEnumMethod(Collection target, boolean isNewData, ExprEvaluatorContext context) {
+        if (target == null) {
+            return null;
+        }
+
+        Collection set;
+        if (scalar) {
+            set = evaluator.evaluateGetROCollectionScalar(events, isNewData, context);
+        }
+        else {
+            set = evaluator.evaluateGetROCollectionEvents(events, isNewData, context);
+        }
+        
+        if (set == null || set.isEmpty() || target.isEmpty()) {
+            return target;
+        }
+
+        if (scalar) {
+            ArrayList<Object> result = new ArrayList<Object>(target);
+            result.retainAll(set);
+            return result;
+        }
+
+        Collection<EventBean> targetEvents = (Collection<EventBean>) target;
+        Collection<EventBean> sourceEvents = (Collection<EventBean>) set;
+        ArrayList<EventBean> result = new ArrayList<EventBean>();
+
+        // we compare event underlying
+        for (EventBean targetEvent : targetEvents) {
+            if (targetEvent == null) {
+                result.add(null);
+                continue;
+            }
+
+            boolean found = false;
+            for (EventBean sourceEvent : sourceEvents) {
+                if (targetEvent == sourceEvent) {
+                    found = true;
+                    break;
+                }
+                if (sourceEvent == null) {
+                    continue;
+                }
+                if (targetEvent.getUnderlying().equals(sourceEvent.getUnderlying())) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) {
+                result.add(targetEvent);
+            }
+        }
+        return result;
+    }
+}

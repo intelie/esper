@@ -9,7 +9,6 @@ import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -71,15 +70,15 @@ public class TestEnumSelectFrom extends TestCase {
         LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), "val0".split(","), new Class[]{Collection.class});
 
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value("E1,12", "E2,11", "E3,2"));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E1", "E2", "E3");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E1", "E2", "E3");
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value(null));
-        LambdaAssertionUtil.assertValues(listener, "val0", null);
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", null);
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value());
-        LambdaAssertionUtil.assertValues(listener, "val0", new String[0]);
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", new String[0]);
         listener.reset();
     }
 

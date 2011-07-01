@@ -214,6 +214,8 @@ public class TestEnumDocSamples extends TestCase {
                 "select assetId, myquery(item) as subq, (myquery(item)).where(z => z.name = \"Z01\") as assetItem " +
                 "from Item as item";
         assertStmt(epl);
+        
+        assertStmt("select za.items.except(zb.items) as itemsCompared from LocationReport as za unidirectional, LocationReport.win:length(10) as zb");
     }
 
     private void assertStmt(String epl) {

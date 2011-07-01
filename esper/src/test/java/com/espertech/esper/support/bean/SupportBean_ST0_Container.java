@@ -12,15 +12,15 @@ public class SupportBean_ST0_Container {
     }
 
     private List<SupportBean_ST0> contained;
-    private List<SupportBean_ST0> second;
+    private List<SupportBean_ST0> containedTwo;
 
     public SupportBean_ST0_Container(List<SupportBean_ST0> contained) {
         this.contained = contained;
     }
 
-    public SupportBean_ST0_Container(List<SupportBean_ST0> contained, List<SupportBean_ST0> second) {
+    public SupportBean_ST0_Container(List<SupportBean_ST0> contained, List<SupportBean_ST0> containedTwo) {
         this.contained = contained;
-        this.second = second;
+        this.containedTwo = containedTwo;
     }
 
     public static List<SupportBean_ST0> makeSampleList() {
@@ -68,6 +68,10 @@ public class SupportBean_ST0_Container {
 
     public List<SupportBean_ST0> getContained() {
         return contained;
+    }
+
+    public List<SupportBean_ST0> getContainedTwo() {
+        return containedTwo;
     }
 
     public static SupportBean_ST0 makeTest(String value) {

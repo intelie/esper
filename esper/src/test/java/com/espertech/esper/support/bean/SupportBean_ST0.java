@@ -53,4 +53,19 @@ public class SupportBean_ST0 {
     public void setPcommon(String pcommon) {
         this.pcommon = pcommon;
     }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SupportBean_ST0 that = (SupportBean_ST0) o;
+
+        if (!id.equals(that.id)) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

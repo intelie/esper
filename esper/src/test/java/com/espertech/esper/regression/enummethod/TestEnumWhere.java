@@ -8,7 +8,6 @@ import com.espertech.esper.support.bean.SupportBean_ST0_Container;
 import com.espertech.esper.support.bean.SupportCollection;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
@@ -76,18 +75,18 @@ public class TestEnumWhere extends TestCase {
         LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{Collection.class, Collection.class});
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1,E2,E3"));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E2", "E3");
-        LambdaAssertionUtil.assertValues(listener, "val1", "E3");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E2", "E3");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val1", "E3");
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString("E4,E2,E1"));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E4", "E2");
-        LambdaAssertionUtil.assertValues(listener, "val1", new String[0]);
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E4", "E2");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val1", new String[0]);
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString(""));
-        LambdaAssertionUtil.assertValues(listener, "val0", new String[0]);
-        LambdaAssertionUtil.assertValues(listener, "val1", new String[0]);
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", new String[0]);
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val1", new String[0]);
         listener.reset();
 
         stmtFragment.destroy();
@@ -101,7 +100,7 @@ public class TestEnumWhere extends TestCase {
         LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), "val0".split(","), new Class[]{Collection.class});
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeBoolean("true,true,false"));
-        LambdaAssertionUtil.assertValues(listener, "val0", true, true);
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", true, true);
         listener.reset();
     }
 }

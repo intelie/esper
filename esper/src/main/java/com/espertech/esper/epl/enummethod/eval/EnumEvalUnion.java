@@ -40,8 +40,7 @@ public class EnumEvalUnion implements EnumEval {
             return target;
         }
 
-        ArrayList<Object> result = new ArrayList<Object>();
-        result.addAll(target);
+        ArrayList<Object> result = new ArrayList<Object>(target);
         result.addAll(set);
 
         return result;

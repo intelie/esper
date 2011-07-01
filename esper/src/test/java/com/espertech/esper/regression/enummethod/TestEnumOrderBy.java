@@ -1,12 +1,10 @@
 package com.espertech.esper.regression.enummethod;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.support.bean.SupportBean_ST0;
 import com.espertech.esper.support.bean.SupportBean_ST0_Container;
 import com.espertech.esper.support.bean.SupportCollection;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
@@ -85,23 +83,23 @@ public class TestEnumOrderBy extends TestCase {
         LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{Collection.class, Collection.class});
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString("E2,E1,E5,E4"));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E1", "E2", "E4", "E5");
-        LambdaAssertionUtil.assertValues(listener, "val1", "E5", "E4", "E2", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E1", "E2", "E4", "E5");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val1", "E5", "E4", "E2", "E1");
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1"));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E1");
-        LambdaAssertionUtil.assertValues(listener, "val1", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val1", "E1");
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString(null));
-        LambdaAssertionUtil.assertValues(listener, "val0", null);
-        LambdaAssertionUtil.assertValues(listener, "val1", null);
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", null);
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val1", null);
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString(""));
-        LambdaAssertionUtil.assertValues(listener, "val0");
-        LambdaAssertionUtil.assertValues(listener, "val1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val1");
     }
 
     public void testInvalid() {

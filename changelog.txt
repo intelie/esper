@@ -7,6 +7,7 @@ Major API or EPL changes
   - Support for specifing consumption on pattern filters
   - Support for filter expressions as part of aggregation functions
   - Support for the transpose(...) function for select-clause transposing an expression result object to a stream
+  - Support for @Audit to output nested expression results
   
 
 Changes in version 4.2.0

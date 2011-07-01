@@ -371,7 +371,7 @@ public class TestExpressionDef extends TestCase {
         LambdaAssertionUtil.assertTypes(stmt.getEventType(), "val1".split(","), new Class[]{Collection.class});
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1,E2,E3,E4"));
-        LambdaAssertionUtil.assertValues(listener, "val1", "E3", "E4");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val1", "E3", "E4");
     }
 
     public void testEventTypeAndSODA() {

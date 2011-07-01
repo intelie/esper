@@ -11,7 +11,6 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 
 public class TestEnumTakeWhileAndWhileLast extends TestCase {
@@ -104,10 +103,10 @@ public class TestEnumTakeWhileAndWhileLast extends TestCase {
         LambdaAssertionUtil.assertTypes(stmt.getEventType(), fields, new Class[]{Collection.class, Collection.class, Collection.class, Collection.class});
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1,E2,E3,E4"));
-        LambdaAssertionUtil.assertValues(listener, "val0");
-        LambdaAssertionUtil.assertValues(listener, "val1");
-        LambdaAssertionUtil.assertValues(listener, "val2", "E2", "E3", "E4");
-        LambdaAssertionUtil.assertValues(listener, "val3", "E3", "E4");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val2", "E2", "E3", "E4");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val3", "E3", "E4");
         listener.reset();
     }
 }

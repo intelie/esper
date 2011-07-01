@@ -8,6 +8,7 @@ import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.Assert;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -15,12 +16,13 @@ import java.util.List;
 
 public class LambdaAssertionUtil {
 
-    public static void assertValues(SupportUpdateListener listener, String field, Object... expected) {
+    public static void assertValuesArrayScalar(SupportUpdateListener listener, String field, Object... expected) {
+        Object result = listener.assertOneGetNew().get(field);
         if (expected == null) {
-            Assert.assertNull(listener.assertOneGetNew().get(field));
+            Assert.assertNull(result);
             return;
         }
-        Object[] arr = ((Collection) listener.assertOneGetNew().get(field)).toArray();
+        Object[] arr = ((Collection) result).toArray();
         ArrayAssertionUtil.assertEqualsExactOrder(arr, expected);
     }
 
@@ -33,10 +35,21 @@ public class LambdaAssertionUtil {
             return;
         }
         String[] expected = expectedList.split(",");
-        Assert.assertEquals(expected.length, arr.length);
+        Assert.assertEquals("Received: " + getIds(arr), expected.length, arr.length);
         for (int i = 0; i < expected.length; i++) {
             Assert.assertEquals(expected[i], arr[i].getId());
         }
+    }
+
+    public static String getIds(SupportBean_ST0[] arr) {
+        String delimiter = "";
+        StringWriter writer = new StringWriter();
+        for (SupportBean_ST0 item : arr) {
+            writer.append(delimiter);
+            delimiter = ",";
+            writer.append(item.getId());
+        }
+        return writer.toString();
     }
 
     private static SupportBean_ST0[] toArray(Collection<SupportBean_ST0> it) {

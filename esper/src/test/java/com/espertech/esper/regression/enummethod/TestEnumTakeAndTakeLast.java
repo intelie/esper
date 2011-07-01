@@ -97,35 +97,35 @@ public class TestEnumTakeAndTakeLast extends TestCase {
         LambdaAssertionUtil.assertTypes(stmt.getEventType(), fields, new Class[]{Collection.class, Collection.class, Collection.class, Collection.class});
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1,E2,E3"));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E1","E2");
-        LambdaAssertionUtil.assertValues(listener, "val1", "E1");
-        LambdaAssertionUtil.assertValues(listener, "val2", "E2","E3");
-        LambdaAssertionUtil.assertValues(listener, "val3", "E3");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E1", "E2");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val1", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val2", "E2", "E3");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val3", "E3");
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1,E2"));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E1","E2");
-        LambdaAssertionUtil.assertValues(listener, "val1", "E1");
-        LambdaAssertionUtil.assertValues(listener, "val2", "E1","E2");
-        LambdaAssertionUtil.assertValues(listener, "val3", "E2");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E1", "E2");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val1", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val2", "E1", "E2");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val3", "E2");
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1"));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E1");
-        LambdaAssertionUtil.assertValues(listener, "val1", "E1");
-        LambdaAssertionUtil.assertValues(listener, "val2", "E1");
-        LambdaAssertionUtil.assertValues(listener, "val3", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val1", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val2", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val3", "E1");
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString(""));
         for (String field : fields) {
-            LambdaAssertionUtil.assertValues(listener, field);
+            LambdaAssertionUtil.assertValuesArrayScalar(listener, field);
         }
         listener.reset();
 
         epService.getEPRuntime().sendEvent(SupportCollection.makeString(null));
         for (String field : fields) {
-            LambdaAssertionUtil.assertValues(listener, field, null);
+            LambdaAssertionUtil.assertValuesArrayScalar(listener, field, null);
         }
         listener.reset();
     }

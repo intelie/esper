@@ -3,6 +3,7 @@ package com.espertech.esper.epl.enummethod.eval;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.epl.enummethod.dot.EnumMethodEnum;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalEnumMethodBase;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalParam;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalTypeInfo;
@@ -11,10 +12,9 @@ import com.espertech.esper.epl.expression.ExprEvaluatorEnumeration;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.event.EventTypeUtility;
 
-import java.util.Iterator;
 import java.util.List;
 
-public class ExprDotEvalUnion extends ExprDotEvalEnumMethodBase {
+public class ExprDotEvalSetExceptUnionIntersect extends ExprDotEvalEnumMethodBase {
 
     public EventType[] getAddStreamTypes(String enumMethodUsedName, List<String> goesToNames, EventType inputEventType, Class collectionComponentType, List<ExprDotEvalParam> bodiesAndParameters) {
         return new EventType[] {};
@@ -45,6 +45,17 @@ public class ExprDotEvalUnion extends ExprDotEvalEnumMethodBase {
             }
         }
 
-        return new EnumEvalUnion(numStreamsIncoming, enumSrc.getFirst(), inputEventType == null);
+        if (this.getEnumMethodEnum() == EnumMethodEnum.UNION) {
+            return new EnumEvalUnion(numStreamsIncoming, enumSrc.getFirst(), inputEventType == null);
+        }
+        else if (this.getEnumMethodEnum() == EnumMethodEnum.INTERSECT) {
+            return new EnumEvalIntersect(numStreamsIncoming, enumSrc.getFirst(), inputEventType == null);
+        }
+        else if (this.getEnumMethodEnum() == EnumMethodEnum.EXCEPT) {
+            return new EnumEvalExcept(numStreamsIncoming, enumSrc.getFirst(), inputEventType == null);
+        }
+        else {
+            throw new IllegalArgumentException("Invalid enumeration method for this factory: " + this.getEnumMethodEnum());
+        }
     }
 }

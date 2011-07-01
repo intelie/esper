@@ -66,19 +66,19 @@ public class TestEnumDataSources extends TestCase {
         LambdaAssertionUtil.assertTypes(stmtScalar.getEventType(), fields, new Class[]{Collection.class});
 
         epService.getEPRuntime().sendEvent(new SupportBean_ST0("E1", 5));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E1");
         listener.reset();
 
         epService.getEPRuntime().sendEvent(new SupportBean_ST0("E2ignore", 6));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E1");
         listener.reset();
 
         epService.getEPRuntime().sendEvent(new SupportBean_ST0("E3", 4));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E3", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E3", "E1");
         listener.reset();
 
         epService.getEPRuntime().sendEvent(new SupportBean_ST0("ignoreE5", 3));
-        LambdaAssertionUtil.assertValues(listener, "val0", "E3", "E1");
+        LambdaAssertionUtil.assertValuesArrayScalar(listener, "val0", "E3", "E1");
         listener.reset();
     }
 
@@ -342,21 +342,21 @@ public class TestEnumDataSources extends TestCase {
         SupportCollection.setSampleCSV("E1,E2,E3");
         epService.getEPRuntime().sendEvent(new SupportBean());
         for (String field : fields) {
-            LambdaAssertionUtil.assertValues(listener, field, "E2", "E3");
+            LambdaAssertionUtil.assertValuesArrayScalar(listener, field, "E2", "E3");
         }
         listener.reset();
 
         SupportCollection.setSampleCSV(null);
         epService.getEPRuntime().sendEvent(new SupportBean());
         for (String field : fields) {
-            LambdaAssertionUtil.assertValues(listener, field, null);
+            LambdaAssertionUtil.assertValuesArrayScalar(listener, field, null);
         }
         listener.reset();
 
         SupportCollection.setSampleCSV("");
         epService.getEPRuntime().sendEvent(new SupportBean());
         for (String field : fields) {
-            LambdaAssertionUtil.assertValues(listener, field);
+            LambdaAssertionUtil.assertValuesArrayScalar(listener, field);
         }
         listener.reset();
     }
