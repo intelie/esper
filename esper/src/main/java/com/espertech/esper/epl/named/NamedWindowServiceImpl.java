@@ -31,7 +31,7 @@ import java.util.*;
 public class NamedWindowServiceImpl implements NamedWindowService
 {
     private final Map<String, NamedWindowProcessor> processors;
-    private final Map<String, StatementLock> windowStatementLocks;
+    private final Map<String, NamedWindowLockPair> windowStatementLocks;
     private final StatementLockFactory statementLockFactory;
     private final VariableService variableService;
     private final Set<NamedWindowLifecycleObserver> observers;
@@ -45,7 +45,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
     {
         protected synchronized List<NamedWindowConsumerDispatchUnit> initialValue()
         {
-            return new ArrayList<NamedWindowConsumerDispatchUnit>(100);
+            return new ArrayList<NamedWindowConsumerDispatchUnit>();
         }
     };
 
@@ -68,7 +68,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
                                   MetricReportingService metricReportingService)
     {
         this.processors = new HashMap<String, NamedWindowProcessor>();
-        this.windowStatementLocks = new HashMap<String, StatementLock>();
+        this.windowStatementLocks = new HashMap<String, NamedWindowLockPair>();
         this.statementLockFactory = statementLockFactory;
         this.variableService = variableService;
         this.observers = new HashSet<NamedWindowLifecycleObserver>();
@@ -94,12 +94,25 @@ public class NamedWindowServiceImpl implements NamedWindowService
 
     public StatementLock getNamedWindowLock(String windowName)
     {
-        return windowStatementLocks.get(windowName);
+        NamedWindowLockPair pair = windowStatementLocks.get(windowName);
+        if (pair == null) {
+            return null;
+        }
+        return pair.getLock();
     }
 
-    public void addNamedWindowLock(String windowName, StatementLock statementResourceLock)
+    public void addNamedWindowLock(String windowName, StatementLock statementResourceLock, String statementName)
     {
-        windowStatementLocks.put(windowName, statementResourceLock);
+        windowStatementLocks.put(windowName, new NamedWindowLockPair(statementName, statementResourceLock));
+    }
+
+    public void removeNamedWindowLock(String statementName) {
+        for (Map.Entry<String, NamedWindowLockPair> entry : windowStatementLocks.entrySet()) {
+            if (entry.getValue().getStatementName().equals(statementName)) {
+                windowStatementLocks.remove(entry.getKey());
+                return;
+            }
+        }
     }
 
     public boolean isNamedWindow(String name)
@@ -135,12 +148,12 @@ public class NamedWindowServiceImpl implements NamedWindowService
             throw new ViewProcessingException("A named window by name '" + name + "' has already been created");
         }
 
-        StatementLock statementResourceLock = windowStatementLocks.get(name);
-        if (statementResourceLock == null) {
+        NamedWindowLockPair lockPair = windowStatementLocks.get(name);
+        if (lockPair == null || lockPair.getLock() == null) {
             throw new ViewProcessingException("A lock for named window by name '" + name + "' is not allocated");
         }
 
-        NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle, statementResultService, revisionProcessor, eplExpression, statementName, isPrioritized, exprEvaluatorContext, statementResourceLock, isEnableSubqueryIndexShare, enableQueryPlanLog, metricReportingService);
+        NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle, statementResultService, revisionProcessor, eplExpression, statementName, isPrioritized, exprEvaluatorContext, lockPair.getLock(), isEnableSubqueryIndexShare, enableQueryPlanLog, metricReportingService);
         processors.put(name, processor);
 
         if (!observers.isEmpty())
@@ -162,7 +175,6 @@ public class NamedWindowServiceImpl implements NamedWindowService
         {
             processor.destroy();
             processors.remove(name);
-            windowStatementLocks.remove(name);
 
             if (!observers.isEmpty())
             {
@@ -189,27 +201,34 @@ public class NamedWindowServiceImpl implements NamedWindowService
             return false;
         }
 
-        // Acquire main processing lock which locks out statement management
-        eventProcessingRWLock.acquireReadLock();
-        try
-        {
-            return processDispatches(exprEvaluatorContext, dispatches);
+        while (!dispatches.isEmpty()) {
+
+            // Acquire main processing lock which locks out statement management
+            eventProcessingRWLock.acquireReadLock();
+            try
+            {
+                NamedWindowConsumerDispatchUnit[] units = dispatches.toArray(new NamedWindowConsumerDispatchUnit[dispatches.size()]);
+                dispatches.clear();
+                processDispatches(exprEvaluatorContext, units);
+            }
+            catch (RuntimeException ex)
+            {
+                throw new EPException(ex);
+            }
+            finally
+            {
+                eventProcessingRWLock.releaseReadLock();
+            }
         }
-        catch (RuntimeException ex)
-        {
-            throw new EPException(ex);
-        }
-        finally
-        {
-            eventProcessingRWLock.releaseReadLock();
-        }
+
+        return true;
     }
 
-    private boolean processDispatches(ExprEvaluatorContext exprEvaluatorContext, List<NamedWindowConsumerDispatchUnit> dispatches) {
+    private void processDispatches(ExprEvaluatorContext exprEvaluatorContext, NamedWindowConsumerDispatchUnit[] dispatches) {
 
-        if (dispatches.size() == 1)
+        if (dispatches.length == 1)
         {
-            NamedWindowConsumerDispatchUnit unit = dispatches.get(0);
+            NamedWindowConsumerDispatchUnit unit = dispatches[0];
             EventBean[] newData = unit.getDeltaData().getNewData();
             EventBean[] oldData = unit.getDeltaData().getOldData();
 
@@ -253,8 +272,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
                 }
             }
 
-            dispatches.clear();
-            return true;
+            return;
         }
 
         // Multiple different-result dispatches to same or different statements are needed in two situations:
@@ -393,10 +411,8 @@ public class NamedWindowServiceImpl implements NamedWindowService
             }
         }
 
-        dispatches.clear();
         dispatchesPerStmt.clear();
-
-        return true;
+        return;
     }
 
     private void processHandleMultiple(EPStatementHandle handle, Map<NamedWindowConsumerView, NamedWindowDeltaData> deltaPerConsumer, ExprEvaluatorContext exprEvaluatorContext) {
@@ -482,5 +498,23 @@ public class NamedWindowServiceImpl implements NamedWindowService
             }
         }
         return deltaPerConsumer;
+    }
+
+    private static class NamedWindowLockPair {
+        private final String statementName;
+        private final StatementLock lock;
+
+        private NamedWindowLockPair(String statementName, StatementLock lock) {
+            this.statementName = statementName;
+            this.lock = lock;
+        }
+
+        public String getStatementName() {
+            return statementName;
+        }
+
+        public StatementLock getLock() {
+            return lock;
+        }
     }
 }

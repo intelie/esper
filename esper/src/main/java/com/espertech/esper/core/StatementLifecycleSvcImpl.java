@@ -681,6 +681,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             // remove referenced variabkes
             services.getStatementVariableRefService().removeReferencesStatement(desc.getEpStatement().getName());
 
+            // remove the named window lock
+            services.getNamedWindowService().removeNamedWindowLock(desc.getEpStatement().getName());
+
             EPStatementSPI statement = desc.getEpStatement();
             if (statement.getState() == EPStatementState.STARTED)
             {

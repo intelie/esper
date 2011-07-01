@@ -94,7 +94,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
             if (statementResourceLock == null)
             {
                 statementResourceLock = engineServices.getStatementLockFactory().getStatementLock(statementName, expression);
-                engineServices.getNamedWindowService().addNamedWindowLock(optCreateWindowDesc.getWindowName(), statementResourceLock);
+                engineServices.getNamedWindowService().addNamedWindowLock(optCreateWindowDesc.getWindowName(), statementResourceLock, statementName);
             }
         }
         else

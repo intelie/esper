@@ -715,7 +715,8 @@ public final class FilterSpecCompiler
             String propertyName = identNode.getResolvedPropertyName();
             Object constant = constantNode.evaluate(null, true, exprEvaluatorContext);
             constant = handleConstantsCoercion(identNode, constant);
-            return new FilterSpecParamConstant(propertyName, op.reversedRelationalOp(), constant);
+            FilterOperator opReversed = op.isComparisonOperator() ? op.reversedRelationalOp() : op;
+            return new FilterSpecParamConstant(propertyName, opReversed, constant);
         }
         // check identifier and expression containing other streams
         if ((left instanceof ExprIdentNode) && (right instanceof ExprIdentNode))

@@ -548,9 +548,18 @@ public class EPStatementStartMethod
                 }
                 else if (item instanceof OnTriggerMergeActionInsert) {
                     OnTriggerMergeActionInsert insert = (OnTriggerMergeActionInsert) item;
+
+                    StreamTypeService insertTypeSvc;
+                    if (insert.getOptionalStreamName() == null || insert.getOptionalStreamName().equals(namedWindowName)) {
+                        insertTypeSvc = insertOnlyTypeSvc;
+                    }
+                    else {
+                        insertTypeSvc = twoStreamTypeSvc;
+                    }
+
                     List<SelectClauseElementCompiled> compiledSelect = new ArrayList<SelectClauseElementCompiled>();
                     if (insert.getOptionalWhereClause() != null) {
-                        insert.setOptionalWhereClause(validateExprNoAgg(insert.getOptionalWhereClause(), twoStreamTypeSvc, statementContext, exprNodeErrorMessage));
+                        insert.setOptionalWhereClause(validateExprNoAgg(insert.getOptionalWhereClause(), insertTypeSvc, statementContext, exprNodeErrorMessage));
                     }
                     int colIndex = 0;
                     for (SelectClauseElementRaw raw : insert.getSelectClause())
@@ -559,8 +568,8 @@ public class EPStatementStartMethod
                         {
                             SelectClauseStreamRawSpec rawStreamSpec = (SelectClauseStreamRawSpec) raw;
                             Integer foundStreamNum = null;
-                            for (int s = 0; s < twoStreamTypeSvc.getStreamNames().length; s++) {
-                                if (!rawStreamSpec.getStreamName().equals(twoStreamTypeSvc.getStreamNames()[s])) {
+                            for (int s = 0; s < insertTypeSvc.getStreamNames().length; s++) {
+                                if (rawStreamSpec.getStreamName().equals(insertTypeSvc.getStreamNames()[s])) {
                                     foundStreamNum = s;
                                     break;
                                 }
@@ -575,7 +584,7 @@ public class EPStatementStartMethod
                         else if (raw instanceof SelectClauseExprRawSpec)
                         {
                             SelectClauseExprRawSpec exprSpec = (SelectClauseExprRawSpec) raw;
-                            ExprValidationContext validationContext = new ExprValidationContext(twoStreamTypeSvc, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                            ExprValidationContext validationContext = new ExprValidationContext(insertTypeSvc, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
                             ExprNode exprCompiled = ExprNodeUtil.getValidatedSubtree(exprSpec.getSelectExpression(), validationContext);
                             String resultName = exprSpec.getOptionalAsName();
                             if (resultName == null)

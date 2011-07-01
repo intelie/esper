@@ -104,8 +104,15 @@ public interface NamedWindowService
      * Sets the lock to use for a named window.
      * @param windowName is the named window name
      * @param statementResourceLock is the statement lock for the create window statement
+     * @param statementName the name of the statement that is the "create window"
      */
-    public void addNamedWindowLock(String windowName, StatementLock statementResourceLock);
+    public void addNamedWindowLock(String windowName, StatementLock statementResourceLock, String statementName);
+
+    /**
+     * Remove the lock associated to the named window.
+     * @param statementName the name of the statement that is the "create window"
+     */
+    public void removeNamedWindowLock(String statementName);
 
     /**
      * Clear out the service.
