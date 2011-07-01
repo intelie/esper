@@ -499,7 +499,7 @@ public class EPStatementStartMethod
         catch (RuntimeException ex) {
             handleException(stopMethod);
             throw ex;
-        }        
+        }
         log.debug(".start Statement start completed");
 
         return new EPStatementStartResult(onExprView, stopMethod);
@@ -550,27 +550,32 @@ public class EPStatementStartMethod
                     OnTriggerMergeActionInsert insert = (OnTriggerMergeActionInsert) item;
                     List<SelectClauseElementCompiled> compiledSelect = new ArrayList<SelectClauseElementCompiled>();
                     if (insert.getOptionalWhereClause() != null) {
-                        insert.setOptionalWhereClause(validateExprNoAgg(insert.getOptionalWhereClause(), insertOnlyTypeSvc, statementContext, exprNodeErrorMessage));
+                        insert.setOptionalWhereClause(validateExprNoAgg(insert.getOptionalWhereClause(), twoStreamTypeSvc, statementContext, exprNodeErrorMessage));
                     }
                     int colIndex = 0;
-                    int contentStreamNumber = 1;
                     for (SelectClauseElementRaw raw : insert.getSelectClause())
                     {
                         if (raw instanceof SelectClauseStreamRawSpec)
                         {
                             SelectClauseStreamRawSpec rawStreamSpec = (SelectClauseStreamRawSpec) raw;
-                            if (!rawStreamSpec.getStreamName().equals(insertOnlyTypeSvc.getStreamNames()[contentStreamNumber]))
-                            {
+                            Integer foundStreamNum = null;
+                            for (int s = 0; s < twoStreamTypeSvc.getStreamNames().length; s++) {
+                                if (!rawStreamSpec.getStreamName().equals(twoStreamTypeSvc.getStreamNames()[s])) {
+                                    foundStreamNum = s;
+                                    break;
+                                }
+                            }
+                            if (foundStreamNum == null) {
                                 throw new ExprValidationException("Stream by name '" + rawStreamSpec.getStreamName() + "' was not found");
                             }
                             SelectClauseStreamCompiledSpec streamSelectSpec = new SelectClauseStreamCompiledSpec(rawStreamSpec.getStreamName(), rawStreamSpec.getOptionalAsName());
-                            streamSelectSpec.setStreamNumber(contentStreamNumber);
+                            streamSelectSpec.setStreamNumber(foundStreamNum);
                             compiledSelect.add(streamSelectSpec);
                         }
                         else if (raw instanceof SelectClauseExprRawSpec)
                         {
                             SelectClauseExprRawSpec exprSpec = (SelectClauseExprRawSpec) raw;
-                            ExprValidationContext validationContext = new ExprValidationContext(insertOnlyTypeSvc, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                            ExprValidationContext validationContext = new ExprValidationContext(twoStreamTypeSvc, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
                             ExprNode exprCompiled = ExprNodeUtil.getValidatedSubtree(exprSpec.getSelectExpression(), validationContext);
                             String resultName = exprSpec.getOptionalAsName();
                             if (resultName == null)

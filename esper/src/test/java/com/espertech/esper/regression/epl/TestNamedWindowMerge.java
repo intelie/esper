@@ -40,6 +40,42 @@ public class TestNamedWindowMerge extends TestCase {
         mergeListener = new SupportUpdateListener();
     }
 
+    public void testInsertOtherStream() throws Exception {
+        String epl = "create schema MyEvent as (name string, value double);\n" +
+                     "create window MyWin.std:unique(name) as MyEvent;\n" +
+                     "insert into MyWin select * from MyEvent;\n" +
+                     "create schema InputEvent as (col1 string, col2 double);\n" +
+                "\n" +
+                "on MyEvent as eme\n" +
+                "merge MyWin as mywin\n" +
+                "where mywin.name = eme.name\n" +
+                "when matched then\n" +
+                "insert into OtherStreamOne\n" +
+                "select eme.name as event_name, mywin.value as status\n" +
+                "when not matched then\n" +
+                "insert into OtherStreamOne\n" +
+                "select eme.name as event_name, 0d as status\n" +
+                ";";
+        epService.getEPAdministrator().getDeploymentAdmin().parseDeploy(epl, null, null, null);
+        epService.getEPAdministrator().createEPL("select * from OtherStreamOne").addListener(mergeListener);
+        
+        epService.getEPRuntime().sendEvent(makeMyEvent("name1", 10d), "MyEvent");
+        ArrayAssertionUtil.assertProps(mergeListener.assertOneGetNewAndReset(), "event_name,status".split(","), new Object[] {"name1", 0d});
+
+        epService.getEPRuntime().sendEvent(makeMyEvent("name1", 11d), "MyEvent");
+        ArrayAssertionUtil.assertProps(mergeListener.assertOneGetNewAndReset(), "event_name,status".split(","), new Object[] {"name1", 10d});
+
+        epService.getEPRuntime().sendEvent(makeMyEvent("name1", 12d), "MyEvent");
+        ArrayAssertionUtil.assertProps(mergeListener.assertOneGetNewAndReset(), "event_name,status".split(","), new Object[] {"name1", 11d});
+    }
+
+    private Map<String, Object> makeMyEvent(String name, double value) {
+        Map<String, Object> event = new HashMap<String, Object>();
+        event.put("name", name);
+        event.put("value", value);
+        return event;
+    }
+
     public void testSubqueryNotMatched() {
         EPStatement stmt = epService.getEPAdministrator().createEPL("create window WindowOne.std:unique(string) (string string, intPrimitive int)");
         epService.getEPAdministrator().createEPL("create window WindowTwo.std:unique(val0) (val0 string, val1 int)");
