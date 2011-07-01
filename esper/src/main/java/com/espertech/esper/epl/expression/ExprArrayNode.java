@@ -9,20 +9,19 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.CoercionException;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.SimpleNumberCoercer;
 import com.espertech.esper.util.SimpleNumberCoercerFactory;
 
 import java.lang.reflect.Array;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents an array in a filter expressiun tree.
  */
-public class ExprArrayNode extends ExprNodeBase implements ExprEvaluator
+public class ExprArrayNode extends ExprNodeBase implements ExprEvaluator, ExprEvaluatorEnumeration
 {
     private Class arrayReturnType;
     private boolean mustCoerce;
@@ -31,6 +30,7 @@ public class ExprArrayNode extends ExprNodeBase implements ExprEvaluator
     private transient SimpleNumberCoercer coercer;
     private transient Object constantResult;
     private transient ExprEvaluator[] evaluators;
+    private volatile transient Collection constantResultList;
 
     private static final long serialVersionUID = 5533223915923867651L;
 
@@ -151,6 +151,9 @@ public class ExprArrayNode extends ExprNodeBase implements ExprEvaluator
     {
         if (constantResult != null)
         {
+            if (constantResultList != null) {
+
+            }
             return constantResult;
         }
 
@@ -199,6 +202,70 @@ public class ExprArrayNode extends ExprNodeBase implements ExprEvaluator
 
         buffer.append('}');
         return buffer.toString();
+    }
+
+    public Class getComponentTypeCollection() throws ExprValidationException {
+        return arrayReturnType;
+    }
+
+    public Collection evaluateGetROCollectionScalar(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+        if (constantResult != null)
+        {
+            if (constantResultList != null) {
+                return constantResultList;
+            }
+            ArrayList list = new ArrayList();
+            for (int i = 0; i < length; i++) {
+                list.add(Array.get(constantResult, i));
+            }
+            constantResultList = list;
+            return list;
+        }
+
+        if (length == 0)
+        {
+            return Collections.emptyList();
+        }
+
+        List resultList = new ArrayList();
+
+        int index = 0;
+        for (ExprEvaluator child : evaluators)
+        {
+            Object result = child.evaluate(eventsPerStream, isNewData, context);
+            if (result != null)
+            {
+                if (mustCoerce)
+                {
+                    Number boxed = (Number) result;
+                    Object coercedResult = coercer.coerceBoxed(boxed);
+                    resultList.add(coercedResult);
+                }
+                else
+                {
+                    resultList.add(result);
+                }
+            }
+            index++;
+        }
+
+        return resultList;
+    }
+
+    public EventType getEventTypeCollection() throws ExprValidationException {
+        return null;
+    }
+
+    public Collection<EventBean> evaluateGetROCollectionEvents(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+        return null;
+    }
+
+    public EventType getEventTypeSingle() throws ExprValidationException {
+        return null;
+    }
+
+    public EventBean evaluateGetEventBean(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+        return null;
     }
 
     public boolean equalsNode(ExprNode node)

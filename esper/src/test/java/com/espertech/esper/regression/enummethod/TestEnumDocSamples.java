@@ -5,10 +5,13 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
+import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.lrreport.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
+import sun.jdbc.odbc.ee.ObjectPool;
 
 import java.util.Collection;
 
@@ -217,6 +220,65 @@ public class TestEnumDocSamples extends TestCase {
         
         assertStmt("select za.items.except(zb.items) as itemsCompared from LocationReport as za unidirectional, LocationReport.win:length(10) as zb");
     }
+    
+    public void testScalarArray() {
+        epService.getEPAdministrator().getConfiguration().addEventType(SupportBean.class);
+
+        validate("{1, 2, 3}.aggregate(0, (result, value) => result + value)", 6);
+        validate("{1, 2, 3}.allOf(v => v > 0)", true);
+        validate("{1, 2, 3}.allOf(v => v > 1)", false);
+        validate("{1, 2, 3}.anyOf(v => v > 1)", true);
+        validate("{1, 2, 3}.anyOf(v => v > 3)", false);
+        validate("{1, 2, 3}.average()", 2.0);
+        validate("{1, 2, 3}.countOf()", 3);
+        validate("{1, 2, 3}.countOf(v => v < 2)", 1);
+        validate("{1, 2, 3}.except({1})", new Object[] {2, 3});
+        validate("{1, 2, 3}.intersect({2,3})", new Object[] {2, 3});
+        validate("{1, 2, 3}.firstOf()", 1);
+        validate("{1, 2, 3}.firstOf(v => v / 2 = 1)", 2);
+        validate("{1, 2, 3}.intersect({2, 3})", new Object[] {2, 3});
+        validate("{1, 2, 3}.lastOf()", 3);
+        validate("{1, 2, 3}.lastOf(v => v < 3)", 2);
+        validate("{1, 2, 3, 2, 1}.leastFrequent()", 3);
+        validate("{1, 2, 3, 2, 1}.max()", 3);
+        validate("{1, 2, 3, 2, 1}.min()", 1);
+        validate("{1, 2, 3, 2, 1, 2}.mostFrequent()", 2);
+        validate("{2, 3, 2, 1}.orderBy", new Object[] {1, 2, 2, 3});
+        validate("{2, 3, 2, 1}.reverse()", new Object[] {1, 2, 3, 2});
+        validate("{1, 2, 3}.sequenceEqual({1})", false);
+        validate("{1, 2, 3}.sequenceEqual({1, 2, 3})", true);
+        validate("{1, 2, 3}.sumOf()", 6);
+        validate("{1, 2, 3}.take(2)", new Object[] {1, 2});
+        validate("{1, 2, 3}.takeLast(2)", new Object[] {2, 3});
+        validate("{1, 2, 3}.takeWhile(v => v < 3)", new Object[] {1, 2});
+        validate("{1, 2, 3}.takeWhile((v,ind) => ind < 2)", new Object[] {1, 2});
+        validate("{1, 2, -1, 4, 5, 6}.takeWhile((v,ind) => ind < 5 and v > 0)", new Object[] {1, 2});
+        validate("{1, 2, 3}.takeWhileLast(v => v > 1)", new Object[] {2, 3});
+        validate("{1, 2, 3}.takeWhileLast((v,ind) => ind < 2)", new Object[] {2, 3});
+        validate("{1, 2, -1, 4, 5, 6}.takeWhileLast((v,ind) => ind < 5 and v > 0)", new Object[] {4, 5, 6});
+        validate("{1, 2, 3}.union({4, 5})", new Object[] {1, 2, 3, 4, 5});
+        validate("{1, 2, 3}.where(v => v != 2)", new Object[] {1, 3});
+    }
+
+    private void validate(String select, Object expected) {
+        String epl = "select " + select + " as result from SupportBean";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 0));
+        Object result = listener.assertOneGetNewAndReset().get("result");
+
+        if (expected instanceof Object[]) {
+            Object[] returned = ((Collection) result).toArray();
+            ArrayAssertionUtil.assertEqualsExactOrder(returned, (Object[]) expected);
+        }
+        else {
+            assertEquals(expected, result);
+        }
+
+        stmt.destroy();
+    }
+
 
     private void assertStmt(String epl) {
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);

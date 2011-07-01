@@ -139,7 +139,6 @@ tokens
    	OBJECT_PARAM_ORDERED_EXPR;
    	FOLLOWED_BY_EXPR;
    	FOLLOWED_BY_ITEM;
-   	ARRAY_PARAM_LIST;
    	PATTERN_FILTER_EXPR;
    	PATTERN_NOT_EXPR;
    	PATTERN_EVERY_DISTINCT_EXPR;
@@ -1353,7 +1352,8 @@ subSelectFilterExpr
 	;
 		
 arrayExpression
-	: LCURLY (expression (COMMA expression)* )? RCURLY
+	: LCURLY (expression (COMMA expression)* )? RCURLY (d=DOT libFunctionNoClass (d=DOT libFunctionNoClass)* )?
+	  -> {$d != null}? ^(DOT_EXPR ^(ARRAY_EXPR expression*) libFunctionNoClass+)
 	  -> ^(ARRAY_EXPR expression*)
 	;
 

@@ -5,6 +5,8 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -23,8 +25,41 @@ public class EnumEvalSequenceEqual extends EnumEvalBase implements EnumEval {
             return false;
         }
         if (!(otherObj instanceof Collection)) {
-            log.warn("Enumeration method 'sequenceEqual' expected a Collection-type return value from its parameter but received '" + otherObj.getClass() + "'");
-            return false;
+            if (otherObj.getClass().isArray()) {
+                if (target.size() != Array.getLength(otherObj)) {
+                    return false;
+                }
+
+                if (target.isEmpty()) {
+                    return true;
+                }
+
+                Iterator oneit = target.iterator();
+                for (int i = 0; i < target.size(); i++) {
+                    Object first = oneit.next();
+                    Object second = Array.get(otherObj, i);
+
+                    if (first == null) {
+                        if (second != null) {
+                            return false;
+                        }
+                        continue;
+                    }
+                    if (second == null) {
+                        return false;
+                    }
+
+                    if (!first.equals(second)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            else {
+                log.warn("Enumeration method 'sequenceEqual' expected a Collection-type return value from its parameter but received '" + otherObj.getClass() + "'");
+                return false;
+            }
         }
 
         Collection other = (Collection) otherObj;
