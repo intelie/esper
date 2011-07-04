@@ -130,7 +130,7 @@ public class TestAudit extends TestCase {
         EPStatement stmtExprNested = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('expression-nested') select ('A'||string)||'X' as val0 from SupportBean");
         stmtExprNested.addListener(listener);
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 50));
-        assertEquals("AE1X", listener.assertOneGetNew().get("val0"));
+        assertEquals("AE1X", listener.assertOneGetNewAndReset().get("val0"));
         stmtExprNested.destroy();
 
         // property

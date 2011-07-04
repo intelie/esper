@@ -7,6 +7,7 @@ import com.espertech.esper.epl.enummethod.dot.ExprDotEvalParam;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalTypeInfo;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class ExprDotEvalSequenceEqual extends ExprDotEvalEnumMethodBase {
         return new EventType[0];
     }
 
-    public EnumEval getEnumEval(StreamTypeService streamTypeService, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Class collectionComponentType, int numStreamsIncoming) throws ExprValidationException {
+    public EnumEval getEnumEval(EventAdapterService eventAdapterService, StreamTypeService streamTypeService, String statementId, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Class collectionComponentType, int numStreamsIncoming) throws ExprValidationException {
         super.setTypeInfo(ExprDotEvalTypeInfo.scalarOrUnderlying(Boolean.class));
         ExprEvaluator body = bodiesAndParameters.get(0).getBodyEvaluator();
         return new EnumEvalSequenceEqual(body, numStreamsIncoming);

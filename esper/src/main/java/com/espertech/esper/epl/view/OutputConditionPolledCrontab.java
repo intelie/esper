@@ -52,7 +52,7 @@ public final class OutputConditionPolledCrontab implements OutputConditionPolled
         // Validate the expression
         ExprEvaluator[] expressions = new ExprEvaluator[scheduleSpecExpressionList.size()];
         int count = 0;
-        ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(context.getEngineURI(), false), context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context, context.getEventAdapterService(), context.getStatementName(), context.getAnnotations());
+        ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(context.getEngineURI(), false), context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context, context.getEventAdapterService(), context.getStatementName(), context.getStatementId(), context.getAnnotations());
         for (ExprNode parameters : scheduleSpecExpressionList)
         {
             ExprNode node = ExprNodeUtility.getValidatedSubtree(parameters, validationContext);

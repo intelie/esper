@@ -16,6 +16,7 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprEvaluatorEnumeration;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.ExpressionDeclItem;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.util.Collection;
 import java.util.Map;
@@ -116,26 +117,27 @@ public abstract class ExprDeclaredEvalBase implements ExprEvaluator, ExprEvaluat
     }
 
     public Class getComponentTypeCollection() throws ExprValidationException {
-        if (innerEvaluator instanceof ExprEvaluatorEnumeration) {
-            ExprEvaluatorEnumeration lambda = (ExprEvaluatorEnumeration) innerEvaluator;
-            return lambda.getComponentTypeCollection();
+        if (innerEvaluatorLambda != null) {
+            return innerEvaluatorLambda.getComponentTypeCollection();
         }
         return null;
     }
 
-    public EventType getEventTypeCollection() throws ExprValidationException {
-        if (innerEvaluator instanceof ExprEvaluatorEnumeration) {
-            ExprEvaluatorEnumeration lambda = (ExprEvaluatorEnumeration) innerEvaluator;
-            return lambda.getEventTypeCollection();
+    public EventType getEventTypeCollection(EventAdapterService eventAdapterService) throws ExprValidationException {
+        if (innerEvaluatorLambda != null) {
+            return innerEvaluatorLambda.getEventTypeCollection(eventAdapterService);
         }
         return null;
     }
 
-    public EventType getEventTypeSingle() throws ExprValidationException {
+    public EventType getEventTypeSingle(EventAdapterService eventAdapterService, String statementId) throws ExprValidationException {
+        if (innerEvaluatorLambda != null) {
+            return innerEvaluatorLambda.getEventTypeSingle(eventAdapterService, statementId);
+        }
         return null;
     }
 
     public EventBean evaluateGetEventBean(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
-        return null;
+        return innerEvaluatorLambda.evaluateGetEventBean(eventsPerStream, isNewData, context);
     }
 }

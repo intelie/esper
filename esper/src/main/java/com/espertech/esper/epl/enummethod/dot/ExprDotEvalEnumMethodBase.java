@@ -9,6 +9,7 @@ import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.enummethod.eval.EnumEval;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.methodbase.*;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.util.CollectionUtil;
 import com.espertech.esper.util.JavaClassHelper;
@@ -30,7 +31,7 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
     }
 
     public abstract EventType[] getAddStreamTypes(String enumMethodUsedName, List<String> goesToNames, EventType inputEventType, Class collectionComponentType, List<ExprDotEvalParam> bodiesAndParameters);
-    public abstract EnumEval getEnumEval(StreamTypeService streamTypeService, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Class collectionComponentType, int numStreamsIncoming) throws ExprValidationException;
+    public abstract EnumEval getEnumEval(EventAdapterService eventAdapterService, StreamTypeService streamTypeService, String statementId, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Class collectionComponentType, int numStreamsIncoming) throws ExprValidationException;
 
     public EnumMethodEnum getEnumMethodEnum() {
         return enumMethodEnum;
@@ -82,7 +83,7 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
             bodiesAndParameters.add(bodyAndParameter);
         }
 
-        this.enumEval = getEnumEval(validationContext.getStreamTypeService(), enumMethodUsedName, bodiesAndParameters, inputEventType, collectionComponentType, streamCountIncoming);
+        this.enumEval = getEnumEval(validationContext.getEventAdapterService(), validationContext.getStreamTypeService(), validationContext.getStatementId(), enumMethodUsedName, bodiesAndParameters, inputEventType, collectionComponentType, streamCountIncoming);
 
         // determine the stream ids of event properties asked for in the evaluator(s)
         HashSet<Integer> streamsRequired = new HashSet<Integer>();

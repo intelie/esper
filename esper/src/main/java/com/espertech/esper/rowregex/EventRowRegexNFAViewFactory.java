@@ -135,7 +135,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
 
             StreamTypeService typeServiceDefines = new StreamTypeServiceImpl(typesDefine, streamNamesDefine, isIStreamOnly, statementContext.getEngineURI(), false);
             ExprNode exprNodeResult = handlePreviousFunctions(defineItem.getExpression());
-            ExprValidationContext validationContext = new ExprValidationContext(typeServiceDefines, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+            ExprValidationContext validationContext = new ExprValidationContext(typeServiceDefines, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
             ExprNode validated = ExprNodeUtility.getValidatedSubtree(exprNodeResult, validationContext);
             defineItem.setExpression(validated);
 
@@ -179,14 +179,14 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
                 int count = 0;
                 ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(true);
 
-                ExprValidationContext validationContext = new ExprValidationContext(typeServiceAggregateMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                ExprValidationContext validationContext = new ExprValidationContext(typeServiceAggregateMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
                 for (ExprNode child : aggregateNode.getChildNodes())
                 {
                     ExprNode validated = ExprNodeUtility.getValidatedSubtree(child, validationContext);
                     validated.accept(visitor);
                     aggregateNode.getChildNodes().set(count++, new ExprNodeValidated(validated));
                 }
-                validationContext = new ExprValidationContext(typeServiceMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                validationContext = new ExprValidationContext(typeServiceMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
                 aggregateNode.validate(validationContext);
 
                 // verify properties used within the aggregation
@@ -267,7 +267,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
         {
             StreamTypeService typeServicePartition = new StreamTypeServiceImpl(parentViewType, "MATCH_RECOGNIZE_PARTITION", true, statementContext.getEngineURI());
             List<ExprNode> validated = new ArrayList<ExprNode>();
-            ExprValidationContext validationContext = new ExprValidationContext(typeServicePartition, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+            ExprValidationContext validationContext = new ExprValidationContext(typeServicePartition, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
             for (ExprNode partitionExpr : matchRecognizeSpec.getPartitionByExpressions())
             {
                 validated.add(ExprNodeUtility.getValidatedSubtree(partitionExpr, validationContext));
@@ -281,7 +281,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
     {
         try
         {
-            ExprValidationContext validationContext = new ExprValidationContext(typeServiceMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+            ExprValidationContext validationContext = new ExprValidationContext(typeServiceMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
             return ExprNodeUtility.getValidatedSubtree(measureNode, validationContext);
         }
         catch (ExprValidationPropertyException e)

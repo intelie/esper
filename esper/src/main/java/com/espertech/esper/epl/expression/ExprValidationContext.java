@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.client.annotation.AuditEnum;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
@@ -19,9 +20,13 @@ public class ExprValidationContext {
     private final ExprEvaluatorContext exprEvaluatorContext;
     private final EventAdapterService eventAdapterService;
     private final String statementName;
+    private final String statementId;
     private final Annotation[] annotations;
 
-    public ExprValidationContext(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService, String statementName, Annotation[] annotations) {
+    private final boolean isExpressionNestedAudit;
+    private final boolean isExpressionAudit;
+
+    public ExprValidationContext(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService, String statementName, String statementId, Annotation[] annotations) {
         this.streamTypeService = streamTypeService;
         this.methodResolutionService = methodResolutionService;
         this.viewResourceDelegate = viewResourceDelegate;
@@ -30,11 +35,15 @@ public class ExprValidationContext {
         this.exprEvaluatorContext = exprEvaluatorContext;
         this.eventAdapterService = eventAdapterService;
         this.statementName = statementName;
+        this.statementId = statementId;
         this.annotations = annotations;
+
+        isExpressionAudit = AuditEnum.EXPRESSION.getAudit(annotations) != null;
+        isExpressionNestedAudit = AuditEnum.EXPRESSION_NESTED.getAudit(annotations) != null;
     }
 
     public ExprValidationContext(StreamTypeServiceImpl types, ExprValidationContext ctx) {
-        this(types, ctx.getMethodResolutionService(), ctx.getViewResourceDelegate(), ctx.getTimeProvider(), ctx.getVariableService(), ctx.getExprEvaluatorContext(), ctx.getEventAdapterService(), ctx.getStatementName(), ctx.getAnnotations());
+        this(types, ctx.getMethodResolutionService(), ctx.getViewResourceDelegate(), ctx.getTimeProvider(), ctx.getVariableService(), ctx.getExprEvaluatorContext(), ctx.getEventAdapterService(), ctx.getStatementName(), ctx.getStatementId(), ctx.getAnnotations());
     }
 
     public StreamTypeService getStreamTypeService() {
@@ -71,5 +80,17 @@ public class ExprValidationContext {
 
     public Annotation[] getAnnotations() {
         return annotations;
+    }
+
+    public boolean isExpressionNestedAudit() {
+        return isExpressionNestedAudit;
+    }
+
+    public boolean isExpressionAudit() {
+        return isExpressionAudit;
+    }
+
+    public String getStatementId() {
+        return statementId;
     }
 }

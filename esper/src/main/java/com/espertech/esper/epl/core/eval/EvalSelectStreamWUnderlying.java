@@ -71,7 +71,7 @@ public class EvalSelectStreamWUnderlying extends EvalSelectStreamBase implements
                 event = super.getSelectExprContext().getEventAdapterService().adapterForBean(value);
             }
         }
-        else if (underlyingExprEvaluator != null) { // TODO refactor-away these if-checks
+        else if (underlyingExprEvaluator != null) {
             Object value = underlyingExprEvaluator.evaluate(eventsPerStream, true, super.getSelectExprContext().getExprEvaluatorContext());
             if (value != null)
             {

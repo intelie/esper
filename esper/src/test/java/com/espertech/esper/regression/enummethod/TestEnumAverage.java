@@ -90,7 +90,7 @@ public class TestEnumAverage extends TestCase {
         tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'average' and 1-parameter footprint, expecting collection of events as input, received collection of Integer [select intvals.average(x => x*2) from SupportCollection]");
 
         epl = "select beans.average() from Bean";
-        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collecton of events of type 'com.espertech.esper.support.bean.SupportBean' [select beans.average() from Bean]");
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'com.espertech.esper.support.bean.SupportBean' [select beans.average() from Bean]");
     }
 
     private SupportBean make(Integer intBoxed, Double doubleBoxed, Long longBoxed, int bigDecimal) {

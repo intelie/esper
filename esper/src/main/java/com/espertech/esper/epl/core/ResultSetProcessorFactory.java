@@ -97,7 +97,7 @@ public class ResultSetProcessorFactory
 
         // Validate selection expressions, if any (could be wildcard i.e. empty list)
         List<SelectClauseExprCompiledSpec> namedSelectionList = new LinkedList<SelectClauseExprCompiledSpec>();
-        ExprValidationContext validationContext = new ExprValidationContext(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService(),stmtContext, stmtContext.getEventAdapterService(), stmtContext.getStatementName(), stmtContext.getAnnotations());
+        ExprValidationContext validationContext = new ExprValidationContext(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService(),stmtContext, stmtContext.getEventAdapterService(), stmtContext.getStatementName(), stmtContext.getStatementId(), stmtContext.getAnnotations());
         for (int i = 0; i < selectClauseSpec.getSelectExprList().size(); i++)
         {
             // validate element

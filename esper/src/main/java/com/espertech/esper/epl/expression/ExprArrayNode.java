@@ -10,6 +10,7 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.util.CoercionException;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.SimpleNumberCoercer;
@@ -252,7 +253,7 @@ public class ExprArrayNode extends ExprNodeBase implements ExprEvaluator, ExprEv
         return resultList;
     }
 
-    public EventType getEventTypeCollection() throws ExprValidationException {
+    public EventType getEventTypeCollection(EventAdapterService eventAdapterService) throws ExprValidationException {
         return null;
     }
 
@@ -260,7 +261,7 @@ public class ExprArrayNode extends ExprNodeBase implements ExprEvaluator, ExprEv
         return null;
     }
 
-    public EventType getEventTypeSingle() throws ExprValidationException {
+    public EventType getEventTypeSingle(EventAdapterService eventAdapterService, String statementId) throws ExprValidationException {
         return null;
     }
 

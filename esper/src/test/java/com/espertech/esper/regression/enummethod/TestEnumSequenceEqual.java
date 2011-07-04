@@ -102,7 +102,7 @@ public class TestEnumSequenceEqual extends TestCase {
         String epl;
 
         epl = "select window(*).sequenceEqual(strvals) from SupportCollection.std:lastevent()";
-        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'sequenceEqual' and 1-parameter footprint, expecting collection of values (typically scalar values) as input, received collecton of events of type 'SupportCollection' [select window(*).sequenceEqual(strvals) from SupportCollection.std:lastevent()]");
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'sequenceEqual' and 1-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'SupportCollection' [select window(*).sequenceEqual(strvals) from SupportCollection.std:lastevent()]");
     }
 
     private void tryInvalid(String epl, String message) {

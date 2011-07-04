@@ -2968,6 +2968,15 @@ from OrderEvent oe]]></programlisting>
 from OrderEvent as oe]]></programlisting>
 
 			<para>
+				The next EPL statement computes a prorated quantity considering the maximum and minimum quantity for the last 1 minute of order events:
+			</para>
+			<programlisting><![CDATA[expression subq {
+  (select max(quantity) as maxq, min(quantity) as minq from OrderEvent.win:time(1 min))
+}
+select (quantity - minq) / (subq().maxq  - subq().minq) as prorated
+from OrderEvent]]></programlisting>
+
+			<para>
 				Output events for the above query contain all properties of the original <literal>OrderEvent</literal> event. In addition each output event contains a <literal>pastOrderTotals</literal> nested property that itself contains the <literal>sumPrice</literal> and <literal>countRows</literal> properties. 
 			</para>
 		</sect2>

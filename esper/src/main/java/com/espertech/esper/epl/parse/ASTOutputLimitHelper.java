@@ -113,7 +113,7 @@ public class ASTOutputLimitHelper
                 ExprNode expression = astExprNodeMap.remove(child);
 
                 try {
-                    ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null, null, null);
+                    ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null, null, null, null);
                     timePeriodExpr = (ExprTimePeriod) ExprNodeUtility.getValidatedSubtree(expression, validationContext);
                 }
                 catch (ExprValidationException ex)
@@ -138,7 +138,7 @@ public class ASTOutputLimitHelper
                 if (expression != null)
                 {
                     try {
-                        ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null, null, null);
+                        ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null, null, null, null);
                         afterTimePeriodExpr = (ExprTimePeriod) ExprNodeUtility.getValidatedSubtree(expression, validationContext);
                     }
                     catch (ExprValidationException ex)

@@ -98,7 +98,7 @@ public class SelectExprProcessorFactory
 
                     StreamTypeService type = new StreamTypeServiceImpl(synthetic.getResultEventType(), null, false, engineURI);
                     groupedDeliveryExpr = new ExprNode[item.getExpressions().size()];
-                    ExprValidationContext validationContext = new ExprValidationContext(type, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService, statementName, annotations);
+                    ExprValidationContext validationContext = new ExprValidationContext(type, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService, statementName, statementId, annotations);
                     for (int i = 0; i < item.getExpressions().size(); i++) {
                         groupedDeliveryExpr[i] = ExprNodeUtility.getValidatedSubtree(item.getExpressions().get(i), validationContext);
                     }

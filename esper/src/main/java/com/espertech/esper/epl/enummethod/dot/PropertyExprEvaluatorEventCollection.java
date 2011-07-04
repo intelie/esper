@@ -7,6 +7,7 @@ import com.espertech.esper.core.ExpressionResultCacheEntry;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprEvaluatorEnumeration;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,7 +48,7 @@ public class PropertyExprEvaluatorEventCollection implements ExprEvaluatorEnumer
         return null;
     }
 
-    public EventType getEventTypeCollection() {
+    public EventType getEventTypeCollection(EventAdapterService eventAdapterService) {
         return fragmentType;
     }
 
@@ -55,7 +56,7 @@ public class PropertyExprEvaluatorEventCollection implements ExprEvaluatorEnumer
         return null;
     }
 
-    public EventType getEventTypeSingle() throws ExprValidationException {
+    public EventType getEventTypeSingle(EventAdapterService eventAdapterService, String statementId) throws ExprValidationException {
         return null;
     }
 

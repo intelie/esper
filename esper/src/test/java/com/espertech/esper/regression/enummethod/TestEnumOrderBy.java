@@ -109,7 +109,7 @@ public class TestEnumOrderBy extends TestCase {
         tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'orderBy' and 1-parameter footprint, expecting collection of events as input, received collection of String [select strvals.orderBy(x=> x) from SupportCollection]");
 
         epl = "select contained.orderBy() from Bean";
-        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'orderBy' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collecton of events of type 'com.espertech.esper.support.bean.SupportBean_ST0' [select contained.orderBy() from Bean]");
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'orderBy' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'com.espertech.esper.support.bean.SupportBean_ST0' [select contained.orderBy() from Bean]");
     }
 
     private void tryInvalid(String epl, String message) {

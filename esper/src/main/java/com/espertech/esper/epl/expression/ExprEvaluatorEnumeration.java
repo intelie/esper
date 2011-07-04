@@ -10,6 +10,7 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.util.Collection;
 
@@ -18,12 +19,12 @@ import java.util.Collection;
  */
 public interface ExprEvaluatorEnumeration
 {
-    public EventType getEventTypeCollection() throws ExprValidationException;
+    public EventType getEventTypeCollection(EventAdapterService eventAdapterService) throws ExprValidationException;
     public Collection<EventBean> evaluateGetROCollectionEvents(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context);
 
     public Class getComponentTypeCollection() throws ExprValidationException;
     public Collection evaluateGetROCollectionScalar(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context);
 
-    public EventType getEventTypeSingle() throws ExprValidationException;
+    public EventType getEventTypeSingle(EventAdapterService eventAdapterService, String statementId) throws ExprValidationException;
     public EventBean evaluateGetEventBean(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context);
 }

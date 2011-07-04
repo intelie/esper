@@ -351,7 +351,7 @@ public class EPStatementStartMethod
                 StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType, streamEventType}, new String[] {namedWindowName, streamName}, new boolean[] {false, true}, services.getEngineURI(), false);
                 if (onTriggerDesc instanceof OnTriggerWindowUpdateDesc) {
                     OnTriggerWindowUpdateDesc updateDesc = (OnTriggerWindowUpdateDesc) onTriggerDesc;
-                    ExprValidationContext validationContext = new ExprValidationContext(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                    ExprValidationContext validationContext = new ExprValidationContext(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
                     for (OnTriggerSetAssignment assignment : updateDesc.getAssignments())
                     {
                         ExprNode validated = ExprNodeUtility.getValidatedSubtree(assignment.getExpression(), validationContext);
@@ -398,7 +398,7 @@ public class EPStatementStartMethod
             {
                 OnTriggerSetDesc desc = (OnTriggerSetDesc) statementSpec.getOnTriggerDesc();
                 StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamSpec.getOptionalStreamName()}, new boolean[] {true}, services.getEngineURI(), false);
-                ExprValidationContext validationContext = new ExprValidationContext(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                ExprValidationContext validationContext = new ExprValidationContext(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
 
                 // Materialize sub-select views
                 startSubSelect(subSelectStreamDesc, new String[]{streamSpec.getOptionalStreamName()}, new EventType[] {streamEventType}, new String[]{triggereventTypeName}, stopCallbacks, statementSpec.getAnnotations(), statementSpec.getDeclaredExpressions());
@@ -503,7 +503,7 @@ public class EPStatementStartMethod
     }
 
     private ExprNode validateExprNoAgg(ExprNode exprNode, StreamTypeService streamTypeService, StatementContext statementContext, String errorMsg) throws ExprValidationException {
-        ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+        ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
         ExprNode validated = ExprNodeUtility.getValidatedSubtree(exprNode, validationContext);
         validateNoAggregations(validated, errorMsg);
         return validated;
@@ -570,7 +570,7 @@ public class EPStatementStartMethod
                         else if (raw instanceof SelectClauseExprRawSpec)
                         {
                             SelectClauseExprRawSpec exprSpec = (SelectClauseExprRawSpec) raw;
-                            ExprValidationContext validationContext = new ExprValidationContext(insertOnlyTypeSvc, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                            ExprValidationContext validationContext = new ExprValidationContext(insertOnlyTypeSvc, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
                             ExprNode exprCompiled = ExprNodeUtility.getValidatedSubtree(exprSpec.getSelectExpression(), validationContext);
                             String resultName = exprSpec.getOptionalAsName();
                             if (resultName == null)
@@ -668,7 +668,7 @@ public class EPStatementStartMethod
         // Materialize sub-select views
         startSubSelect(subSelectStreamDesc, new String[]{streamName}, new EventType[] {streamEventType}, new String[]{triggereventTypeName}, stopCallbacks, statementSpec.getAnnotations(), statementSpec.getDeclaredExpressions());
 
-        ExprValidationContext validationContext = new ExprValidationContext(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+        ExprValidationContext validationContext = new ExprValidationContext(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
         for (OnTriggerSetAssignment assignment : desc.getAssignments())
         {
             ExprNode validated = ExprNodeUtility.getValidatedSubtree(assignment.getExpression(), validationContext);
@@ -870,7 +870,7 @@ public class EPStatementStartMethod
         {
             // Evaluate assignment expression
             StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[0], new String[0], new boolean[0], services.getEngineURI(), false);
-            ExprValidationContext validationContext = new ExprValidationContext(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+            ExprValidationContext validationContext = new ExprValidationContext(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
             ExprNode validated = ExprNodeUtility.getValidatedSubtree(createDesc.getAssignment(), validationContext);
             value = validated.getExprEvaluator().evaluate(null, true, statementContext);
         }
@@ -1154,7 +1154,7 @@ public class EPStatementStartMethod
                             statementContext.getVariableService(), statementContext,
                             services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI(),
                             statementSpec.getSqlParameters(),
-                            statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                            statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
                 }
                 if (viewable instanceof HistoricalEventViewable)
                 {
@@ -1557,7 +1557,7 @@ public class EPStatementStartMethod
             // Validate where clause, initializing nodes to the stream ids used
             try
             {
-                ExprValidationContext validationContext = new ExprValidationContext(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                ExprValidationContext validationContext = new ExprValidationContext(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
                 optionalFilterNode = ExprNodeUtility.getValidatedSubtree(optionalFilterNode, validationContext);
                 if (optionalFilterNode.getExprEvaluator().getType() != boolean.class && optionalFilterNode.getExprEvaluator().getType() != Boolean.class) {
                     throw new ExprValidationException("The where-clause filter expression must return a boolean value");
@@ -1588,7 +1588,7 @@ public class EPStatementStartMethod
             {
                 EventType outputLimitType = OutputConditionExpression.getBuiltInEventType(statementContext.getEventAdapterService());
                 StreamTypeService typeServiceOutputWhen = new StreamTypeServiceImpl(new EventType[] {outputLimitType}, new String[]{null}, new boolean[] {true}, statementContext.getEngineURI(), false);
-                ExprValidationContext validationContext = new ExprValidationContext(typeServiceOutputWhen, methodResolutionService, null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                ExprValidationContext validationContext = new ExprValidationContext(typeServiceOutputWhen, methodResolutionService, null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
                 outputLimitWhenNode = ExprNodeUtility.getValidatedSubtree(outputLimitWhenNode, validationContext);
                 statementSpec.getOutputLimitSpec().setWhenExpressionNode(outputLimitWhenNode);
 
@@ -1672,7 +1672,7 @@ public class EPStatementStartMethod
         equalsNode.addChildNode(rightNode);
         try
         {
-            ExprValidationContext validationContext = new ExprValidationContext(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+            ExprValidationContext validationContext = new ExprValidationContext(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
             ExprNodeUtility.getValidatedSubtree(equalsNode, validationContext);
         }
         catch (ExprValidationException ex)
@@ -1900,7 +1900,7 @@ public class EPStatementStartMethod
             {
                 List<ExprAggregateNode> aggExprNodes = new LinkedList<ExprAggregateNode>();
 
-                ExprValidationContext validationContext = new ExprValidationContext(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                ExprValidationContext validationContext = new ExprValidationContext(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
                 for (int i = 0; i < selectClauseSpec.getSelectExprList().size(); i++) {
                     SelectClauseElementCompiled element = selectClauseSpec.getSelectExprList().get(i);
 
@@ -1992,7 +1992,7 @@ public class EPStatementStartMethod
             boolean correlatedSubquery = false;
             if (filterExpr != null)
             {
-                ExprValidationContext validationContext = new ExprValidationContext(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                ExprValidationContext validationContext = new ExprValidationContext(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
                 filterExpr = ExprNodeUtility.getValidatedSubtree(filterExpr, validationContext);
                 if (JavaClassHelper.getBoxedType(filterExpr.getExprEvaluator().getType()) != Boolean.class)
                 {
@@ -2026,6 +2026,7 @@ public class EPStatementStartMethod
             {
                 subselect.setStrategy(new SubordTableLookupStrategyNullRow());
                 subselect.setFilterExpr(null);      // filter not evaluated by subselect expression as not correlated
+                subselect.setAggregatedSubquery(true);
                 ExprEvaluator filterExprEval = (filterExpr == null) ? null : filterExpr.getExprEvaluator();
 
                 // If we have window index sharing, the subselectView will be null
@@ -2039,7 +2040,6 @@ public class EPStatementStartMethod
                     Pair<EventTable, SubordTableLookupStrategy> indexPair = determineSubqueryIndex(filterExpr, eventType,
                             outerEventTypes, subselectTypeService, fullTableScan);
                     subselect.setStrategy(indexPair.getSecond());
-                    subselect.setFilterExpr(null);  // this will be evaluated in the preprocessor
                     eventIndex = indexPair.getFirst();
 
                     SubselectAggregationPreprocessor preprocessor = new SubselectAggregationPreprocessor(aggregationService, filterExpr.getExprEvaluator());
@@ -2273,7 +2273,7 @@ public class EPStatementStartMethod
         namesAndTypes.put(filterStreamName, new Pair<EventType, String>(filteredType, filteredTypeName));
         StreamTypeService typeService = new StreamTypeServiceImpl(namesAndTypes, services.getEngineURI(), false, false);
 
-        ExprValidationContext validationContext = new ExprValidationContext(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+        ExprValidationContext validationContext = new ExprValidationContext(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
         return ExprNodeUtility.getValidatedSubtree(deleteJoinExpr, validationContext);
     }
 

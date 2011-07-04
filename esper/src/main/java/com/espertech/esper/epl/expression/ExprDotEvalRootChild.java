@@ -11,6 +11,7 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalTypeInfo;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.util.Collection;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class ExprDotEvalRootChild implements ExprEvaluator, ExprEvaluatorEnumera
     }
 
 
-    public EventType getEventTypeCollection() throws ExprValidationException {
+    public EventType getEventTypeCollection(EventAdapterService eventAdapterService) throws ExprValidationException {
         return innerEvaluator.getEventTypeCollection();
     }
 
@@ -96,7 +97,7 @@ public class ExprDotEvalRootChild implements ExprEvaluator, ExprEvaluatorEnumera
         return null;
     }
 
-    public EventType getEventTypeSingle() throws ExprValidationException {
+    public EventType getEventTypeSingle(EventAdapterService eventAdapterService, String statementId) throws ExprValidationException {
         return null;
     }
 

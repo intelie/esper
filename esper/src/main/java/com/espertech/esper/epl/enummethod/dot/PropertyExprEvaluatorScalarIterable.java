@@ -6,6 +6,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprEvaluatorEnumeration;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.event.EventAdapterService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -51,7 +52,7 @@ public class PropertyExprEvaluatorScalarIterable implements ExprEvaluatorEnumera
         return items;
     }
 
-    public EventType getEventTypeCollection() {
+    public EventType getEventTypeCollection(EventAdapterService eventAdapterService) {
         return null;
     }
 
@@ -59,7 +60,7 @@ public class PropertyExprEvaluatorScalarIterable implements ExprEvaluatorEnumera
         return componentType;
     }
 
-    public EventType getEventTypeSingle() throws ExprValidationException {
+    public EventType getEventTypeSingle(EventAdapterService eventAdapterService, String statementId) throws ExprValidationException {
         return null;
     }
 

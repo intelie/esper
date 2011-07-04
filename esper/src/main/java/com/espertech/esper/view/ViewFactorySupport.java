@@ -184,7 +184,7 @@ public abstract class ViewFactorySupport implements ViewFactory
         try
         {
             ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, statementContext.getMethodResolutionService(),
-                    null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                    null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
             validated = ExprNodeUtility.getValidatedSubtree(expression, validationContext);
         }
         catch (ExprValidationException ex)

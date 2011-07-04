@@ -78,7 +78,7 @@ public class ExprDotEvalTypeInfo {
             return "event type '" + eventType.getName() + "'";
         }
         else if (eventTypeColl != null) {
-            return "collecton of events of type '" + eventTypeColl.getName() + "'";
+            return "collection of events of type '" + eventTypeColl.getName() + "'";
         }
         else if (scalar != null) {
             return "class " + JavaClassHelper.getClassNameFullyQualPretty(scalar);

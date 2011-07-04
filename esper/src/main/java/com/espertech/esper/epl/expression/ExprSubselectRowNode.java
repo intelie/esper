@@ -11,6 +11,8 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.util.CollectionUtil;
 import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,6 +26,8 @@ public class ExprSubselectRowNode extends ExprSubselectNode
 {
     private static final Log log = LogFactory.getLog(ExprSubselectRowNode.class);
     private static final long serialVersionUID = -7865711714805807559L;
+
+    private transient SubselectMultirowType subselectMultirowType;
 
     /**
      * Ctor.
@@ -50,23 +54,7 @@ public class ExprSubselectRowNode extends ExprSubselectNode
         if ((selectClause == null) || (selectClause.length < 2)) {
             return null;
         }
-
-        Set<String> uniqueNames = new HashSet<String>();
-        Map<String, Object> type = new LinkedHashMap<String, Object>();
-
-        for (int i = 0; i < selectClause.length; i++) {
-            String assignedName = this.selectAsNames[i];
-            if (assignedName == null) {
-                assignedName = selectClause[i].toExpressionString();
-            }
-            if (uniqueNames.add(assignedName)) {
-                type.put(assignedName, selectClause[i].getExprEvaluator().getType());
-            }
-            else {
-                throw new ExprValidationException("Column " + i + " in subquery does not have a unique column name assigned");
-            }
-        }
-        return type;
+        return getRowType();
     }
 
     public void validate(ExprValidationContext validationContext) throws ExprValidationException
@@ -157,15 +145,22 @@ public class ExprSubselectRowNode extends ExprSubselectNode
         return result;
     }
 
-    public EventType getEventTypeSingle() throws ExprValidationException {
-        return null;
+    public EventType getEventTypeSingle(EventAdapterService eventAdapterService, String statementId) throws ExprValidationException {
+        if (!this.isAggregatedSubquery() || selectClause == null) {
+            return null;
+        }
+        Map<String, Object> rowType = getRowType();
+        EventType resultEventType = eventAdapterService.createAnonymousMapType(statementId + "_subquery_" + this.getSubselectNumber(), rowType);
+        subselectMultirowType = new SubselectMultirowType(resultEventType, eventAdapterService);
+        return resultEventType;
     }
 
     public EventBean evaluateGetEventBean(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
-        return null;
-    }    
+        Map<String, Object> row = evaluateRow(eventsPerStream, true, context);
+        return subselectMultirowType.getEventAdapterService().adaptorForTypedMap(row, subselectMultirowType.getEventType());
+    }
 
-    public EventType getEventTypeCollection() throws ExprValidationException {
+    public EventType getEventTypeCollection(EventAdapterService eventAdapterService) throws ExprValidationException {
         if (selectClause == null)   // wildcards allowed
         {
             return rawEventType;
@@ -245,12 +240,7 @@ public class ExprSubselectRowNode extends ExprSubselectNode
                 result = selectClauseEvaluator[0].evaluate(events, true, exprEvaluatorContext);
             }
             else {
-                Map<String, Object> map = new HashMap<String, Object>();
-                for (int i = 0; i < selectClauseEvaluator.length; i++) {
-                    Object resultEntry = selectClauseEvaluator[i].evaluate(events, true, exprEvaluatorContext);
-                    map.put(this.selectAsNames[i], resultEntry);
-                }
-                result = map;
+                result = evaluateRow(events, true, exprEvaluatorContext);
             }
         }
         else
@@ -264,5 +254,51 @@ public class ExprSubselectRowNode extends ExprSubselectNode
     @Override
     public boolean isAllowMultiColumnSelect() {
         return true;
+    }
+
+    private Map<String, Object> evaluateRow(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        for (int i = 0; i < selectClauseEvaluator.length; i++) {
+            Object resultEntry = selectClauseEvaluator[i].evaluate(eventsPerStream, isNewData, context);
+            map.put(this.selectAsNames[i], resultEntry);
+        }
+        return map;
+    }
+
+    private Map<String, Object> getRowType() throws ExprValidationException {
+        Set<String> uniqueNames = new HashSet<String>();
+        Map<String, Object> type = new LinkedHashMap<String, Object>();
+
+        for (int i = 0; i < selectClause.length; i++) {
+            String assignedName = this.selectAsNames[i];
+            if (assignedName == null) {
+                assignedName = selectClause[i].toExpressionString();
+            }
+            if (uniqueNames.add(assignedName)) {
+                type.put(assignedName, selectClause[i].getExprEvaluator().getType());
+            }
+            else {
+                throw new ExprValidationException("Column " + i + " in subquery does not have a unique column name assigned");
+            }
+        }
+        return type;
+    }
+
+    private static class SubselectMultirowType {
+        private final EventType eventType;
+        private final EventAdapterService eventAdapterService;
+
+        private SubselectMultirowType(EventType eventType, EventAdapterService eventAdapterService) {
+            this.eventType = eventType;
+            this.eventAdapterService = eventAdapterService;
+        }
+
+        public EventType getEventType() {
+            return eventType;
+        }
+
+        public EventAdapterService getEventAdapterService() {
+            return eventAdapterService;
+        }
     }
 }

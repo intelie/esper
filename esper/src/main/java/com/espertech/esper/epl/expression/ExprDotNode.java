@@ -15,6 +15,7 @@ import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.PropertyResolutionDescriptor;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.enummethod.dot.*;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.util.JavaClassHelper;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
@@ -72,7 +73,7 @@ public class ExprDotNode extends ExprNodeBase implements ExprNodeInnerNodeProvid
 
             // the root expression may also provide a lambda-function input (Iterator<EventBean>)
             // Determine collection-type and evaluator if any for root node
-            Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo> enumSrc = getEnumerationSource(rootNode, validationContext.getStreamTypeService(), hasEnumerationMethod);
+            Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo> enumSrc = getEnumerationSource(rootNode, validationContext.getStreamTypeService(), validationContext.getEventAdapterService(), validationContext.getStatementId(), hasEnumerationMethod);
 
             ExprDotEvalTypeInfo typeInfo;
             if (enumSrc.getSecond() == null) {
@@ -321,7 +322,7 @@ public class ExprDotNode extends ExprNodeBase implements ExprNodeInnerNodeProvid
         return ExprNodeUtility.collectChainParameters(chainSpec);
     }
 
-    public static Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo> getEnumerationSource(ExprNode inputExpression, StreamTypeService streamTypeService, boolean hasEnumerationMethod) throws ExprValidationException {
+    public static Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo> getEnumerationSource(ExprNode inputExpression, StreamTypeService streamTypeService, EventAdapterService eventAdapterService, String statementId, boolean hasEnumerationMethod) throws ExprValidationException {
         ExprEvaluator rootNodeEvaluator = inputExpression.getExprEvaluator();
         ExprEvaluatorEnumeration rootLambdaEvaluator = null;
         ExprDotEvalTypeInfo info = null;
@@ -329,11 +330,11 @@ public class ExprDotNode extends ExprNodeBase implements ExprNodeInnerNodeProvid
         if (rootNodeEvaluator instanceof ExprEvaluatorEnumeration) {
             rootLambdaEvaluator = (ExprEvaluatorEnumeration) rootNodeEvaluator;
 
-            if (rootLambdaEvaluator.getEventTypeCollection() != null) {
-                info = ExprDotEvalTypeInfo.eventColl(rootLambdaEvaluator.getEventTypeCollection());
+            if (rootLambdaEvaluator.getEventTypeCollection(eventAdapterService) != null) {
+                info = ExprDotEvalTypeInfo.eventColl(rootLambdaEvaluator.getEventTypeCollection(eventAdapterService));
             }
-            else if (rootLambdaEvaluator.getEventTypeSingle() != null) {
-                info = ExprDotEvalTypeInfo.event(rootLambdaEvaluator.getEventTypeSingle());
+            else if (rootLambdaEvaluator.getEventTypeSingle(eventAdapterService, statementId) != null) {
+                info = ExprDotEvalTypeInfo.event(rootLambdaEvaluator.getEventTypeSingle(eventAdapterService, statementId));
             }
             else if (rootLambdaEvaluator.getComponentTypeCollection() != null) {
                 info = ExprDotEvalTypeInfo.componentColl(rootLambdaEvaluator.getComponentTypeCollection());

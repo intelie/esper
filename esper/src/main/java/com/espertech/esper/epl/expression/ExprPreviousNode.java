@@ -11,6 +11,7 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.ViewCapDataWindowAccess;
 import com.espertech.esper.view.window.RandomAccessByIndexGetter;
@@ -170,14 +171,14 @@ public class ExprPreviousNode extends ExprNodeBase implements ViewResourceCallba
         return evaluator.evaluateGetCollScalar(eventsPerStream, context);
     }
 
-    public EventType getEventTypeCollection() throws ExprValidationException {
+    public EventType getEventTypeCollection(EventAdapterService eventAdapterService) throws ExprValidationException {
         if (previousType == PreviousType.PREV || previousType == PreviousType.PREVTAIL) {
             return null;
         }
         return enumerationMethodType;
     }
 
-    public EventType getEventTypeSingle() throws ExprValidationException {
+    public EventType getEventTypeSingle(EventAdapterService eventAdapterService, String statementId) throws ExprValidationException {
         if (previousType == PreviousType.PREV || previousType == PreviousType.PREVTAIL) {
             return enumerationMethodType;
         }

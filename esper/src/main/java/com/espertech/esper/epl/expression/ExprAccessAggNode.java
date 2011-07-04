@@ -14,6 +14,7 @@ import com.espertech.esper.epl.agg.AggregationAccessType;
 import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.io.StringWriter;
 import java.util.*;
@@ -211,7 +212,7 @@ public class ExprAccessAggNode extends ExprAggregateNodeBase implements ExprEval
         return list;
     }
 
-    public EventType getEventTypeCollection() {
+    public EventType getEventTypeCollection(EventAdapterService eventAdapterService) {
         if (accessType == AggregationAccessType.FIRST || accessType == AggregationAccessType.LAST) {
             return null;
         }
@@ -222,7 +223,7 @@ public class ExprAccessAggNode extends ExprAggregateNodeBase implements ExprEval
         return scalarCollectionEvaluator == null ? null : scalarCollectionEvaluator.componentType;
     }
 
-    public EventType getEventTypeSingle() throws ExprValidationException {
+    public EventType getEventTypeSingle(EventAdapterService eventAdapterService, String statementId) throws ExprValidationException {
         if (accessType == AggregationAccessType.FIRST || accessType == AggregationAccessType.LAST) {
             return containedType;
         }

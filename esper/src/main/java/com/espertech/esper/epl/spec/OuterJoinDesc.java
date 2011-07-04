@@ -8,8 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
-import com.espertech.esper.type.OuterJoinType;
 import com.espertech.esper.epl.expression.*;
+import com.espertech.esper.type.OuterJoinType;
 import com.espertech.esper.util.MetaDefItem;
 
 import java.io.Serializable;
@@ -135,7 +135,7 @@ public class OuterJoinDesc implements MetaDefItem, Serializable
     private void topValidate(ExprNode exprNode, ExprEvaluatorContext exprEvaluatorContext) {
         try
         {
-            ExprValidationContext validationContext = new ExprValidationContext(null, null, null, null, null, exprEvaluatorContext, null, null, null);
+            ExprValidationContext validationContext = new ExprValidationContext(null, null, null, null, null, exprEvaluatorContext, null, null, null, null);
             exprNode.validate(validationContext);
         }
         catch (ExprValidationException e)

@@ -50,5 +50,6 @@ public interface ValidatedView
                          Map<Integer, List<ExprNode>> sqlParameters,
                          EventAdapterService eventAdapterService,
                          String statementName,
+                         String statementId,
                          Annotation[] annotations) throws ExprValidationException;
 }

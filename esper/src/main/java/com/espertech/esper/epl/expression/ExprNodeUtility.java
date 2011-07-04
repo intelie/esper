@@ -9,8 +9,6 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.annotation.Audit;
-import com.espertech.esper.client.annotation.AuditEnum;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportException;
@@ -94,17 +92,12 @@ public class ExprNodeUtility {
 
         // For top-level expressions check if we perform audit
         if (isTopLevel) {
-            Audit audit = AuditEnum.EXPRESSION.getAudit(validationContext.getAnnotations());
-            if (audit == null) {
-                audit = AuditEnum.EXPRESSION_NESTED.getAudit(validationContext.getAnnotations());
-            }
-            if (audit != null) {
+            if (validationContext.isExpressionAudit()) {
                 return (ExprNode) ExprNodeProxy.newInstance(validationContext.getStatementName(), result);
             }
         }
         else {
-            Audit audit = AuditEnum.EXPRESSION_NESTED.getAudit(validationContext.getAnnotations());
-            if (audit != null) {
+            if (validationContext.isExpressionNestedAudit() && !(result instanceof ExprIdentNode) && !(result instanceof ExprConstantNode)) {
                 return (ExprNode) ExprNodeProxy.newInstance(validationContext.getStatementName(), result);
             }
         }

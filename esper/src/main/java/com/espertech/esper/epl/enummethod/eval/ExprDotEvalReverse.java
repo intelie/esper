@@ -5,6 +5,7 @@ import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalEnumMethodBase;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalParam;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalTypeInfo;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class ExprDotEvalReverse extends ExprDotEvalEnumMethodBase {
         return new EventType[] {};
     }
 
-    public EnumEval getEnumEval(StreamTypeService streamTypeService, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Class collectionComponentType, int numStreamsIncoming) {
+    public EnumEval getEnumEval(EventAdapterService eventAdapterService, StreamTypeService streamTypeService, String statementId, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Class collectionComponentType, int numStreamsIncoming) {
         if (inputEventType != null) {
             super.setTypeInfo(ExprDotEvalTypeInfo.eventColl(inputEventType));
         }

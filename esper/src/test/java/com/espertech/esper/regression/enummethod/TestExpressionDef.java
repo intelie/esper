@@ -115,6 +115,46 @@ public class TestExpressionDef extends TestCase {
         stmt.destroy();
     }
 
+    public void testSubqueryMultiresult() {
+        String eplOne = "" +
+                "expression maxi {" +
+                " (select max(intPrimitive) from SupportBean.win:keepall())" +
+                "} " +
+                "expression mini {" +
+                " (select min(intPrimitive) from SupportBean.win:keepall())" +
+                "} " +
+                "select p00/maxi() as val0, p00/mini() as val1 " +
+                "from SupportBean_ST0.std:lastevent()";
+        runAssertionMultiResult(eplOne);
+
+        String eplTwo = "" +
+                "expression subq {" +
+                " (select max(intPrimitive) as maxi, min(intPrimitive) as mini from SupportBean.win:keepall())" +
+                "} " +
+                "select p00/subq().maxi as val0, p00/subq().mini as val1 " +
+                "from SupportBean_ST0.std:lastevent()";
+        runAssertionMultiResult(eplTwo);
+    }
+
+    private void runAssertionMultiResult(String epl) {
+        String fields[] = new String[] {"val0","val1"};
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 10));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 5));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ST0", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{2/10d, 2/5d});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 20));
+        epService.getEPRuntime().sendEvent(new SupportBean("E4", 2));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ST0", 4));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{4/20d, 4/2d});
+
+        stmt.destroy();
+    }
+
     public void testSubqueryCross() {
         String fields[] = new String[] {"val1"};
         String epl = "" +

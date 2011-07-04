@@ -53,6 +53,8 @@ public abstract class ExprSubselectNode extends ExprNodeBase implements ExprEval
     private transient StatementSpecCompiled statementSpecCompiled;
     private transient SubordTableLookupStrategy strategy;
     private transient SubselectAggregationPreprocessor subselectAggregationPreprocessor;
+    private transient boolean aggregatedSubquery;
+    private int subselectNumber;
 
     private static Set<EventBean> singleNullRowEventSet = new HashSet<EventBean>();
     static
@@ -97,9 +99,10 @@ public abstract class ExprSubselectNode extends ExprNodeBase implements ExprEval
      * Supplies a compiled statement spec.
      * @param statementSpecCompiled compiled validated filters
      */
-    public void setStatementSpecCompiled(StatementSpecCompiled statementSpecCompiled)
+    public void setStatementSpecCompiled(StatementSpecCompiled statementSpecCompiled, int subselectNumber)
     {
         this.statementSpecCompiled = statementSpecCompiled;
+        this.subselectNumber = subselectNumber;
     }
 
     /**
@@ -259,5 +262,17 @@ public abstract class ExprSubselectNode extends ExprNodeBase implements ExprEval
 
     public void setSubselectAggregationPreprocessor(SubselectAggregationPreprocessor subselectAggregationPreprocessor) {
         this.subselectAggregationPreprocessor = subselectAggregationPreprocessor;
+    }
+
+    public boolean isAggregatedSubquery() {
+        return aggregatedSubquery;
+    }
+
+    public void setAggregatedSubquery(boolean aggregatedSubquery) {
+        this.aggregatedSubquery = aggregatedSubquery;
+    }
+
+    public int getSubselectNumber() {
+        return subselectNumber;
     }
 }

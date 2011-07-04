@@ -8,6 +8,7 @@ import com.espertech.esper.epl.enummethod.dot.ExprDotEvalParamLambda;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalTypeInfo;
 import com.espertech.esper.epl.expression.ExprDotNodeUtility;
 import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.util.JavaClassHelper;
 
@@ -30,7 +31,7 @@ public class ExprDotEvalAggregate extends ExprDotEvalEnumMethodBase {
         return new EventType[] {typeResult, evalEventType};
     }
 
-    public EnumEval getEnumEval(StreamTypeService streamTypeService, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Class collectionComponentType, int numStreamsIncoming) {
+    public EnumEval getEnumEval(EventAdapterService eventAdapterService, StreamTypeService streamTypeService, String statementId, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Class collectionComponentType, int numStreamsIncoming) {
         ExprDotEvalParam initValueParam = bodiesAndParameters.get(0);
         ExprEvaluator initValueEval = initValueParam.getBodyEvaluator();
         super.setTypeInfo(ExprDotEvalTypeInfo.scalarOrUnderlying(JavaClassHelper.getBoxedType(initValueEval.getType())));

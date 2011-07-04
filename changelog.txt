@@ -8,7 +8,8 @@ Major API or EPL changes
   - Support for filter expressions as part of aggregation functions
   - Support for the transpose(...) function for select-clause transposing an expression result object to a stream
   - Support for @Audit to output nested expression results
-  
+  - Support for {} array operator to be input to enumeration methods
+  - Support for subqueries that return multiple result columns to be used in an expression definition  
 
 Changes in version 4.2.0
 ------------------------

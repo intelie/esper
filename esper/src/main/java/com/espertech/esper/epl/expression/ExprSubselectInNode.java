@@ -10,13 +10,8 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.Collection;
 import java.util.Map;
@@ -80,7 +75,7 @@ public class ExprSubselectInNode extends ExprSubselectNode
         return null;
     }
 
-    public EventType getEventTypeCollection() {
+    public EventType getEventTypeCollection(EventAdapterService eventAdapterService) {
         return null;
     }
 
@@ -96,7 +91,7 @@ public class ExprSubselectInNode extends ExprSubselectNode
         return false;
     }
 
-    public EventType getEventTypeSingle() throws ExprValidationException {
+    public EventType getEventTypeSingle(EventAdapterService eventAdapterService, String statementId) throws ExprValidationException {
         return null;
     }
 

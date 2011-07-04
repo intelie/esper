@@ -10,6 +10,7 @@ import com.espertech.esper.epl.enummethod.dot.ExprDotEvalTypeInfo;
 import com.espertech.esper.epl.expression.ExprDotNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorEnumeration;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventTypeUtility;
 
 import java.util.List;
@@ -20,10 +21,10 @@ public class ExprDotEvalSetExceptUnionIntersect extends ExprDotEvalEnumMethodBas
         return new EventType[] {};
     }
 
-    public EnumEval getEnumEval(StreamTypeService streamTypeService, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Class collectionComponentType, int numStreamsIncoming) throws ExprValidationException {
+    public EnumEval getEnumEval(EventAdapterService eventAdapterService, StreamTypeService streamTypeService, String statementId, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Class collectionComponentType, int numStreamsIncoming) throws ExprValidationException {
         ExprDotEvalParam first = bodiesAndParameters.get(0);
 
-        Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo> enumSrc = ExprDotNode.getEnumerationSource(first.getBody(), streamTypeService, true);
+        Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo> enumSrc = ExprDotNode.getEnumerationSource(first.getBody(), streamTypeService, eventAdapterService, statementId, true);
         if (inputEventType != null) {
             super.setTypeInfo(ExprDotEvalTypeInfo.eventColl(inputEventType));
         }
@@ -36,11 +37,11 @@ public class ExprDotEvalSetExceptUnionIntersect extends ExprDotEvalEnumMethodBas
             throw new ExprValidationException(message);
         }
 
-        EventType setType = enumSrc.getFirst().getEventTypeCollection();
+        EventType setType = enumSrc.getFirst().getEventTypeCollection(eventAdapterService);
         if (setType != inputEventType) {
             boolean isSubtype = EventTypeUtility.isTypeOrSubTypeOf(setType, inputEventType);
             if (!isSubtype) {
-                String message = "Enumeration method '" + enumMethodUsedName + "' expects event type '" + inputEventType.getName() + "' but receives event type '" + enumSrc.getFirst().getEventTypeCollection().getName() + "'";
+                String message = "Enumeration method '" + enumMethodUsedName + "' expects event type '" + inputEventType.getName() + "' but receives event type '" + enumSrc.getFirst().getEventTypeCollection(eventAdapterService).getName() + "'";
                 throw new ExprValidationException(message);
             }
         }

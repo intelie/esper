@@ -8,7 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.epl.view;
 
-import com.espertech.esper.client.annotation.Audit;
 import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ResultSetProcessor;
@@ -67,7 +66,7 @@ public class OutputProcessViewFactory
         boolean isGrouped = statementSpec.getGroupByExpressions() != null && !statementSpec.getGroupByExpressions().isEmpty();
 
         if (outputLimitSpec != null) {
-            ExprValidationContext validationContext = new ExprValidationContext(null, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+            ExprValidationContext validationContext = new ExprValidationContext(null, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getStatementId(), statementContext.getAnnotations());
             if (outputLimitSpec.getAfterTimePeriodExpr() != null) {
                 outputLimitSpec.getAfterTimePeriodExpr().validate(validationContext);
             }

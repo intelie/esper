@@ -81,7 +81,7 @@ public class TestEnumMinMax extends TestCase {
         tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'min' and 1-parameter footprint, expecting collection of events as input, received collection of String [select strvals.min(x=> x) from SupportCollection]");
 
         epl = "select contained.min() from Bean";
-        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'min' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collecton of events of type 'com.espertech.esper.support.bean.SupportBean_ST0' [select contained.min() from Bean]");
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'min' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'com.espertech.esper.support.bean.SupportBean_ST0' [select contained.min() from Bean]");
     }
 
     private void tryInvalid(String epl, String message) {

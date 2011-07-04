@@ -103,7 +103,7 @@ public class TestEnumSumOf extends TestCase {
         tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'sumof' and 1-parameter footprint, expecting collection of events as input, received collection of Integer [select intvals.sumof(x=> x) from SupportCollection]");
 
         epl = "select beans.sumof() from Bean";
-        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collecton of events of type 'com.espertech.esper.support.bean.SupportBean' [select beans.sumof() from Bean]");
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'com.espertech.esper.support.bean.SupportBean' [select beans.sumof() from Bean]");
     }
 
     private void tryInvalid(String epl, String message) {
