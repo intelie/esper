@@ -16,6 +16,9 @@ import com.espertech.esper.epl.lookup.SubordPropRangeKey;
 import com.espertech.esper.epl.lookup.SubordTableLookupStrategy;
 import com.espertech.esper.epl.named.IndexMultiKey;
 import com.espertech.esper.epl.named.IndexedPropDesc;
+import com.espertech.esper.epl.spec.CreateIndexDesc;
+import com.espertech.esper.epl.spec.CreateIndexItem;
+import com.espertech.esper.epl.spec.CreateIndexType;
 import com.espertech.esper.filter.Range;
 import com.espertech.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
@@ -209,5 +212,43 @@ public class VirtualDWViewImpl extends ViewSupport implements VirtualDWView {
 
     public Iterator<EventBean> iterator() {
         return dataExternal.iterator();
+    }
+
+    public void handleStartIndex(CreateIndexDesc spec) {
+        try {
+            List<VirtualDataWindowEventStartIndex.VDWCreateIndexField> fields = new ArrayList<VirtualDataWindowEventStartIndex.VDWCreateIndexField>();
+            for (CreateIndexItem col : spec.getColumns()) {
+                fields.add(new VirtualDataWindowEventStartIndex.VDWCreateIndexField(col.getName(), col.getType() == CreateIndexType.HASH));
+            }
+            VirtualDataWindowEventStartIndex create = new VirtualDataWindowEventStartIndex(spec.getWindowName(), spec.getIndexName(), fields);
+            dataExternal.handleEvent(create);
+        }
+        catch (Exception ex) {
+            String message = "Exception encountered invoking virtual data window handle start-index event for window '" + namedWindowName + "': " + ex.getMessage();
+            log.warn(message, ex);
+            throw new EPException(message, ex);
+        }
+    }
+
+    public void handleStopIndex(CreateIndexDesc spec) {
+        try {
+            VirtualDataWindowEventStopIndex event = new VirtualDataWindowEventStopIndex(spec.getWindowName(), spec.getIndexName());
+            dataExternal.handleEvent(event);
+        }
+        catch (Exception ex) {
+            String message = "Exception encountered invoking virtual data window handle stop-index event for window '" + namedWindowName + "': " + ex.getMessage();
+            log.warn(message, ex);
+        }
+    }
+
+    public void handleStopWindow() {
+        try {
+            VirtualDataWindowEventStopWindow event = new VirtualDataWindowEventStopWindow(namedWindowName);
+            dataExternal.handleEvent(event);
+        }
+        catch (Exception ex) {
+            String message = "Exception encountered invoking virtual data window handle stop-window event for window '" + namedWindowName + "': " + ex.getMessage();
+            log.warn(message, ex);
+        }
     }
 }

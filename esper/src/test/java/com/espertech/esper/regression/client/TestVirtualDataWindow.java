@@ -1,10 +1,7 @@
 package com.espertech.esper.regression.client;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.hook.VirtualDataWindow;
-import com.espertech.esper.client.hook.VirtualDataWindowLookupContext;
-import com.espertech.esper.client.hook.VirtualDataWindowLookupFieldDesc;
-import com.espertech.esper.client.hook.VirtualDataWindowKeyRange;
+import com.espertech.esper.client.hook.*;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanRange;
 import com.espertech.esper.support.bean.SupportBean_ST0;
@@ -312,6 +309,40 @@ public class TestVirtualDataWindow extends TestCase {
         tryInvalid(epl, "Unexpected exception starting statement: Exception obtaining index lookup from virtual data window, the implementation has returned a null index [select (select * from ABC) from SupportBean]");
     }
 
+    public void testManagementEvents() {
+        SupportVirtualDW vdw = registerTypeSetMapData();
+
+        // create-index event
+        vdw.getEvents().clear();
+        EPStatement stmtIndex = epService.getEPAdministrator().createEPL("create index IndexOne on MyVDW (col3, col2 btree)");
+        VirtualDataWindowEventStartIndex startEvent = (VirtualDataWindowEventStartIndex) vdw.getEvents().get(0);
+        assertEquals("MyVDW", startEvent.getNamedWindowName());
+        assertEquals("IndexOne", startEvent.getIndexName());
+        assertEquals(2, startEvent.getFields().size());
+        assertEquals("col3", startEvent.getFields().get(0).getName());
+        assertEquals(true, startEvent.getFields().get(0).isHash());
+        assertEquals("col2", startEvent.getFields().get(1).getName());
+        assertEquals(false, startEvent.getFields().get(1).isHash());
+
+        // stop-index event
+        vdw.getEvents().clear();
+        stmtIndex.stop();
+        VirtualDataWindowEventStopIndex stopEvent = (VirtualDataWindowEventStopIndex) vdw.getEvents().get(0);
+        assertEquals("MyVDW", stopEvent.getNamedWindowName());
+        assertEquals("IndexOne", stopEvent.getIndexName());
+
+        // stop named window
+        vdw.getEvents().clear();
+        epService.getEPAdministrator().getStatement("create-nw").stop();
+        VirtualDataWindowEventStopWindow stopWindow = (VirtualDataWindowEventStopWindow) vdw.getEvents().get(0);
+        assertEquals("MyVDW", stopWindow.getNamedWindowName());
+
+        // start named window (not an event but a new factory call)
+        SupportVirtualDWFactory.getWindows().clear();
+        epService.getEPAdministrator().getStatement("create-nw").start();
+        assertEquals(1, SupportVirtualDWFactory.getWindows().size());
+    }
+
     private void tryInvalid(String epl, String message) {
         try
         {
@@ -330,7 +361,7 @@ public class TestVirtualDataWindow extends TestCase {
         mapType.put("col3", "int");
         epService.getEPAdministrator().getConfiguration().addEventType("MapType", mapType);
 
-        epService.getEPAdministrator().createEPL("create window MyVDW.test:vdw() as MapType");
+        epService.getEPAdministrator().createEPL("@Name('create-nw') create window MyVDW.test:vdw() as MapType");
 
         // define some test data to return, via lookup
         SupportVirtualDW window = (SupportVirtualDW) getFromContext("/virtualdw/MyVDW");

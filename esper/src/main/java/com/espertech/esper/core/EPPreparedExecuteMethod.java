@@ -101,8 +101,8 @@ public class EPPreparedExecuteMethod
             processors[i] = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
             typesPerStream[i] = processors[i].getTailView().getEventType();
 
-            if (processors[i].getRootView().getViews().get(0) instanceof VirtualDWView) {
-                streamJoinAnalysisResult.getViewExternal()[i] = (VirtualDWView) processors[i].getRootView().getViews().get(0);
+            if (processors[i].isVirtualDataWindow()) {
+                streamJoinAnalysisResult.getViewExternal()[i] = processors[i].getVirtualDataWindow();
             }
         }
 

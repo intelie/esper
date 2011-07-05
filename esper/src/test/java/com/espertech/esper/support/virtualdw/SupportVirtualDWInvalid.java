@@ -2,6 +2,7 @@ package com.espertech.esper.support.virtualdw;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.hook.VirtualDataWindow;
+import com.espertech.esper.client.hook.VirtualDataWindowEvent;
 import com.espertech.esper.client.hook.VirtualDataWindowLookup;
 import com.espertech.esper.client.hook.VirtualDataWindowLookupContext;
 
@@ -21,5 +22,8 @@ public class SupportVirtualDWInvalid implements VirtualDataWindow {
 
     public Iterator<EventBean> iterator() {
         return null;
+    }
+
+    public void handleEvent(VirtualDataWindowEvent event) {
     }
 }

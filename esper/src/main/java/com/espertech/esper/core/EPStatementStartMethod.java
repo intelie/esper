@@ -147,14 +147,26 @@ public class EPStatementStartMethod
     {
         final CreateIndexDesc spec = statementSpec.getCreateIndexDesc();
         final NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(spec.getWindowName());
-        processor.getRootView().addExplicitIndex(spec.getWindowName(), spec.getIndexName(), spec.getColumns());
 
-        EPStatementStopMethod stopMethod = new EPStatementStopMethod() {
-            public void stop()
-            {
-                processor.getRootView().removeExplicitIndex(spec.getIndexName());
-            }
-        };
+        EPStatementStopMethod stopMethod;
+        if (processor.isVirtualDataWindow()) {
+            processor.getVirtualDataWindow().handleStartIndex(spec);
+            stopMethod = new EPStatementStopMethod() {
+                public void stop() {
+                    processor.getVirtualDataWindow().handleStopIndex(spec);
+                }
+            };
+        }
+        else {
+            processor.getRootView().addExplicitIndex(spec.getWindowName(), spec.getIndexName(), spec.getColumns());
+            stopMethod = new EPStatementStopMethod() {
+                public void stop()
+                {
+                    processor.getRootView().removeExplicitIndex(spec.getIndexName());
+                }
+            };
+        }
+
         Viewable viewable = new ViewableDefaultImpl(processor.getNamedWindowType());
         return new EPStatementStartResult(viewable, stopMethod, null);
     }
@@ -788,6 +800,14 @@ public class EPStatementStartMethod
                 boolean filterSubselectSameStream = determineSubquerySameStream(filterStreamSpec);
                 services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), statementContext.getFilterService(), false,false, true, filterSubselectSameStream);
                 String windowName = statementSpec.getCreateWindowDesc().getWindowName();
+                try {
+                    NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(windowName);
+                    if (processor.isVirtualDataWindow()) {
+                        processor.getVirtualDataWindow().handleStopWindow();
+                    }
+                } catch (ExprValidationException e) {
+                    log.warn("Named window processor by name '" + windowName + "' has not been found");
+                }
                 services.getNamedWindowService().removeProcessor(windowName);
                 if (environmentStopCallback != null) {
                     environmentStopCallback.stop();
@@ -1349,8 +1369,8 @@ public class EPStatementStartMethod
                 NamedWindowConsumerStreamSpec nwSpec = (NamedWindowConsumerStreamSpec) streamSpec;
                 analysisResult.setNamedWindow(i);
                 NamedWindowProcessor processor = namedWindowService.getProcessor(nwSpec.getWindowName());
-                if (processor.getRootView().getViews().get(0) instanceof VirtualDWView) {
-                    analysisResult.getViewExternal()[i] = (VirtualDWView) processor.getRootView().getViews().get(0);
+                if (processor.isVirtualDataWindow()) {
+                    analysisResult.getViewExternal()[i] = processor.getVirtualDataWindow();
                 }
             }
         }

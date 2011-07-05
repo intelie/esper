@@ -34,6 +34,19 @@ public interface VirtualDataWindow {
     public VirtualDataWindowLookup getLookup(VirtualDataWindowLookupContext desc);
 
     /**
+     * Handle a management event.
+     * <p>
+     * Management events indicate:
+     * <ul>
+     *     <li>Create/Start of an index on a virtual data window.</li>
+     *     <li>Stop/Destroy of an index.</li>
+     *     <li>Destroy of the virtual data window.</li>
+     * </ul>
+     * @param event to handle
+     */
+    public void handleEvent(VirtualDataWindowEvent event);
+
+    /**
      * This method is invoked when events are inserted-into or removed-from the
      * virtual data window.
      * <p>

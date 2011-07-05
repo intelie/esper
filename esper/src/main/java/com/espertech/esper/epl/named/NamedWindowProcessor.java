@@ -18,6 +18,7 @@ import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.property.PropertyEvaluator;
 import com.espertech.esper.epl.spec.OnTriggerDesc;
+import com.espertech.esper.epl.virtualdw.VirtualDWView;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.view.StatementStopService;
 
@@ -59,6 +60,14 @@ public class NamedWindowProcessor
         rootView = new NamedWindowRootView(revisionProcessor, statementResourceLock, enableQueryPlanLog, createWindowStmtHandle, metricReportingService);
         tailView = new NamedWindowTailView(eventType, namedWindowService, rootView, createWindowStmtHandle, statementResultService, revisionProcessor, isPrioritized, exprEvaluatorContext);
         rootView.setDataWindowContents(tailView);   // for iteration used for delete without index
+    }
+
+    public boolean isVirtualDataWindow() {
+        return rootView.isVirtualDataWindow();
+    }
+
+    public VirtualDWView getVirtualDataWindow() {
+        return rootView.getVirtualDataWindow();
     }
 
     /**

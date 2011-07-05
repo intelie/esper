@@ -16,6 +16,7 @@ import com.espertech.esper.epl.lookup.SubordPropRangeKey;
 import com.espertech.esper.epl.lookup.SubordTableLookupStrategy;
 import com.espertech.esper.epl.named.IndexMultiKey;
 import com.espertech.esper.epl.named.IndexedPropDesc;
+import com.espertech.esper.epl.spec.CreateIndexDesc;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,4 +35,8 @@ public interface VirtualDWView {
     public VirtualDataWindow getVirtualDataWindow();
 
     public void destroy();
+
+    public void handleStartIndex(CreateIndexDesc spec);
+    public void handleStopIndex(CreateIndexDesc spec);
+    public void handleStopWindow();
 }

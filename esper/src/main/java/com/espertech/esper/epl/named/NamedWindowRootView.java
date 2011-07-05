@@ -297,8 +297,8 @@ public class NamedWindowRootView extends ViewSupport
 
         // Get or Create the table for this index (exact match or property names, type of index and coercion type is expected)
         Pair<IndexMultiKey, EventTable> tableDesc;
-        if (this.getViews().get(0) instanceof VirtualDWView) {
-            VirtualDWView viewExternal = (VirtualDWView) this.getViews().get(0);
+        if (isVirtualDataWindow()) {
+            VirtualDWView viewExternal = getVirtualDataWindow();
             tableDesc = viewExternal.getSubordinateQueryDesc(hashedProps, btreeProps);
         }
         else {
@@ -367,8 +367,8 @@ public class NamedWindowRootView extends ViewSupport
         CoercionDesc rangeKeyCoercionTypes = indexKeyInfo.getOrderedRangeCoercionTypes();
 
         SubordTableLookupStrategy lookupStrategy;
-        if (this.getViews().get(0) instanceof VirtualDWView) {
-            VirtualDWView viewExternal = (VirtualDWView) this.getViews().get(0);
+        if (isVirtualDataWindow()) {
+            VirtualDWView viewExternal = getVirtualDataWindow();
             lookupStrategy = viewExternal.getSubordinateLookupStrategy(accessedByStatementName, outerStreamTypes,
                     hashKeys, hashKeyCoercionTypes, rangeKeys, rangeKeyCoercionTypes, isNWOnTrigger, eventTable, joinDesc, forceTableScan);
         }
@@ -392,7 +392,7 @@ public class NamedWindowRootView extends ViewSupport
         SubordPropPlan joinedPropPlan = QueryPlanIndexBuilder.getJoinProps(joinExpr, 1, allStreamsZeroIndexed);
 
         // No join expression means delete all
-        if (joinExpr == null && (!(this.getViews().get(0) instanceof VirtualDWView)))
+        if (joinExpr == null && (!(isVirtualDataWindow())))
         {
             return new Pair<NamedWindowLookupStrategy,EventTable>(new NamedWindowLookupStrategyAllRows(dataWindowContents), null);
         }
@@ -446,8 +446,8 @@ public class NamedWindowRootView extends ViewSupport
 
         // Determine virtual data window
         VirtualDWView virtualDataWindow = null;
-        if (this.getViews().get(0) instanceof VirtualDWView) {
-            virtualDataWindow = (VirtualDWView) this.getViews().get(0);
+        if (isVirtualDataWindow()) {
+            virtualDataWindow = getVirtualDataWindow();
         }
 
         if (optionalFilter == null || optionalFilter.getParameters().isEmpty()) {
@@ -653,5 +653,16 @@ public class NamedWindowRootView extends ViewSupport
         if (table != null) {
             indexRepository.removeTableReference(table);
         }
+    }
+
+    public boolean isVirtualDataWindow() {
+        return this.getViews().get(0) instanceof VirtualDWView;
+    }
+
+    public VirtualDWView getVirtualDataWindow() {
+        if (!isVirtualDataWindow()) {
+            return null;
+        }
+        return (VirtualDWView) this.getViews().get(0);
     }
 }
