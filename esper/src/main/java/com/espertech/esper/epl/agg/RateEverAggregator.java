@@ -53,8 +53,10 @@ public class RateEverAggregator implements AggregationMethod {
 
     public Object getValue()
     {
-        long newest = points.getLast();
-        removeFromHead(newest);
+        if (!points.isEmpty()) {
+            long newest = points.getLast();
+            removeFromHead(newest);
+        }
         if (!hasLeave) {
             return null;
         }

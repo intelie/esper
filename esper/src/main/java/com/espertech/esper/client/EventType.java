@@ -212,4 +212,7 @@ public interface EventType
     public EventPropertyGetterIndexed getGetterIndexed(String indexedPropertyName);
 
     public int getEventTypeId();
+
+    public String getTimestampProperty();
+    public String getDurationProperty();
 }

@@ -1453,6 +1453,7 @@ funcIdent
 	| min=MIN -> IDENT[$min]
 	| w=WHERE -> IDENT[$w]
 	| s=SET -> IDENT[$s]
+	| after=AFTER-> IDENT[$after]
 	;
 	
 libFunctionArgs

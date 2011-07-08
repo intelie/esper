@@ -1331,7 +1331,7 @@ output last every 2 sec</programlisting>
 									Returns an event arrival rate per second over the provided number of seconds, computed based on engine time.								
 								</para>
 								<para>
-									Returns null until events fill the number of seconds. Useful with <literal>output snapshot</literal> to output a current rate. Does not require a data window onto the stream(s).
+									Returns null until events fill the number of seconds. Useful with <literal>output snapshot</literal> to output a current rate. This function footprint is for use without a data window onto the stream(s).
 								</para>
 								<para>
 									A sample statement to output, every 2 seconds, the arrival rate per second considering the last 10 seconds of events is shown here:
@@ -1361,7 +1361,7 @@ output snapshot every 2 sec</programlisting>
 									The optional second parameter is a property or expression for computing an accumulation rate: If a value is provided as a second parameter then the accumulation rate for that quantity is returned (e.g. turnover in dollars per second).
 								</para>
 								<para>
-									Requires a data window declared onto the stream. Returns null until events start leaving the window.
+									This footprint is designed for use with a data window and requires a data window declared onto the stream. Returns null until events start leaving the window.
 								</para>
 								<para>
 									This sample statement outputs event rate for each group (symbol) with fixed sample size of four events 

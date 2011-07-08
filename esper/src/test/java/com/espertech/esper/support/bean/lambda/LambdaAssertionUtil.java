@@ -68,4 +68,11 @@ public class LambdaAssertionUtil {
             Assert.assertEquals("position " + count, classes[count++], type.getPropertyType(field));
         }
     }
+
+    public static void assertTypesAllSame(EventType type, String[] fields, Class clazz) {
+        int count = 0;
+        for (String field : fields) {
+            Assert.assertEquals("position " + count, clazz, type.getPropertyType(field));
+        }
+    }
 }

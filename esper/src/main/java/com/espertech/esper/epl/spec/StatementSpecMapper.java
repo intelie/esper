@@ -2593,7 +2593,7 @@ public class StatementSpecMapper
     private static List<ExprChainedSpec> mapChains(List<DotExpressionItem> pairs, StatementSpecMapContext mapContext) {
         List<ExprChainedSpec> chains = new ArrayList<ExprChainedSpec>();
         for (DotExpressionItem item : pairs) {
-            chains.add(new ExprChainedSpec(item.getName(), mapExpressionDeep(item.getParameters(), mapContext), false));
+            chains.add(new ExprChainedSpec(item.getName(), mapExpressionDeep(item.getParameters(), mapContext), item.isProperty()));
         }
         return chains;
     }

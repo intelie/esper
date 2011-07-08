@@ -8,9 +8,17 @@ public class SupportDateTime {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
+    private String key;
     private Long msecdate;
     private Date utildate;
     private Calendar caldate;
+
+    public SupportDateTime(String key, Long msecdate, Date utildate, Calendar caldate) {
+        this.key = key;
+        this.msecdate = msecdate;
+        this.utildate = utildate;
+        this.caldate = caldate;
+    }
 
     public SupportDateTime(Long msecdate, Date utildate, Calendar caldate) {
         this.msecdate = msecdate;
@@ -30,6 +38,15 @@ public class SupportDateTime {
         return caldate;
     }
 
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     public static SupportDateTime make(String datestr) {
         if (datestr == null) {
             return new SupportDateTime(null, null, null);
@@ -40,6 +57,12 @@ public class SupportDateTime {
         cal.setTimeInMillis(date.getTime());
         cal.set(Calendar.MILLISECOND, 0);
         return new SupportDateTime(date.getTime(), date, cal);
+    }
+
+    public static SupportDateTime make(String key, String datestr) {
+        SupportDateTime bean = make(datestr);
+        bean.setKey(key);
+        return bean;
     }
 
     public static long parseGetMSec(String datestr) {
@@ -57,7 +80,7 @@ public class SupportDateTime {
         return cal;
     }
 
-    private static Date parse(String datestr) {
+    public static Date parse(String datestr) {
         Date date;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);

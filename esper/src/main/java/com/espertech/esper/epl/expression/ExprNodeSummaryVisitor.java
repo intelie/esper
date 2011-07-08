@@ -30,7 +30,7 @@ public class ExprNodeSummaryVisitor implements ExprNodeVisitor
         {
             hasAggregation = true;
         }
-        else if ((exprNode instanceof ExprStreamUnderlyingNode) || (exprNode instanceof ExprStreamInstanceMethodNode))
+        else if ((exprNode instanceof ExprStreamUnderlyingNode))
         {
             hasStreamSelect = true;
         }

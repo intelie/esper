@@ -43,4 +43,16 @@ public class DatetimeMethodEnumParams {
     public static final DotMethodFP[] NOPARAM = new DotMethodFP[] {
                     new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY)
             };
+
+    public static final DotMethodFP[] INTERVAL = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
+                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
+                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
+                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null))
+                    };
 }

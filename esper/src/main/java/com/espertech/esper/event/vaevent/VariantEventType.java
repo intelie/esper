@@ -79,6 +79,15 @@ public class VariantEventType implements EventTypeSPI
         }
     }
 
+    // TODO - add property name
+    public String getTimestampProperty() {
+        return null;
+    }
+
+    public String getDurationProperty() {
+        return null;
+    }
+
     public Class getPropertyType(String property)
     {
         VariantPropertyDesc entry = propertyDesc.get(property);

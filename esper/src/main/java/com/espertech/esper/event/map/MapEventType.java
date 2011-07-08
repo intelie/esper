@@ -129,6 +129,15 @@ public class MapEventType implements EventTypeSPI
         return eventTypeId;
     }
 
+    // TODO - add property name
+    public String getTimestampProperty() {
+        return null;
+    }
+
+    public String getDurationProperty() {
+        return null;
+    }
+
     public final Class getPropertyType(String propertyName)
     {
         Class result = simplePropertyTypes.get(ASTFilterSpecHelper.unescapeDot(propertyName));

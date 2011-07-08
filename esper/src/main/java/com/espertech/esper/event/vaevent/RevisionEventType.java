@@ -10,8 +10,8 @@ package com.espertech.esper.event.vaevent;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
-import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.*;
+import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.property.*;
 import com.espertech.esper.util.JavaClassHelper;
 
@@ -63,6 +63,15 @@ public class RevisionEventType implements EventTypeSPI
 
     public int getEventTypeId() {
         return eventTypeId;
+    }
+
+    // TODO - add property name
+    public String getTimestampProperty() {
+        return null;
+    }
+
+    public String getDurationProperty() {
+        return null;
     }
 
     public EventPropertyGetter getGetter(String propertyName)

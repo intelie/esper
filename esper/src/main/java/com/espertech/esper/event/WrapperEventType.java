@@ -97,7 +97,16 @@ public class WrapperEventType implements EventTypeSPI
 		this.propertyDesc = propertyDesc.toArray(new EventPropertyDescriptor[propertyDesc.size()]);
     }
 
-	public Iterator<EventType> getDeepSuperTypes()
+    // TODO - add property name
+    public String getTimestampProperty() {
+        return null;
+    }
+
+    public String getDurationProperty() {
+        return null;
+    }
+
+    public Iterator<EventType> getDeepSuperTypes()
 	{
 		return null;
 	}

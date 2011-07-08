@@ -52,6 +52,8 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
     private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
     private String factoryMethodName;
     private String copyMethodName;
+    private String timestampProperty;
+    private String durationProperty;
 
     /**
      * Constructor takes a java bean class as an argument.
@@ -85,6 +87,27 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         propertyGetterCache = new HashMap<String, EventPropertyGetter>();
 
         initialize(false);
+
+        if (optionalLegacyDef != null && optionalLegacyDef.getTimestampProperty() != null) {
+            timestampProperty = optionalLegacyDef.getTimestampProperty();
+            if (getGetter(timestampProperty) == null) {
+                throw new ConfigurationException("Declared timestamp property name '" + timestampProperty + "' was not found");
+            }
+        }
+        if (optionalLegacyDef != null && optionalLegacyDef.getDurationProperty() != null) {
+            durationProperty = optionalLegacyDef.getDurationProperty();
+            if (getGetter(durationProperty) == null) {
+                throw new ConfigurationException("Declared duration property name '" + durationProperty + "' was not found");
+            }
+        }
+    }
+
+    public String getTimestampProperty() {
+        return timestampProperty;
+    }
+
+    public String getDurationProperty() {
+        return durationProperty;
     }
 
     public ConfigurationEventTypeLegacy getOptionalLegacyDef() {

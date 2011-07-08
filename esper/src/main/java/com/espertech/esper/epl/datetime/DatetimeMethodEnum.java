@@ -32,7 +32,12 @@ public enum DatetimeMethodEnum {
     GETMILLISOFSECOND("getMillisOfSecond", DatetimeMethodEnumStatics.reformatOpFactory, DatetimeMethodEnumParams.NOPARAM),
     GETSECONDOFMINUTE("getSecondOfMinute", DatetimeMethodEnumStatics.reformatOpFactory, DatetimeMethodEnumParams.NOPARAM),
     GETWEEKYEAR("getWeekyear", DatetimeMethodEnumStatics.reformatOpFactory, DatetimeMethodEnumParams.NOPARAM),
-    GETYEAR("getYear", DatetimeMethodEnumStatics.reformatOpFactory, DatetimeMethodEnumParams.NOPARAM)
+    GETYEAR("getYear", DatetimeMethodEnumStatics.reformatOpFactory, DatetimeMethodEnumParams.NOPARAM),
+
+    // interval ops
+    BEFORE("before", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL),
+    AFTER("after", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL),
+    COINCIDES("coincides", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL),
     ;
 
     private final String nameCamel;

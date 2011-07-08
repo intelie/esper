@@ -12,9 +12,9 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.event.*;
 import com.espertech.esper.util.ClassInstantiationException;
 import com.espertech.esper.util.JavaClassHelper;
-import org.w3c.dom.Node;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Node;
 
 import javax.xml.xpath.*;
 import java.util.*;
@@ -224,5 +224,14 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
     public EventBeanReader getReader()
     {
         return null;
-    }    
+    }
+
+    // TODO - add property name
+    public String getTimestampProperty() {
+        return null;
+    }
+
+    public String getDurationProperty() {
+        return null;
+    }
 }

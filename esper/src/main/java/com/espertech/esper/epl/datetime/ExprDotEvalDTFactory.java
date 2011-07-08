@@ -1,9 +1,11 @@
 package com.espertech.esper.epl.datetime;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.collection.Pair;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.datetime.calop.CalendarOp;
 import com.espertech.esper.epl.datetime.calop.CalendarOpFactory;
+import com.espertech.esper.epl.datetime.interval.IntervalOp;
+import com.espertech.esper.epl.datetime.interval.IntervalOpFactory;
 import com.espertech.esper.epl.datetime.reformatop.ReformatOp;
 import com.espertech.esper.epl.datetime.reformatop.ReformatOpFactory;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalTypeInfo;
@@ -17,27 +19,39 @@ import java.util.*;
 
 public class ExprDotEvalDTFactory {
 
-    public static Pair<ExprDotEval, ExprDotEvalTypeInfo> validateMake(Deque<ExprChainedSpec> chainSpecStack, DatetimeMethodEnum dtMethod, String dtMethodName, ExprDotEvalTypeInfo inputType, List<ExprNode> parameters)
+    public static ExprDotEvalDTMethodDesc validateMake(EventType[] typesPerStream, Deque<ExprChainedSpec> chainSpecStack, DatetimeMethodEnum dtMethod, String dtMethodName, ExprDotEvalTypeInfo inputType, List<ExprNode> parameters, ExprDotNodeFilterAnalyzerInput inputDesc)
             throws ExprValidationException
     {
         // verify input
-        String message = "Date-time enumeration method '" + dtMethodName + "' requires a scalar input value of type Calendar, Date or long";
-        if (!inputType.isScalar() || inputType.getScalar() == null) {
-            throw new ExprValidationException(message);
+        String inputPropertyName = null;
+        if (inputType.getEventType() != null) {
+            if (inputType.getEventType().getTimestampProperty() == null) {
+                String message = "Date-time enumeration method '" + dtMethodName + "' requires an event type as input that declares a timestamp property";
+                throw new ExprValidationException(message);
+            }
+            inputPropertyName = inputType.getEventType().getTimestampProperty();
         }
-        if ((!JavaClassHelper.isSubclassOrImplementsInterface(inputType.getScalar(), Calendar.class)) &&
-            (!JavaClassHelper.isSubclassOrImplementsInterface(inputType.getScalar(), Date.class)) &&
-            (JavaClassHelper.getBoxedType(inputType.getScalar()) != Long.class)) {
-            throw new ExprValidationException(message + " but received " + JavaClassHelper.getClassNameFullyQualPretty(inputType.getScalar()));
+        else {
+            String message = "Date-time enumeration method '" + dtMethodName + "' requires a scalar input value of type Calendar, Date or long";
+            if (!inputType.isScalar() || inputType.getScalar() == null) {
+                throw new ExprValidationException(message);
+            }
+            if ((!JavaClassHelper.isSubclassOrImplementsInterface(inputType.getScalar(), Calendar.class)) &&
+                (!JavaClassHelper.isSubclassOrImplementsInterface(inputType.getScalar(), Date.class)) &&
+                (JavaClassHelper.getBoxedType(inputType.getScalar()) != Long.class)) {
+                throw new ExprValidationException(message + " but received " + JavaClassHelper.getClassNameFullyQualPretty(inputType.getScalar()));
+            }
         }
 
         List<CalendarOp> calendarOps = new ArrayList<CalendarOp>();
         ReformatOp reformatOp = null;
+        IntervalOp intervalOp = null;
         DatetimeMethodEnum currentMethod = dtMethod;
         List<ExprNode> currentParameters = parameters;
         String currentMethodName = dtMethodName;
 
         // drain all calendar ops
+        ExprDotNodeFilterAnalyzerDTIntervalDesc intervalFilterDesc = null;
         while(true) {
 
             // handle the first one only if its a calendar op
@@ -54,8 +68,15 @@ public class ExprDotEvalDTFactory {
                 CalendarOp calendarOp = ((CalendarOpFactory) currentMethod.getOpFactory()).getOp(currentMethod, currentMethodName, currentParameters, evaluators);
                 calendarOps.add(calendarOp);
             }
-            else {
+            else if (opFactory instanceof ReformatOpFactory) {
                 reformatOp = ((ReformatOpFactory) opFactory).getOp(currentMethod, currentMethodName, currentParameters.isEmpty() ? null : currentParameters.get(0));
+            }
+            else if (opFactory instanceof IntervalOpFactory) {
+                intervalOp = ((IntervalOpFactory) opFactory).getOp(typesPerStream, currentMethod, currentMethodName, currentParameters, evaluators);
+                intervalFilterDesc = intervalOp.getFilterDesc(typesPerStream, inputDesc, inputPropertyName);
+            }
+            else {
+                throw new IllegalStateException("Invalid op factory class " + opFactory);
             }
 
             // see if there is more
@@ -73,21 +94,21 @@ public class ExprDotEvalDTFactory {
         ExprDotEval dotEval;
         ExprDotEvalTypeInfo returnType;
 
-        if (!calendarOps.isEmpty() && reformatOp == null) {
+        if (!calendarOps.isEmpty() && reformatOp == null && intervalOp == null) {
             dotEval = new ExprDotEvalDTCalendarOps(inputType.getScalar(), calendarOps);
             returnType = dotEval.getTypeInfo();
         }
         else {
-            if (calendarOps.isEmpty()) {
-                dotEval = new ExprDotEvalDTReformatOnly(dtMethodName, reformatOp);
+            if (calendarOps.isEmpty() && (reformatOp != null || intervalOp != null)) {
+                dotEval = new ExprDotEvalDTReformatIntervalOnly(dtMethodName, reformatOp, intervalOp);
                 returnType = dotEval.getTypeInfo();
             }
             else {
-                dotEval = new ExprDotEvalDTCalOpsReformat(dtMethodName, reformatOp, calendarOps);
+                dotEval = new ExprDotEvalDTCalOpsReformatInterval(dtMethodName, reformatOp, intervalOp, calendarOps);
                 returnType = dotEval.getTypeInfo();
             }
         }
-        return new Pair<ExprDotEval, ExprDotEvalTypeInfo>(dotEval, returnType);
+        return new ExprDotEvalDTMethodDesc(dotEval, returnType, intervalFilterDesc);
     }
 
     private static ExprEvaluator[] getEvaluators(List<ExprNode> parameters) {

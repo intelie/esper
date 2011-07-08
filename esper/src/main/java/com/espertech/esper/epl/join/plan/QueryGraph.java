@@ -378,8 +378,8 @@ public class QueryGraph
         }
     }
 
-    public void addRelationalOpStrict(int streamIdLeft, String propertyLeft, ExprIdentNode propertyLeftExpr,
-                                      int streamIdRight, String propertyRight, ExprIdentNode propertyRightExpr,
+    public void addRelationalOpStrict(int streamIdLeft, String propertyLeft, ExprNode propertyLeftExpr,
+                                      int streamIdRight, String propertyRight, ExprNode propertyRightExpr,
                                       RelationalOpEnum relationalOpEnum) {
         check(streamIdLeft, streamIdRight);
         QueryGraphValue valueLeft = getCreateValue(streamIdLeft, streamIdRight);

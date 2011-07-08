@@ -79,11 +79,6 @@ public class ExprNodeUtility {
                     result = resolveAsStreamName(identNode, e, validationContext);
                 }
             }
-            else if (exprNode instanceof ExprDotNode)
-            {
-                ExprDotNode staticMethodNode = (ExprDotNode) exprNode;
-                result = resolveInstanceMethod(staticMethodNode, e, validationContext);
-            }
             else
             {
                 throw e;
@@ -103,44 +98,6 @@ public class ExprNodeUtility {
         }
         
         return result;
-    }
-
-    private static ExprNode resolveInstanceMethod(ExprDotNode staticMethodNode, ExprValidationException existingException, ExprValidationContext validationContext)
-            throws ExprValidationException
-    {
-        String streamName = staticMethodNode.getChainSpec().get(0).getName();
-
-        boolean streamFound = false;
-        for (String name : validationContext.getStreamTypeService().getStreamNames())
-        {
-            if (name != null && name.equals(streamName))
-            {
-                streamFound = true;
-            }
-        }
-
-        List<ExprChainedSpec> remainingChain = new ArrayList<ExprChainedSpec>(staticMethodNode.getChainSpec());
-        remainingChain.remove(0);
-
-        if (remainingChain.isEmpty()) {
-            throw existingException;
-        }
-
-        ExprStreamInstanceMethodNode exprStream = new ExprStreamInstanceMethodNode(streamName, remainingChain);
-        try
-        {
-            exprStream.validate(validationContext);
-        }
-        catch (ExprValidationException ex)
-        {
-            if (streamFound)
-            {
-                throw ex;
-            }
-            throw existingException;
-        }
-
-        return exprStream;
     }
 
     private static ExprNode resolveAsStreamName(ExprIdentNode identNode, ExprValidationException existingException, ExprValidationContext validationContext)

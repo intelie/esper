@@ -9,10 +9,9 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.collection.Pair;
-import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.datetime.DatetimeMethodEnum;
 import com.espertech.esper.epl.datetime.ExprDotEvalDTFactory;
+import com.espertech.esper.epl.datetime.ExprDotEvalDTMethodDesc;
 import com.espertech.esper.epl.enummethod.dot.*;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.map.MapEventType;
@@ -25,16 +24,18 @@ import java.util.*;
 
 public class ExprDotNodeUtility
 {
-    public static UniformPair<ExprDotEval[]> getChainEvaluators(ExprDotEvalTypeInfo inputType,
+    public static ExprDotNodeRealizedChain getChainEvaluators(ExprDotEvalTypeInfo inputType,
                                                    List<ExprChainedSpec> chainSpec,
                                                    ExprValidationContext validationContext,
-                                                   boolean isDuckTyping)
+                                                   boolean isDuckTyping,
+                                                   ExprDotNodeFilterAnalyzerInput inputDesc)
             throws ExprValidationException
     {
         List<ExprDotEval> methodEvals = new ArrayList<ExprDotEval>();
         ExprDotEvalTypeInfo currentInputType = inputType;
         EnumMethodEnum lastLambdaFunc = null;
         ExprChainedSpec lastElement = chainSpec.isEmpty() ? null : chainSpec.get(chainSpec.size() - 1);
+        ExprDotNodeFilterAnalyzerDTIntervalDesc datetimeIntervalFilterDesc = null;
 
         Deque<ExprChainedSpec> chainSpecStack = new ArrayDeque<ExprChainedSpec>(chainSpec);
         while (!chainSpecStack.isEmpty()) {
@@ -84,12 +85,13 @@ public class ExprDotNodeUtility
             // resolve datetime
             if (DatetimeMethodEnum.isDateTimeMethod(chainElement.getName())) {
                 DatetimeMethodEnum datetimeMethod = DatetimeMethodEnum.fromName(chainElement.getName());
-                Pair<ExprDotEval, ExprDotEvalTypeInfo> pair = ExprDotEvalDTFactory.validateMake(chainSpecStack, datetimeMethod, chainElement.getName(), currentInputType, chainElement.getParameters());
-                currentInputType = pair.getSecond();
+                ExprDotEvalDTMethodDesc datetimeImpl = ExprDotEvalDTFactory.validateMake(validationContext.getStreamTypeService().getEventTypes(), chainSpecStack, datetimeMethod, chainElement.getName(), currentInputType, chainElement.getParameters(), inputDesc);
+                currentInputType = datetimeImpl.getReturnType();
                 if (currentInputType == null) {
                     throw new IllegalStateException("Date-time method '" + chainElement.getName() + "' has not returned type information");
                 }
-                methodEvals.add(pair.getFirst());
+                methodEvals.add(datetimeImpl.getEval());
+                datetimeIntervalFilterDesc = datetimeImpl.getIntervalFilterDesc();
                 continue;
             }
 
@@ -171,7 +173,7 @@ public class ExprDotNodeUtility
         }
 
         ExprDotEval[] unpackingEvals = methodEvals.toArray(new ExprDotEval[methodEvals.size()]);
-        return new UniformPair<ExprDotEval[]>(intermediateEvals, unpackingEvals);
+        return new ExprDotNodeRealizedChain(intermediateEvals, unpackingEvals, datetimeIntervalFilterDesc);
     }
 
     public static MapEventType makeTransientMapType(String enumMethod, String propertyName, Class type) {

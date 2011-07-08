@@ -1131,4 +1131,22 @@ public class ArrayAssertionUtil
         }
         return arr;
     }
+
+    public static void assertAllValuesSame(EventBean event, String[] fields, Object value) {
+        for (String field : fields) {
+            Assert.assertEquals("Field " + field, value, event.get(field));
+        }
+    }
+
+    public static void assertAllValuesSameExcept(EventBean event, String[] fields, Object value, String[] exceptions, Object exceptionValue) {
+        for (String field : fields) {
+            for (String exception : exceptions) {
+                if (field.equals(exception)) {
+                    continue;
+                }
+            }
+            Assert.assertEquals("Field " + field, value, event.get(field));
+        }
+        assertAllValuesSame(event, exceptions, exceptionValue);
+    }
 }
