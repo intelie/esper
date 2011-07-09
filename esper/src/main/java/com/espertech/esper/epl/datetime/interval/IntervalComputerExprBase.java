@@ -8,9 +8,9 @@ public abstract class IntervalComputerExprBase implements IntervalComputer {
     private final ExprEvaluator start;
     private final ExprEvaluator finish;
 
-    public IntervalComputerExprBase(ExprEvaluator start, ExprEvaluator finish) {
-        this.start = start;
-        this.finish = finish;
+    public IntervalComputerExprBase(IntervalStartEndParameterPair pair) {
+        this.start = pair.getStart().getEvaluator();
+        this.finish = pair.getEnd().getEvaluator();
     }
 
     public abstract boolean compute(long left, long leftDuration, long right, long rightDuration, long start, long end);
@@ -32,8 +32,8 @@ public abstract class IntervalComputerExprBase implements IntervalComputer {
         return compute(left, leftDuration, right, rightDuration, start, end);
     }
 
-    private static long toLong(Object value) {
-        double d = (Double) value;
+    public static long toLong(Object value) {
+        double d = ((Number) value).doubleValue();
         return (long) (d * 1000);
     }
 }

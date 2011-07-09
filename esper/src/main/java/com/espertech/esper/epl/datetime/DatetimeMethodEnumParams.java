@@ -55,4 +55,30 @@ public class DatetimeMethodEnumParams {
                         new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
                         new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null))
                     };
+
+    public static final DotMethodFP[] INTERVAL_DURING = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                    };
+
+    public static final DotMethodFP[] INTERVAL_FINISHES = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
+                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                    };
 }
