@@ -6,6 +6,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.datetime.DatetimeMethodEnum;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.type.RelationalOpEnum;
+import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -14,19 +15,26 @@ import java.util.List;
 public class IntervalOpImpl implements IntervalOp {
 
     private final ExprEvaluator evaluatorTimestamp;
-    private ExprEvaluator evaluatorDuration;
     private final Integer streamId;
     private final String timestampPropertyName;
+    private final IntervalOpEval intervalOpEval;
 
-    private final IntervalComputer intervalComputer;
+    public IntervalOpImpl(DatetimeMethodEnum method, String methodNameUse, EventType[] typesPerStream, List<ExprNode> expressions)
+        throws ExprValidationException {
 
-    public IntervalOpImpl(DatetimeMethodEnum method, EventType[] typesPerStream, List<ExprNode> expressions) {
+        ExprEvaluator evaluatorDuration = null;
+        Class timestampType;
 
         if (expressions.get(0) instanceof ExprStreamUnderlyingNode) {
             ExprStreamUnderlyingNode und = (ExprStreamUnderlyingNode) expressions.get(0);
             streamId = und.getStreamId();
             EventType type = typesPerStream[streamId];
             timestampPropertyName = type.getTimestampProperty();
+            if (timestampPropertyName == null) {
+                throw new ExprValidationException("For date-time method '" + methodNameUse + "' the first parameter is event type '" + type.getName() + "', however no timestamp property has been defined for this event type");
+            }
+
+            timestampType = type.getPropertyType(timestampPropertyName);
             EventPropertyGetter getter = type.getGetter(timestampPropertyName);
             evaluatorTimestamp = new ExprEvaluatorStreamLongProp(streamId, getter);
 
@@ -39,9 +47,44 @@ public class IntervalOpImpl implements IntervalOp {
             streamId = null;
             timestampPropertyName = null;
             evaluatorTimestamp = expressions.get(0).getExprEvaluator();
+            timestampType = evaluatorTimestamp.getType();
+
+            if (!JavaClassHelper.isDatetimeClass(evaluatorTimestamp.getType())) {
+                throw new ExprValidationException("For date-time method '" + methodNameUse + "' the first parameter expression returns '" + evaluatorTimestamp.getType() + "', however requires a Date, Calendar, Long-type return value or event (with timestamp)");
+            }
         }
 
-        intervalComputer = IntervalComputerFactory.make(method, expressions);
+        IntervalComputer intervalComputer = IntervalComputerFactory.make(method, expressions);
+
+        // evaluation without duration
+        if (evaluatorDuration == null) {
+            if (JavaClassHelper.isSubclassOrImplementsInterface(timestampType, Calendar.class)) {
+                intervalOpEval = new IntervalOpEvalCal(intervalComputer);
+            }
+            else if (JavaClassHelper.isSubclassOrImplementsInterface(timestampType, Date.class)) {
+                intervalOpEval = new IntervalOpEvalDate(intervalComputer);
+            }
+            else if (JavaClassHelper.getBoxedType(timestampType) == Long.class) {
+                intervalOpEval = new IntervalOpEvalLong(intervalComputer);
+            }
+            else {
+                throw new IllegalArgumentException("Invalid interval first parameter type '" + timestampType + "'");
+            }
+        }
+        else {
+            if (JavaClassHelper.isSubclassOrImplementsInterface(timestampType, Calendar.class)) {
+                intervalOpEval = new IntervalOpEvalCalDuration(intervalComputer, evaluatorDuration);
+            }
+            else if (JavaClassHelper.isSubclassOrImplementsInterface(timestampType, Date.class)) {
+                intervalOpEval = new IntervalOpEvalDateDuration(intervalComputer, evaluatorDuration);
+            }
+            else if (JavaClassHelper.getBoxedType(timestampType) == Long.class) {
+                intervalOpEval = new IntervalOpEvalLongDuration(intervalComputer, evaluatorDuration);
+            }
+            else {
+                throw new IllegalArgumentException("Invalid interval first parameter type '" + timestampType + "'");
+            }
+        }
     }
 
     public ExprDotNodeFilterAnalyzerDTIntervalDesc getFilterDesc(EventType[] typesPerStream, ExprDotNodeFilterAnalyzerInput inputDesc, String inputPropertyName) {
@@ -63,26 +106,105 @@ public class IntervalOpImpl implements IntervalOp {
             return parameter;
         }
 
-        long paramLong; // TODO this should not be if-then-else
-        if (parameter instanceof Long) {
-            paramLong = (Long) parameter;
+        return intervalOpEval.evaluate(ts, duration, parameter, eventsPerStream, isNewData, context);
+    }
+
+    public static interface IntervalOpEval {
+        public Object evaluate(long ts, long duration, Object parameter, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context);
+    }
+
+    public abstract static class IntervalOpEvalDateBase implements IntervalOpEval {
+        protected final IntervalComputer intervalComputer;
+
+        public IntervalOpEvalDateBase(IntervalComputer intervalComputer) {
+            this.intervalComputer = intervalComputer;
         }
-        else if (parameter instanceof Calendar) {
-            paramLong = ((Calendar) parameter).getTimeInMillis();
-        }
-        else {
-            paramLong = ((Date) parameter).getTime();
+    }
+
+    public static class IntervalOpEvalDate extends IntervalOpEvalDateBase {
+
+        public IntervalOpEvalDate(IntervalComputer intervalComputer) {
+            super(intervalComputer);
         }
 
-        long paramDuration = 0;
-        if (evaluatorDuration != null) {
+        public Object evaluate(long ts, long duration, Object parameter, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+            return intervalComputer.compute(ts, duration, ((Date) parameter).getTime(), 0, eventsPerStream, isNewData, context);
+        }
+    }
+
+    public static class IntervalOpEvalLong extends IntervalOpEvalDateBase {
+
+        public IntervalOpEvalLong(IntervalComputer intervalComputer) {
+            super(intervalComputer);
+        }
+
+        public Object evaluate(long ts, long duration, Object parameter, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+            return intervalComputer.compute(ts, duration, (Long) parameter, 0, eventsPerStream, isNewData, context);
+        }
+    }
+
+    public static class IntervalOpEvalCal extends IntervalOpEvalDateBase {
+
+        public IntervalOpEvalCal(IntervalComputer intervalComputer) {
+            super(intervalComputer);
+        }
+
+        public Object evaluate(long ts, long duration, Object parameter, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+            return intervalComputer.compute(ts, duration, ((Calendar) parameter).getTimeInMillis(), 0, eventsPerStream, isNewData, context);
+        }
+    }
+
+    public abstract static class IntervalOpEvalDateDurationBase implements IntervalOpEval {
+        protected final IntervalComputer intervalComputer;
+        private final ExprEvaluator evaluatorDuration;
+
+        protected IntervalOpEvalDateDurationBase(IntervalComputer intervalComputer, ExprEvaluator evaluatorDuration) {
+            this.intervalComputer = intervalComputer;
+            this.evaluatorDuration = evaluatorDuration;
+        }
+
+        public abstract Object evaluate(long ts, long duration, Object parameter, long durationParameter, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context);
+
+        public Object evaluate(long ts, long duration, Object parameter, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
             Object durationObj = evaluatorDuration.evaluate(eventsPerStream, isNewData, context);
             if (durationObj == null) {
                 return null;
             }
-            paramDuration = (Long) durationObj;
+            long paramDuration = (Long) durationObj;
+            return evaluate(ts, duration, parameter, paramDuration, eventsPerStream, isNewData, context);
+        }
+    }
+
+    public static class IntervalOpEvalDateDuration extends IntervalOpEvalDateDurationBase {
+
+        public IntervalOpEvalDateDuration(IntervalComputer intervalComputer, ExprEvaluator evaluatorDuration) {
+            super(intervalComputer, evaluatorDuration);
         }
 
-        return intervalComputer.compute(ts, duration, paramLong, paramDuration, eventsPerStream, isNewData, context);
+        public Object evaluate(long ts, long duration, Object parameter, long paramDuration, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+            return intervalComputer.compute(ts, duration, ((Date) parameter).getTime(), paramDuration, eventsPerStream, isNewData, context);
+        }
+    }
+
+    public static class IntervalOpEvalLongDuration extends IntervalOpEvalDateDurationBase {
+
+        public IntervalOpEvalLongDuration(IntervalComputer intervalComputer, ExprEvaluator evaluatorDuration) {
+            super(intervalComputer, evaluatorDuration);
+        }
+
+        public Object evaluate(long ts, long duration, Object parameter, long paramDuration, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+            return intervalComputer.compute(ts, duration, (Long) parameter, paramDuration, eventsPerStream, isNewData, context);
+        }
+    }
+
+    public static class IntervalOpEvalCalDuration extends IntervalOpEvalDateDurationBase {
+
+        public IntervalOpEvalCalDuration(IntervalComputer intervalComputer, ExprEvaluator evaluatorDuration) {
+            super(intervalComputer, evaluatorDuration);
+        }
+
+        public Object evaluate(long ts, long duration, Object parameter, long paramDuration, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+            return intervalComputer.compute(ts, duration, ((Calendar) parameter).getTimeInMillis(), paramDuration, eventsPerStream, isNewData, context);
+        }
     }
 }

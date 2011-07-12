@@ -35,19 +35,20 @@ public enum DatetimeMethodEnum {
     GETYEAR("getYear", DatetimeMethodEnumStatics.reformatOpFactory, DatetimeMethodEnumParams.NOPARAM),
 
     // interval ops
-    BEFORE("before", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL),
-    AFTER("after", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL),
-    COINCIDES("coincides", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL), // TODO footprint is actually start and end thresholds
-    DURING("during", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_DURING),
-    INCLUDES("includes", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_DURING),
-    FINISHES("finishes", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_FINISHES),
-    FINISHEDBY("finishedBy", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_FINISHES),
-    MEETS("meets", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_FINISHES),
-    METBY("metBy", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_FINISHES),
-    OVERLAPS("overlaps", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_DURING),
-    OVERLAPPEDBY("overlappedBy", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_DURING),
-    STARTS("starts", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_FINISHES),
-    STARTEDBY("startedBy", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_FINISHES),
+    BEFORE("before", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_BEFORE_AFTER),
+    AFTER("after", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_BEFORE_AFTER),
+    COINCIDES("coincides", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_COINCIDES),
+    DURING("during", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_DURING_INCLUDES),
+    INCLUDES("includes", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_DURING_INCLUDES),
+    FINISHES("finishes", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_FINISHES_FINISHEDBY),
+    FINISHEDBY("finishedBy", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_FINISHES_FINISHEDBY),
+    MEETS("meets", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_MEETS_METBY),
+    METBY("metBy", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_MEETS_METBY),
+
+    OVERLAPS("overlaps", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_DURING_OVERLAPS_OVERLAPBY),
+    OVERLAPPEDBY("overlappedBy", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_DURING_OVERLAPS_OVERLAPBY),
+    STARTS("starts", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_STARTS_STARTEDBY),
+    STARTEDBY("startedBy", DatetimeMethodEnumStatics.intervalOpFactory, DatetimeMethodEnumParams.INTERVAL_STARTS_STARTEDBY),
     ;
 
     private final String nameCamel;

@@ -13,6 +13,7 @@ import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.PropertyResolutionDescriptor;
 import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.epl.datetime.DatetimeMethodEnum;
 import com.espertech.esper.epl.enummethod.dot.*;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.util.JavaClassHelper;
@@ -166,6 +167,7 @@ public class ExprDotNode extends ExprNodeBase implements ExprNodeInnerNodeProvid
                 }
 
                 ExprDotEval[] eventTypeMethodChain = null;
+                ExprValidationException enumDatetimeEx = null;
                 try {
                     ExprDotEvalTypeInfo typeInfo = ExprDotEvalTypeInfo.event(eventType);
                     ExprDotNodeRealizedChain chain = ExprDotNodeUtility.getChainEvaluators(typeInfo, remainderChain, validationContext, false, new ExprDotNodeFilterAnalyzerInputStream(prefixedStreamNumber));
@@ -173,6 +175,7 @@ public class ExprDotNode extends ExprNodeBase implements ExprNodeInnerNodeProvid
                     intervalFilterDesc = chain.getFilterAnalyzerDesc();
                 }
                 catch (ExprValidationException ex) {
+                    enumDatetimeEx = ex;
                     // expected - may not be able to find the methods on the underlying
                 }
 
@@ -183,7 +186,10 @@ public class ExprDotNode extends ExprNodeBase implements ExprNodeInnerNodeProvid
                     exprEvaluator = new ExprDotEvalStreamEventBean(prefixedStreamNumber, eventTypeMethodChain);
                 }
                 else {
-                    throw new ExprValidationException("Failed to solve '" + remainderChain.get(0).getName() + "' to either an instance method or method on the event: ", methodEx);
+                    if (ExprDotNodeUtility.isDatetimeOrEnumMethod(remainderChain.get(0).getName())) {
+                        throw enumDatetimeEx;
+                    }
+                    throw new ExprValidationException("Failed to solve '" + remainderChain.get(0).getName() + "' to either an date-time or enumeration method, an event property or a method on the event underlying object", methodEx);
                 }
             }
         }
@@ -312,7 +318,7 @@ public class ExprDotNode extends ExprNodeBase implements ExprNodeInnerNodeProvid
             return -1;
         }
         ExprChainedSpec spec = chainSpec.get(0);
-        if (!spec.isProperty()) {
+        if (spec.getParameters().size() > 0 && !spec.isProperty()) {
             return -1;
         }
         return streamTypeService.getStreamNumForStreamName(spec.getName());

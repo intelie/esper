@@ -44,41 +44,90 @@ public class DatetimeMethodEnumParams {
                     new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY)
             };
 
-    public static final DotMethodFP[] INTERVAL = new DotMethodFP[] {
+
+    /**
+     * Interval.
+     */
+
+    public static final String INPUT_INTERVAL = "timestamp or timestamped-event";
+    public static final String INPUT_INTERVAL_START = "interval start value";
+    public static final String INPUT_INTERVAL_FINISHES = "interval finishes value";
+
+    public static final DotMethodFP[] INTERVAL_BEFORE_AFTER = new DotMethodFP[] {
                     new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
-                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null)),
                     new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
-                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
-                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                        new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null),
+                        new DotMethodFPParam(INPUT_INTERVAL_START, DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null)),
                     new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
-                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
-                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
-                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null))
+                        new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null),
+                        new DotMethodFPParam(INPUT_INTERVAL_START, DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null),
+                        new DotMethodFPParam(INPUT_INTERVAL_FINISHES, DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null))
                     };
 
-    public static final DotMethodFP[] INTERVAL_DURING = new DotMethodFP[] {
+    public static final DotMethodFP[] INTERVAL_COINCIDES = new DotMethodFP[] {
                     new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
-                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null)),
                     new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
-                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
-                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                        new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null),
+                        new DotMethodFPParam("threshold for start and end value", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null)),
                     new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
-                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
-                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
-                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
-                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
-                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
-                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
-                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
-                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
-                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                        new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null),
+                        new DotMethodFPParam("threshold for start value", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null),
+                        new DotMethodFPParam("threshold for end value", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null))
                     };
 
-    public static final DotMethodFP[] INTERVAL_FINISHES = new DotMethodFP[] {
+    public static final DotMethodFP[] INTERVAL_DURING_INCLUDES = new DotMethodFP[] {
                     new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
-                            new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null)),
                     new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
-                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null),
-                        new DotMethodFPParam("a TODO", DotMethodFPParamTypeEnum.ANY, null)),
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("maximum distance interval both start and end", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null)),
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("minimum distance interval both start and end", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null),
+                            new DotMethodFPParam("maximum distance interval both start and end", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null)),
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("minimum distance start", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null),
+                            new DotMethodFPParam("maximum distance start", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null),
+                            new DotMethodFPParam("minimum distance end", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null),
+                            new DotMethodFPParam("maximum distance end", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null)),
+                    };
+
+    public static final DotMethodFP[] INTERVAL_DURING_OVERLAPS_OVERLAPBY = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null)),
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("maximum distance interval both start and end", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null)),
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("minimum distance interval both start and end", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null),
+                            new DotMethodFPParam("maximum distance interval both start and end", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null)),
+                    };
+
+    public static final DotMethodFP[] INTERVAL_FINISHES_FINISHEDBY = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null)),
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("maximum distance between end timestamps", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null)),
+                    };
+
+    public static final DotMethodFP[] INTERVAL_STARTS_STARTEDBY = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null)),
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("maximum distance between start timestamps", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null)),
+                    };
+
+    public static final DotMethodFP[] INTERVAL_MEETS_METBY = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null)),
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                            new DotMethodFPParam(INPUT_INTERVAL, DotMethodFPParamTypeEnum.ANY, null),
+                            new DotMethodFPParam("maximum distance between start and end timestamps", DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC, null)),
                     };
 }

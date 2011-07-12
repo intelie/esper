@@ -24,21 +24,18 @@ public class ExprDotEvalDTFactory {
     {
         // verify input
         String inputPropertyName = null;
+        String message = "Date-time enumeration method '" + dtMethodName + "' requires either a Calendar, Date or long value as input or events of an event type that declares a timestamp property";
         if (inputType.getEventType() != null) {
             if (inputType.getEventType().getTimestampProperty() == null) {
-                String message = "Date-time enumeration method '" + dtMethodName + "' requires an event type as input that declares a timestamp property";
                 throw new ExprValidationException(message);
             }
             inputPropertyName = inputType.getEventType().getTimestampProperty();
         }
         else {
-            String message = "Date-time enumeration method '" + dtMethodName + "' requires a scalar input value of type Calendar, Date or long";
             if (!inputType.isScalar() || inputType.getScalar() == null) {
                 throw new ExprValidationException(message);
             }
-            if ((!JavaClassHelper.isSubclassOrImplementsInterface(inputType.getScalar(), Calendar.class)) &&
-                (!JavaClassHelper.isSubclassOrImplementsInterface(inputType.getScalar(), Date.class)) &&
-                (JavaClassHelper.getBoxedType(inputType.getScalar()) != Long.class)) {
+            if (!JavaClassHelper.isDatetimeClass(inputType.getScalar())) {
                 throw new ExprValidationException(message + " but received " + JavaClassHelper.getClassNameFullyQualPretty(inputType.getScalar()));
             }
         }
@@ -89,25 +86,17 @@ public class ExprDotEvalDTFactory {
             currentMethod = DatetimeMethodEnum.fromName(next.getName());
             currentParameters = next.getParameters();
             currentMethodName = next.getName();
+
+            if ((reformatOp != null || intervalOp != null)) {
+                throw new ExprValidationException("Invalid input for date-time method '" + next.getName() + "'");
+            }
         }
 
         ExprDotEval dotEval;
         ExprDotEvalTypeInfo returnType;
 
-        if (!calendarOps.isEmpty() && reformatOp == null && intervalOp == null) {
-            dotEval = new ExprDotEvalDTCalendarOps(inputType.getScalar(), calendarOps);
-            returnType = dotEval.getTypeInfo();
-        }
-        else {
-            if (calendarOps.isEmpty() && (reformatOp != null || intervalOp != null)) {
-                dotEval = new ExprDotEvalDTReformatIntervalOnly(dtMethodName, reformatOp, intervalOp);
-                returnType = dotEval.getTypeInfo();
-            }
-            else {
-                dotEval = new ExprDotEvalDTCalOpsReformatInterval(dtMethodName, reformatOp, intervalOp, calendarOps);
-                returnType = dotEval.getTypeInfo();
-            }
-        }
+        dotEval = new ExprDotEvalDT(calendarOps, reformatOp, intervalOp, inputType.getScalar(), inputType.getEventType());
+        returnType = dotEval.getTypeInfo();
         return new ExprDotEvalDTMethodDesc(dotEval, returnType, intervalFilterDesc);
     }
 

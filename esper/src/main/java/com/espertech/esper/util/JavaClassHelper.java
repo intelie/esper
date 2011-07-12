@@ -1597,4 +1597,16 @@ public class JavaClassHelper
             "' passing parameters " + parameters +
             " for statement '" + statementName + "': " + e.getTargetException().getClass().getSimpleName() + " : " + e.getTargetException().getMessage();
     }
+
+    public static boolean isDatetimeClass(Class inputType) {
+        if (inputType == null) {
+            return false;
+        }
+        if ((!JavaClassHelper.isSubclassOrImplementsInterface(inputType, Calendar.class)) &&
+            (!JavaClassHelper.isSubclassOrImplementsInterface(inputType, Date.class)) &&
+            (JavaClassHelper.getBoxedType(inputType) != Long.class)) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -20,7 +20,7 @@ public class DotMethodFP {
         return params;
     }
 
-    public String toStringFootprint() {
+    public String toStringFootprint(boolean isLambdaApplies) {
         if (params.length == 0) {
             return "no parameters";
         }
@@ -29,14 +29,19 @@ public class DotMethodFP {
         for (DotMethodFPParam param : params) {
             buf.append(delimiter);
 
-            if (param.getLambdaParamNum() == 0) {
-                buf.append("an (non-lambda)");
-            }
-            else if (param.getLambdaParamNum() == 1) {
-                buf.append("a lambda");
+            if (isLambdaApplies) {
+                if (param.getLambdaParamNum() == 0) {
+                    buf.append("an (non-lambda)");
+                }
+                else if (param.getLambdaParamNum() == 1) {
+                    buf.append("a lambda");
+                }
+                else {
+                    buf.append("a " + param.getLambdaParamNum() + "-parameter lambda");
+                }
             }
             else {
-                buf.append("a " + param.getLambdaParamNum() + "-parameter lambda");
+                buf.append("an");
             }
             buf.append(" expression");
             buf.append(" providing ");
@@ -46,27 +51,36 @@ public class DotMethodFP {
         return buf.toString();
     }
 
-    public static String toStringProvided(DotMethodFPProvided provided) {
+    public static String toStringProvided(DotMethodFPProvided provided, boolean isLambdaApplies) {
         if (provided.getParams().length == 0) {
             return "no parameters";
         }
         StringWriter buf = new StringWriter();
         String delimiter = "";
-        for (DotMethodFPProvidedParam param : provided.getParams()) {
-            buf.append(delimiter);
 
-            if (param.getLambdaParamNum() == 0) {
-                buf.append("an (non-lambda)");
-            }
-            else if (param.getLambdaParamNum() == 1) {
-                buf.append("a lambda");
-            }
-            else {
-                buf.append("a " + param.getLambdaParamNum() + "-parameter lambda");
-            }
-            buf.append(" expression");
-            delimiter = " and ";
+        if (!isLambdaApplies) {
+            buf.append(Integer.toString(provided.getParams().length));
+            buf.append(" expressions");
         }
+        else {
+
+            for (DotMethodFPProvidedParam param : provided.getParams()) {
+                buf.append(delimiter);
+
+                if (param.getLambdaParamNum() == 0) {
+                    buf.append("an (non-lambda)");
+                }
+                else if (param.getLambdaParamNum() == 1) {
+                    buf.append("a lambda");
+                }
+                else {
+                    buf.append("a " + param.getLambdaParamNum() + "-parameter lambda");
+                }
+                buf.append(" expression");
+                delimiter = " and ";
+            }
+        }
+
         return buf.toString();
     }
 

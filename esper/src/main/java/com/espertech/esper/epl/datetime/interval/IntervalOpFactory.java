@@ -12,7 +12,8 @@ import java.util.List;
 public class IntervalOpFactory implements OpFactory {
     public IntervalOp getOp(EventType[] typesPerStream, DatetimeMethodEnum method, String methodNameUsed, List<ExprNode> parameters, ExprEvaluator[] evaluators)
         throws ExprValidationException {
-        return new IntervalOpImpl(method, typesPerStream, parameters);
+
+        return new IntervalOpImpl(method, methodNameUsed, typesPerStream, parameters);
     }
 
 }

@@ -259,9 +259,13 @@
 			</para>
 			
 			<para>
-				The input value can be any expression or event property that returns a value of type long or <literal>java.util.Calendar</literal> or <literal>java.util.Date</literal>. If the input value is a long-type millisecond value, the output is also a long-type millisecond value. If the input is a <literal>Calendar</literal>-type value the output is also a <literal>Calendar</literal>-type value. If the input is a <literal>Date</literal>-type value the output is also a <literal>Date</literal>-type value. If the input value is null, the expression result is also null.
+				The input value can be any expression or event property that returns a value of type long or <literal>java.util.Calendar</literal> or <literal>java.util.Date</literal>. If the input value is null, the expression result is also null.
 			</para>
 			
+			<para>
+				The input value can also be an event. In this case the event type of the event must have the timestamp special property defined and optionally also the duration special property. 
+			</para>
+
 			<para>
 				The following example EPL statement employs the <literal>withTime</literal> date-time method. This example returns the current engine time with the time-part set to 1 am:
 			</para>
@@ -287,17 +291,22 @@ from MyEvent]]></programlisting>
 			<programlisting><![CDATA[select timeTaken.roundFloor('min') as timeTakenRounded from RFIDEvent]]></programlisting>
 			
 			<para>
-			   For comparing date-time values we recommend comparing millisecond values using the <literal>between</literal> or <literal>in</literal> ranges and inverted ranges or relational operators (<literal>&gt; , &lt;, &gt;=, &lt;=)</literal>.
+				You may apply a date-time method to events. This examples assumes that the RFIDEvent and WifiEvent event types both have a timestamp property defined. The EPL compares the timestamps of the RFIDEvent and the WifiEvent: 
+			</para>			
+			<programlisting><![CDATA[select rfid.after(wifi) as isAfter from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programlisting>
+
+			<para>
+			   For comparing date-time values and considering duration we recommend any of the interval algebra methods. You may also compare millisecond values using the <literal>between</literal> or <literal>in</literal> ranges and inverted ranges or relational operators (<literal>&gt; , &lt;, &gt;=, &lt;=)</literal>.
 			</para>
+						
 			<para>
 				From a performance perspective, the date-time method evaluation ensures that for each unique chain of date-time methods only a single calendar objects is copied or created when necessary.
-			</para>
-			
+			</para>			
 		</sect2>
 	</sect1>
 
-	<sect1 id="datetime-method">
-		<title>Reference</title>
+	<sect1 id="datetime-method-calref">
+		<title>Calendar and Formatting Reference</title>
 		
 		<sect2 id="datetime-method-format">
 		  <title>Format</title>
@@ -628,6 +637,154 @@ from MyEvent]]></programlisting>
 			</para>
 			<programlisting>select timeTaken.toMillisec() as timeTakenLong from RFIDEvent</programlisting>
 		</sect2>
+	</sect1>
+
+	<sect1 id="datetime-method-intervalref">
+		<title>Interval Algebra Reference</title>
+
+		<para>
+			Interval algebra methods compare start and end timestamps of events or timestamps in general. For an event with zero (0) duration the start and end timestamp of the event is the same. 
+		</para>
+		
+		<para>
+		  When expression input or parameter is only a timestamp value, such as a long-type value or a <literal>Date</literal> or <literal>Calendar</literal> object, the duration is zero and the start and end timestamp represented by that value are the same.
+		</para>
+		
+		<para>
+		  When expression input or parameter is an event that has the special timestamp property and the special duration property declared, the timestamp and duration are taken from the event. 
+		</para>
+		
+		<para>
+			Interval algebra methods all return <literal>Boolean</literal>-type value. When the input value is null or the value of the first parameter (the compare-to timestamp and duration) are null, the result value is null.
+		</para>
+		
+		<sect2 id="datetime-method-after">
+		  <title>After</title>
+		  
+		  	<para>
+				The <literal>after</literal> date-time method compares the input value's start timestamp and the first parameter's end timestamp.
+			</para>
+			
+			<para>
+				If used with one parameter, for example in <literal>a.after(b)</literal>, the method returns true if A starts after B ends. The engine applies the formula <literal>a.startTimestamp - b.endTimeStamp &gt; 0</literal>.
+			</para>
+
+			<para>
+				If providing two parameters, for example in <literal>a.after(b, 5 sec)</literal>, the method returns true if A starts at least 5 seconds after B ends. The engine applies the formula <literal>a.startTimestamp - b.endTimeStamp &gt;= N</literal>.
+			</para>
+
+			<para>
+				If providing three parameters, for example in <literal>a.after(b, 5 sec, 10 sec)</literal>, the method returns true if A starts at least 5 seconds but no more then 10 seconds after B ends. The engine applies the formula <literal>MIN &lt;= a.startTimestamp - b.endTimeStamp &lt;= MAX</literal>.
+			</para>
+		</sect2>
+				
+		<sect2 id="datetime-method-before">
+		  <title>Before</title>
+		  	<para>
+				The <literal>before</literal> date-time method compares the input value's end timestamp and the first parameter's start timestamp.
+			</para>
+			
+			<para>
+				If used with one parameter, for example in <literal>a.before(b)</literal>, the method returns true if A ends before B starts. The engine applies the formula <literal>b.startTimestamp - a.endTimeStamp &gt; 0</literal>.
+			</para>
+
+			<para>
+				If providing two parameters, for example in <literal>a.before(b, 5 sec)</literal>, the method returns true if A ends at least 5 seconds before B starts. The engine applies the formula <literal>b.startTimestamp - a.endTimeStamp &gt;= N</literal>.
+			</para>
+
+			<para>
+				If providing three parameters, for example in <literal>a.before(b, 5 sec, 10 sec)</literal>, the method returns true if A ends at least 5 seconds but no more then 10 seconds before B starts. The engine applies the formula <literal>MIN &lt;= a.startTimestamp - b.endTimeStamp &lt;= MAX</literal>.
+			</para>
+		</sect2>
+		
+		<sect2 id="datetime-method-coincides">
+		  <title>Coincides</title>
+		  	<para>
+				The <literal>coincides</literal> date-time method compares the input value's end timestamp and the first parameter's start timestamp.
+			</para>
+			
+			<para>
+				If used with one parameter, for example in <literal>a.before(b)</literal>, the method returns true if A ends before B starts. The engine applies the formula <literal>b.startTimestamp - a.endTimeStamp &gt; 0</literal>.
+			</para>
+
+			<para>
+				If providing two parameters, for example in <literal>a.before(b, 5 sec)</literal>, the method returns true if A ends at least 5 seconds before B starts. The engine applies the formula <literal>b.startTimestamp - a.endTimeStamp &gt;= N</literal>.
+			</para>
+
+			<para>
+				If providing three parameters, for example in <literal>a.before(b, 5 sec, 10 sec)</literal>, the method returns true if A ends at least 5 seconds but no more then 10 seconds before B starts. The engine applies the formula <literal>MIN &lt;= a.startTimestamp - b.endTimeStamp &lt;= MAX</literal>.
+			</para>
+		</sect2>
+		
+		<sect2 id="datetime-method-during">
+		  <title>During</title>
+		  	<para>
+				The <literal>during</literal> date-time method ......
+			</para>
+		</sect2>
+		
+		<sect2 id="datetime-method-finishes">
+		  <title>Finishes</title>
+		  	<para>
+				The <literal>finishes</literal> date-time method ......
+			</para>
+		</sect2>
+		
+		<sect2 id="datetime-method-finishedby">
+		  <title>Finished By</title>
+		  	<para>
+				The <literal>finishedBy</literal> date-time method ......
+			</para>
+		</sect2>
+		
+		<sect2 id="datetime-method-includes">
+		  <title>Includes</title>
+		  	<para>
+				The <literal>includes</literal> date-time method ......
+			</para>
+		</sect2>
+		
+		<sect2 id="datetime-method-meets">
+		  <title>Meets</title>
+		  	<para>
+				The <literal>meets</literal> date-time method ......
+			</para>
+		</sect2>
+		
+		<sect2 id="datetime-method-metby">
+		  <title>Met By</title>
+		  	<para>
+				The <literal>metBy</literal> date-time method ......
+			</para>
+		</sect2>
+		
+		<sect2 id="datetime-method-overlaps">
+		  <title>Overlaps</title>
+		  	<para>
+				The <literal>overlaps</literal> date-time method ......
+			</para>
+		</sect2>
+		
+		<sect2 id="datetime-method-overlappedby">
+		  <title>Overlapped By</title>
+		  	<para>
+				The <literal>overlappedBy</literal> date-time method ......
+			</para>
+		</sect2>
+
+		<sect2 id="datetime-method-starts">
+		  <title>Starts</title>
+		  	<para>
+				The <literal>starts</literal> date-time method ......
+			</para>
+		</sect2>
+		
+		<sect2 id="datetime-method-startedby">
+		  <title>Started By</title>
+		  	<para>
+				The <literal>startedby</literal> date-time method ......
+			</para>
+		</sect2>		
 	</sect1>
 
 </chapter>

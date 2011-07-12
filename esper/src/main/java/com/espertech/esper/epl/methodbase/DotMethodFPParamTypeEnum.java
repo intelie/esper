@@ -5,5 +5,6 @@ public enum DotMethodFPParamTypeEnum {
     BOOLEAN,
     NUMERIC,
     ANY,
-    SPECIFIC
+    SPECIFIC,
+    TIME_PERIOD_OR_SEC
 }

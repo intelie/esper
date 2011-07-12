@@ -201,7 +201,7 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
         ExprEvaluator filterEvaluator = filter.getExprEvaluator();
         DotMethodFPParamTypeEnum expectedType = footprint.getParams()[parameterNum].getType();
         // Lambda-methods don't use a specific expected return-type, so passing null for type is fine.
-        DotMethodUtil.validateSpecificType(enumMethodUsedName, DotMethodTypeEnum.ENUM, expectedType, null, filterEvaluator.getType(), parameterNum);
+        DotMethodUtil.validateSpecificType(enumMethodUsedName, DotMethodTypeEnum.ENUM, expectedType, null, filterEvaluator.getType(), parameterNum, filter);
 
         int numStreamsIncoming = validationContext.getStreamTypeService().getEventTypes().length;
         return new ExprDotEvalParamLambda(parameterNum, filter, filterEvaluator,

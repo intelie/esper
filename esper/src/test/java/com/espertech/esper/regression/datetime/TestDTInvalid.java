@@ -29,27 +29,27 @@ public class TestDTInvalid extends TestCase {
 
         // invalid incompatible params
         epl = "select contained.set('hour', 1) from SupportBean_ST0_Container";
-        tryInvalid(epl, "Error starting statement: Date-time enumeration method 'set' requires a scalar input value of type Calendar, Date or long but received java.util.List [select contained.set('hour', 1) from SupportBean_ST0_Container]");
+        tryInvalid(epl, "Error starting statement: Date-time enumeration method 'set' requires either a Calendar, Date or long value as input or events of an event type that declares a timestamp property but received java.util.List [select contained.set('hour', 1) from SupportBean_ST0_Container]");
 
         // invalid incompatible params
         epl = "select window(*).set('hour', 1) from SupportBean.win:keepall()";
-        tryInvalid(epl, "Error starting statement: Date-time enumeration method 'set' requires a scalar input value of type Calendar, Date or long [select window(*).set('hour', 1) from SupportBean.win:keepall()]");
+        tryInvalid(epl, "Error starting statement: Date-time enumeration method 'set' requires either a Calendar, Date or long value as input or events of an event type that declares a timestamp property [select window(*).set('hour', 1) from SupportBean.win:keepall()]");
 
         // invalid incompatible params
         epl = "select utildate.set('invalid') from SupportDateTime";
-        tryInvalid(epl, "Error starting statement: Parameters mismatch for date-time method 'set', the method requires an (non-lambda) expression providing a string-type calendar field name and an (non-lambda) expression providing an integer-type value [select utildate.set('invalid') from SupportDateTime]");
+        tryInvalid(epl, "Error starting statement: Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value [select utildate.set('invalid') from SupportDateTime]");
 
         // invalid lambda parameter
         epl = "select utildate.set(x => true) from SupportDateTime";
-        tryInvalid(epl, "Error starting statement: Parameters mismatch for date-time method 'set', the method requires an (non-lambda) expression providing a string-type calendar field name and an (non-lambda) expression providing an integer-type value [select utildate.set(x => true) from SupportDateTime]");
+        tryInvalid(epl, "Error starting statement: Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value [select utildate.set(x => true) from SupportDateTime]");
 
         // invalid no parameter
         epl = "select utildate.set() from SupportDateTime";
-        tryInvalid(epl, "Error starting statement: Parameters mismatch for date-time method 'set', the method requires an (non-lambda) expression providing a string-type calendar field name and an (non-lambda) expression providing an integer-type value [select utildate.set() from SupportDateTime]");
+        tryInvalid(epl, "Error starting statement: Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value [select utildate.set() from SupportDateTime]");
 
         // invalid wrong parameter
         epl = "select utildate.set(1) from SupportDateTime";
-        tryInvalid(epl, "Error starting statement: Parameters mismatch for date-time method 'set', the method requires an (non-lambda) expression providing a string-type calendar field name and an (non-lambda) expression providing an integer-type value [select utildate.set(1) from SupportDateTime]");
+        tryInvalid(epl, "Error starting statement: Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value [select utildate.set(1) from SupportDateTime]");
     }
 
     private void tryInvalid(String epl, String message) {

@@ -19,14 +19,12 @@ import java.util.Map;
 public class TestDTDocSamples extends TestCase {
 
     private EPServiceProvider epService;
-    private SupportUpdateListener listener;
 
     public void setUp() {
 
         Configuration config = SupportConfigFactory.getConfiguration();
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-        listener = new SupportUpdateListener();
     }
 
     public void testInput() {

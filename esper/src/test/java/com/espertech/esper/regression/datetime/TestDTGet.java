@@ -1,10 +1,8 @@
 package com.espertech.esper.regression.datetime;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportDateTime;
+import com.espertech.esper.support.bean.SupportTimeDurationA;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -28,18 +26,32 @@ public class TestDTGet extends TestCase {
     public void testInput() {
 
         String[] fields = "val0,val1,val2".split(",");
-        String eplFragment = "select " +
+        String epl = "select " +
                 "utildate.get('month') as val0," +
                 "msecdate.get('month') as val1," +
                 "caldate.get('month') as val2" +
                 " from SupportDateTime";
-        EPStatement stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
-        stmtFragment.addListener(listener);
-        LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{Integer.class, Integer.class, Integer.class});
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmt.getEventType(), fields, new Class[]{Integer.class, Integer.class, Integer.class});
 
         String startTime = "2002-05-30T09:00:00.000";
         epService.getEPRuntime().sendEvent(SupportDateTime.make(startTime));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {4, 4, 4});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{4, 4, 4});
+
+        // try event as input
+        ConfigurationEventTypeLegacy configBean = new ConfigurationEventTypeLegacy();
+        configBean.setTimestampProperty("msecdate");
+        configBean.setDurationProperty("duration");
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportTimeDurationA", SupportTimeDurationA.class.getName(), configBean);
+
+        stmt.destroy();
+        epl = "select abc.get('month') as val0 from SupportTimeDurationA as abc";
+        stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(SupportTimeDurationA.make(startTime, 0));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "val0".split(","), new Object[]{4});
     }
 
     public void testFields() {

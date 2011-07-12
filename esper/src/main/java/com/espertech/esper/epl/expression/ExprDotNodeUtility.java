@@ -24,6 +24,10 @@ import java.util.*;
 
 public class ExprDotNodeUtility
 {
+    public static boolean isDatetimeOrEnumMethod(String name) {
+        return EnumMethodEnum.isEnumerationMethod(name) || DatetimeMethodEnum.isDateTimeMethod(name);
+    }
+
     public static ExprDotNodeRealizedChain getChainEvaluators(ExprDotEvalTypeInfo inputType,
                                                    List<ExprChainedSpec> chainSpec,
                                                    ExprValidationContext validationContext,

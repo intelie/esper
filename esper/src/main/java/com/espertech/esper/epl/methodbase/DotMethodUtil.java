@@ -2,7 +2,8 @@ package com.espertech.esper.epl.methodbase;
 
 import com.espertech.esper.epl.enummethod.dot.ExprLambdaGoesNode;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprStreamUnderlyingNode;
+import com.espertech.esper.epl.expression.ExprTimePeriod;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.util.JavaClassHelper;
 
@@ -16,11 +17,11 @@ public class DotMethodUtil {
         List<DotMethodFPProvidedParam> params = new ArrayList<DotMethodFPProvidedParam>();
         for (ExprNode node : parameters) {
             if (!(node instanceof ExprLambdaGoesNode)) {
-                params.add(new DotMethodFPProvidedParam(0, node.getExprEvaluator().getType()));
+                params.add(new DotMethodFPProvidedParam(0, node.getExprEvaluator().getType(), node));
                 continue;
             }
             ExprLambdaGoesNode goesNode = (ExprLambdaGoesNode) node;
-            params.add(new DotMethodFPProvidedParam(goesNode.getGoesToNames().size(), null));
+            params.add(new DotMethodFPProvidedParam(goesNode.getGoesToNames().size(), null, goesNode));
         }
         return new DotMethodFPProvided(params.toArray(new DotMethodFPProvidedParam[params.size()]));
     }
@@ -28,6 +29,7 @@ public class DotMethodUtil {
     public static DotMethodFP validateParameters(DotMethodFP[] footprints, DotMethodTypeEnum methodType, String methodUsedName, DotMethodFPProvided providedFootprint)
         throws ExprValidationException
     {
+        boolean isLambdaApplies = DotMethodTypeEnum.ENUM == methodType;
         DotMethodFP found = null;
         DotMethodFP bestMatch = null;
         for (DotMethodFP footprint : footprints) {
@@ -65,25 +67,25 @@ public class DotMethodUtil {
         String message = "Parameters mismatch for " + methodType.getTypeName() + " method '" + methodUsedName + "', the method ";
         if (bestMatch != null) {
             StringWriter buf = new StringWriter();
-            buf.append(bestMatch.toStringFootprint());
+            buf.append(bestMatch.toStringFootprint(isLambdaApplies));
             buf.append(", but receives ");
-            buf.append(DotMethodFP.toStringProvided(providedFootprint));
+            buf.append(DotMethodFP.toStringProvided(providedFootprint, isLambdaApplies));
             throw new ExprValidationException(message + "requires " + buf.toString());
         }
 
         if (footprints.length == 1) {
-            throw new ExprValidationException(message + "requires " + footprints[0].toStringFootprint());
+            throw new ExprValidationException(message + "requires " + footprints[0].toStringFootprint(isLambdaApplies));
         }
         else {
             StringWriter buf = new StringWriter();
             String delimiter = "";
             for (DotMethodFP footprint : footprints) {
                 buf.append(delimiter);
-                buf.append(footprint.toStringFootprint());
+                buf.append(footprint.toStringFootprint(isLambdaApplies));
                 delimiter = ", or ";
             }
             throw new ExprValidationException(message + "has multiple footprints accepting " + buf +
-                    ", but receives " + DotMethodFP.toStringProvided(providedFootprint));
+                    ", but receives " + DotMethodFP.toStringProvided(providedFootprint, isLambdaApplies));
         }
     }
 
@@ -98,11 +100,11 @@ public class DotMethodUtil {
             if (found.getLambdaParamNum() > 0) {
                 continue;
             }
-            validateSpecificType(methodUsedName, type, found.getType(), found.getSpecificType(), provided.getReturnType(), i);
+            validateSpecificType(methodUsedName, type, found.getType(), found.getSpecificType(), provided.getReturnType(), i, provided.getExpression());
         }
     }
 
-    public static void validateSpecificType(String methodUsedName, DotMethodTypeEnum type, DotMethodFPParamTypeEnum expectedTypeEnum, Class expectedTypeClass, Class providedType, int parameterNum)
+    public static void validateSpecificType(String methodUsedName, DotMethodTypeEnum type, DotMethodFPParamTypeEnum expectedTypeEnum, Class expectedTypeClass, Class providedType, int parameterNum, ExprNode parameterExpression)
             throws ExprValidationException
     {
         String message = "Error validating " + type.getTypeName() + " method '" + methodUsedName + "', ";
@@ -117,6 +119,14 @@ public class DotMethodUtil {
             Class boxedProvidedType = JavaClassHelper.getBoxedType(providedType);
             if (!JavaClassHelper.isSubclassOrImplementsInterface(boxedProvidedType, boxedExpectedType)) {
                 throw new ExprValidationException(message + "expected a " + boxedExpectedType.getSimpleName() + "-type result for expression parameter " + parameterNum + " but received " + JavaClassHelper.getClassNameFullyQualPretty(providedType));
+            }
+        }
+        if (expectedTypeEnum == DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC) {
+            if (parameterExpression instanceof ExprTimePeriod || parameterExpression instanceof ExprStreamUnderlyingNode) {
+                return;
+            }
+            if (!(JavaClassHelper.isNumeric(providedType))) {
+                throw new ExprValidationException(message + "expected a time-period expression or a numeric-type result for expression parameter " + parameterNum + " but received " + JavaClassHelper.getClassNameFullyQualPretty(providedType));
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.espertech.esper.regression.datetime;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportDateTime;
 import com.espertech.esper.support.bean.SupportTimeDurationA;
 import com.espertech.esper.support.bean.SupportTimeDurationB;
@@ -30,25 +31,156 @@ public class TestDTIntervalOps extends TestCase {
     }
 
     // TODO
-    // test all other interval operators
-    // test first parameter to "before" could also be an absolute time or some other origin (i.e. bean property)
     // test configuration returns Date or Calendar object
     // test bean actually returns null for duration or timestamp
-    // test in conjuntion with reformat ops and calendar ops+reformace
-    // test outer join performance
     // test "a.getTime(xxx)" and "a.toCalendar()"
     // test "a.get(b.timestamp)"
-    // test "a.finishes(b, 5)" note the integer 5 means 5 seconds
 
     // TODO
-    // doc ConfigurationEventTypeLegacy "timestamp" and "duration" property names
+    // doc ConfigurationEventTypeLegacy "timestamp" and "duration" property names, all others
+    // all types of datetime expression
 
     // TODO
-    // invalid config: bean timestamp property config not found
-    // invalid mix of reformat ops and interval ops
-    // invalid not-configured used of timestamp: "a.before(b)" without timestamp expressions configured
-    // invalid "before" method zero params, 2 params without timestamps, string params, too many parameters
-    // invalid target param to "before": object.before, string.before
+    // remaining event types and their configs for timestamp and duration
+    // create-schema support for timestamp and duration
+
+    // TODO - performance
+    // all operators
+    // test outer join performance
+
+    public void testCalendarOps() {
+        String seedTime = "2002-05-30T9:00:00.000"; // seed is time for B
+
+        Object[][] expected = {
+                {"2999-01-01T9:00:00.001", 0, true},       // sending in A
+        };
+        assertExpression(seedTime, 0, "a.withDate(2001, 1, 1).before(b)", expected, null);
+
+        expected = new Object[][] {
+                {"2999-01-01T10:00:00.001", 0, false},
+                {"2999-01-01T8:00:00.001", 0, true},
+        };
+        assertExpression(seedTime, 0, "a.withDate(2001, 1, 1).before(b.withDate(2001, 1, 1))", expected, null);
+
+        // Test duration preserved when using calendar ops
+        // Test target preserves duration.
+        expected = new Object[][] {
+                {"2002-05-30T8:59:59.000", 2000, false},
+        };
+        assertExpression(seedTime, 0, "a.before(b)", expected, null);
+        expected = new Object[][] {
+                {"2002-05-30T8:59:59.000", 2000, false},
+        };
+        assertExpression(seedTime, 0, "a.withTime(8, 59, 59, 0).before(b)", expected, null);
+
+        // Test duration preserved when using calendar ops
+        // Parameter preserves duration.
+        expected = new Object[][] {
+                {"2002-05-30T9:00:01.000", 0, false},
+                {"2002-05-30T9:00:01.001", 0, true},
+        };
+        assertExpression(seedTime, 1000, "a.after(b)", expected, null);
+        assertExpression(seedTime, 0, "a.after(b.withTime(9, 0, 0, 0))", expected, null);   // the "b.withTime(...) must retain the duration
+    }
+
+    public void testInvalid() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class.getName());
+
+        // wrong 1st parameter - string
+        tryInvalid("select a.before('x') from A as a",
+                   "Error starting statement: Failed to resolve enumeration method, date-time method or mapped property 'a.before('x')': For date-time method 'before' the first parameter expression returns 'class java.lang.String', however requires a Date, Calendar, Long-type return value or event (with timestamp) [select a.before('x') from A as a]");
+
+        // wrong 1st parameter - event not defined with timestamp expression
+        tryInvalid("select a.before(b) from A.std:lastevent() as a, SupportBean.std:lastevent() as b",
+                   "Error starting statement: For date-time method 'before' the first parameter is event type 'SupportBean', however no timestamp property has been defined for this event type [select a.before(b) from A.std:lastevent() as a, SupportBean.std:lastevent() as b]");
+
+        // wrong 1st parameter - boolean
+        tryInvalid("select a.before(true) from A.std:lastevent() as a, SupportBean.std:lastevent() as b",
+                   "Error starting statement: For date-time method 'before' the first parameter expression returns 'class java.lang.Boolean', however requires a Date, Calendar, Long-type return value or event (with timestamp) [select a.before(true) from A.std:lastevent() as a, SupportBean.std:lastevent() as b]");
+
+        // wrong zero parameters
+        tryInvalid("select a.before() from A.std:lastevent() as a, SupportBean.std:lastevent() as b",
+                   "Error starting statement: Parameters mismatch for date-time method 'before', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing interval start value, or an expression providing timestamp or timestamped-event and an expression providing interval start value and an expression providing interval finishes value, but receives no parameters [select a.before() from A.std:lastevent() as a, SupportBean.std:lastevent() as b]");
+
+        // wrong target
+        tryInvalid("select string.before(a) from A.std:lastevent() as a, SupportBean.std:lastevent() as b",
+                   "Error starting statement: Date-time enumeration method 'before' requires either a Calendar, Date or long value as input or events of an event type that declares a timestamp property but received java.lang.String [select string.before(a) from A.std:lastevent() as a, SupportBean.std:lastevent() as b]");
+        tryInvalid("select b.before(a) from A.std:lastevent() as a, SupportBean.std:lastevent() as b",
+                   "Error starting statement: Date-time enumeration method 'before' requires either a Calendar, Date or long value as input or events of an event type that declares a timestamp property [select b.before(a) from A.std:lastevent() as a, SupportBean.std:lastevent() as b]");
+        tryInvalid("select a.get('month').before(a) from A.std:lastevent() as a, SupportBean.std:lastevent() as b",
+                   "Error starting statement: Invalid input for date-time method 'before' [select a.get('month').before(a) from A.std:lastevent() as a, SupportBean.std:lastevent() as b]");
+
+        // test before/after
+        tryInvalid("select a.before(b, 'abc') from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: Error validating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 1 but received java.lang.String [select a.before(b, 'abc') from A.std:lastevent() as a, B.std:lastevent() as b]");
+        tryInvalid("select a.before(b, 1, 'def') from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: Error validating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 2 but received java.lang.String [select a.before(b, 1, 'def') from A.std:lastevent() as a, B.std:lastevent() as b]");
+        tryInvalid("select a.before(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: Parameters mismatch for date-time method 'before', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing interval start value, or an expression providing timestamp or timestamped-event and an expression providing interval start value and an expression providing interval finishes value, but receives 4 expressions [select a.before(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b]");
+
+        // test coincides
+        tryInvalid("select a.coincides(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: Parameters mismatch for date-time method 'coincides', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing threshold for start and end value, or an expression providing timestamp or timestamped-event and an expression providing threshold for start value and an expression providing threshold for end value, but receives 4 expressions [select a.coincides(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b]");
+
+        // test during+interval
+        tryInvalid("select a.during(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: Parameters mismatch for date-time method 'during', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance interval both start and end, or an expression providing timestamp or timestamped-event and an expression providing minimum distance interval both start and end and an expression providing maximum distance interval both start and end, or an expression providing timestamp or timestamped-event and an expression providing minimum distance start and an expression providing maximum distance start and an expression providing minimum distance end and an expression providing maximum distance end, but receives 4 expressions [select a.during(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b]");
+
+        // test finishes+finished-by
+        tryInvalid("select a.finishes(b, 1, 2) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: Parameters mismatch for date-time method 'finishes', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between end timestamps, but receives 3 expressions [select a.finishes(b, 1, 2) from A.std:lastevent() as a, B.std:lastevent() as b]");
+
+        // test meets+met-by
+        tryInvalid("select a.meets(b, 1, 2) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: Parameters mismatch for date-time method 'meets', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between start and end timestamps, but receives 3 expressions [select a.meets(b, 1, 2) from A.std:lastevent() as a, B.std:lastevent() as b]");
+
+        // test overlaps+overlapped-by
+        tryInvalid("select a.overlaps(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: Parameters mismatch for date-time method 'overlaps', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance interval both start and end, or an expression providing timestamp or timestamped-event and an expression providing minimum distance interval both start and end and an expression providing maximum distance interval both start and end, but receives 4 expressions [select a.overlaps(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b]");
+
+        // test start/startedby
+        tryInvalid("select a.starts(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: Parameters mismatch for date-time method 'starts', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between start timestamps, but receives 4 expressions [select a.starts(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b]");
+    }
+
+    public void testInvalidConfig() {
+        ConfigurationEventTypeLegacy configBean = new ConfigurationEventTypeLegacy();
+
+        configBean.setTimestampProperty("xyz");
+        tryInvalidConfig(configBean, "Declared timestamp property name 'xyz' was not found");
+
+        configBean.setTimestampProperty("longPrimitive");
+        configBean.setDurationProperty("xyz");
+        tryInvalidConfig(configBean, "Declared duration property name 'xyz' was not found");
+
+        configBean.setDurationProperty(null);
+        configBean.setTimestampProperty("string");
+        tryInvalidConfig(configBean, "Declared timestamp property does not return a Date, Calendar or long-typed value for property 'string'");
+
+        configBean.setTimestampProperty("longPrimitive");
+        configBean.setDurationProperty("string");
+        tryInvalidConfig(configBean, "Declared duration property does not return a long-typed value for property 'string'");
+    }
+
+    private void tryInvalidConfig(ConfigurationEventTypeLegacy config, String message) {
+        try {
+            epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class.getName(), config);
+            fail();
+        }
+        catch (ConfigurationException ex) {
+            assertEquals(message, ex.getMessage());
+        }
+    }
+
+    private void tryInvalid(String epl, String message) {
+        try {
+            epService.getEPAdministrator().createEPL(epl);
+            fail();
+        }
+        catch (EPStatementException ex) {
+            assertEquals(message, ex.getMessage());
+        }
+    }
 
     public void testBeforeInSelectClause() {
 
