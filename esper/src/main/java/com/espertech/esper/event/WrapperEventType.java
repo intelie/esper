@@ -70,7 +70,7 @@ public class WrapperEventType implements EventTypeSPI
         this.metadata = metadata;
 		this.underlyingEventType = eventType;
         EventTypeMetadata metadataMapType = EventTypeMetadata.createAnonymous(typeName);
-        this.underlyingMapType = new MapEventType(metadataMapType, typeName, 0, eventAdapterService, properties, null, null);
+        this.underlyingMapType = new MapEventType(metadataMapType, typeName, 0, eventAdapterService, properties, null, null, null);
         this.hashCode = underlyingMapType.hashCode() ^ underlyingEventType.hashCode();
         this.isNoMapProperties = properties.isEmpty();
         this.eventAdapterService = eventAdapterService;
@@ -97,13 +97,12 @@ public class WrapperEventType implements EventTypeSPI
 		this.propertyDesc = propertyDesc.toArray(new EventPropertyDescriptor[propertyDesc.size()]);
     }
 
-    // TODO - add property name
-    public String getTimestampProperty() {
-        return null;
+    public String getTimestampPropertyName() {
+        return null;    // Wrapper does not yet support timestamp property
     }
 
-    public String getDurationProperty() {
-        return null;
+    public String getDurationPropertyName() {
+        return null;    // Wrapper does not yet support duration
     }
 
     public Iterator<EventType> getDeepSuperTypes()

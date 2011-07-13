@@ -180,12 +180,28 @@ public class EPStatementStartMethod
             if (!spec.isVariant()) {
                 if (spec.getTypes().isEmpty()) {
                     Map<String, Object> typing = TypeBuilderUtil.buildType(spec.getColumns());
-                    eventType = services.getEventAdapterService().addNestableMapType(spec.getSchemaName(), typing, spec.getInherits(), false, false, true, false, false);
+                    ConfigurationEventTypeMap config = new ConfigurationEventTypeMap();
+                    if (spec.getInherits() != null) {
+                        config.getSuperTypes().addAll(spec.getInherits());
+                    }
+                    config.setTimestampPropertyName(spec.getTimestampProperty());
+                    config.setDurationPropertyName(spec.getDurationProperty());
+                    eventType = services.getEventAdapterService().addNestableMapType(spec.getSchemaName(), typing, config, false, false, true, false, false);
                 }
                 else {
                     if (spec.getTypes().size() == 1) {
                         String typeName = spec.getTypes().iterator().next();
                         try {
+                            // use the existing configuration, if any, possibly adding the timestamp and duration properties
+                            ConfigurationEventTypeLegacy config = services.getEventAdapterService().getClassLegacyConfigs(typeName);
+                            if (spec.getTimestampProperty() != null || spec.getDurationProperty() != null) {
+                                if (config == null) {
+                                    config = new ConfigurationEventTypeLegacy();
+                                }
+                                config.setTimestampProperty(spec.getTimestampProperty());
+                                config.setDurationProperty(spec.getDurationProperty());
+                                services.getEventAdapterService().setClassLegacyConfigs(Collections.singletonMap(typeName, config));
+                            }
                             eventType = services.getEventAdapterService().addBeanType(spec.getSchemaName(), spec.getTypes().iterator().next(), false, false, false, true);
                         }
                         catch (EventAdapterException ex) {
@@ -527,7 +543,7 @@ public class EPStatementStartMethod
         String exprNodeErrorMessage = "Aggregation functions may not be used within an merge-clause";
         for (OnTriggerMergeMatched matchedItem : mergeDesc.getItems()) {
 
-            EventType dummyTypeNoProperties = new MapEventType(EventTypeMetadata.createAnonymous("merge_named_window_insert"), "merge_named_window_insert", 0, null, Collections.<String, Object>emptyMap(), null, null);
+            EventType dummyTypeNoProperties = new MapEventType(EventTypeMetadata.createAnonymous("merge_named_window_insert"), "merge_named_window_insert", 0, null, Collections.<String, Object>emptyMap(), null, null, null);
             StreamTypeService twoStreamTypeSvc = new StreamTypeServiceImpl(new EventType[] {namedWindowType, triggerStreamType},
                     new String[] {namedWindowName, triggerStreamName}, new boolean[] {true, true}, statementContext.getEngineURI(), false);
             StreamTypeService insertOnlyTypeSvc = new StreamTypeServiceImpl(new EventType[] {dummyTypeNoProperties, triggerStreamType},

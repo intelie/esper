@@ -31,7 +31,7 @@ public class ExprDotEvalDT implements ExprDotEval
         }
         else {  // only calendar ops
             if (inputEventType != null) {
-                returnType = ExprDotEvalTypeInfo.scalarOrUnderlying(inputEventType.getPropertyType(inputEventType.getTimestampProperty()));
+                returnType = ExprDotEvalTypeInfo.scalarOrUnderlying(inputEventType.getPropertyType(inputEventType.getTimestampPropertyName()));
             }
             else {
                 returnType = ExprDotEvalTypeInfo.scalarOrUnderlying(inputType);
@@ -99,8 +99,8 @@ public class ExprDotEvalDT implements ExprDotEval
             throw new IllegalArgumentException("Invalid input type '" + inputType + "'");
         }
 
-        EventPropertyGetter getter = inputEventType.getGetter(inputEventType.getTimestampProperty());
-        Class getterResultType = inputEventType.getPropertyType(inputEventType.getTimestampProperty());
+        EventPropertyGetter getter = inputEventType.getGetter(inputEventType.getTimestampPropertyName());
+        Class getterResultType = inputEventType.getPropertyType(inputEventType.getTimestampPropertyName());
 
         if (reformatOp != null) {
             DTLocalEvaluator inner = getEvaluator(calendarOps, getterResultType, null, reformatOp, null);
@@ -112,13 +112,13 @@ public class ExprDotEvalDT implements ExprDotEval
         }
 
         // have interval ops but no duration
-        if (inputEventType.getDurationProperty() == null) {
+        if (inputEventType.getDurationPropertyName() == null) {
             DTLocalEvaluator inner = getEvaluator(calendarOps, getterResultType, null, null, intervalOp);
             return new DTLocalEvaluatorBeanIntervalNoDuration(getter, inner);
         }
 
         // interval ops and have duration
-        EventPropertyGetter getterDuration = inputEventType.getGetter(inputEventType.getDurationProperty());
+        EventPropertyGetter getterDuration = inputEventType.getGetter(inputEventType.getDurationPropertyName());
         DTLocalEvaluatorIntervalComp inner = (DTLocalEvaluatorIntervalComp) getEvaluator(calendarOps, getterResultType, null, null, intervalOp);
         return new DTLocalEvaluatorBeanIntervalWithDuration(getter, getterDuration, inner);
     }

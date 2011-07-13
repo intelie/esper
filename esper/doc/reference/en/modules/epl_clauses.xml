@@ -5082,7 +5082,9 @@ select * from TickEventWindow where symbol='GE' and buyPrice between 10 and 20]]
 				The synopsis of the <literal>create schema</literal> syntax providing property names and types is:
 			</para>
 			<synopsis>create schema <emphasis>schema_name</emphasis> [as] (<emphasis>property_name</emphasis> <emphasis>property_type</emphasis> [,<emphasis>property_name</emphasis> <emphasis>property_type</emphasis> [,...])
-  [inherits <emphasis>inherited_event_type</emphasis>[, <emphasis>inherited_event_type</emphasis>] [,...]]</synopsis>
+  [inherits <emphasis>inherited_event_type</emphasis>[, <emphasis>inherited_event_type</emphasis>] [,...]]
+  [timestamp <emphasis>timestamp_property_name</emphasis>]
+  [duration <emphasis>timestamp_property_name</emphasis>]</synopsis>
 
 			<para>				
 				The <emphasis>property_name</emphasis> is an identifier providing the event property name. The <emphasis>property_type</emphasis> is also required for each property. Valid property types are listed in <xref linkend="variable_create"/>
@@ -5108,9 +5110,19 @@ select * from TickEventWindow where symbol='GE' and buyPrice between 10 and 20]]
 			</orderedlist>
 
 			<para>
-				The optional <literal>inherits</literal> keywords may be used to provide a list of event types that are supertypes to the declared type.
+				The optional <literal>inherits</literal> keywords is followed by a comma-separated list of event type names that are the supertypes to the declared type.
 			</para>
 			
+			<para>
+				The optional <literal>timestamp</literal> keyword is followed by a property name. Use this to tell the engine that your event has a timestamp. The engine checks that the property name exists on the declared type and returns a date-time value.
+				Declare a timestamp property if you want your events to implicitly carry a timestamp value for convenient use with interval algebra methods as a start timestamp. 
+			</para>
+
+			<para>
+				The optional <literal>duration</literal> keyword is followed by a property name. Use this to tell the engine that your event has a duration (requires a timestamp as well).  The engine checks that the property name exists on the declared type and returns a long-type value.
+				Declare a duration property if you want your events to implicitly carry a duration value for convenient use with interval algebra methods to compute an end timestamp.
+			</para>
+
 			<para>
 				A few example event type declarations follow:
 			</para>
@@ -5125,7 +5137,10 @@ create schema AuthorizationEvent(group String, roles String[], hostinfo com.myco
 create schema CompositeEvent(group String, innerEvents SecurityEvent[])
 
 // Declare type WebPageVisitEvent that inherits all properties from PageHitEvent
-create schema WebPageVisitEvent(userId String) inherits PageHitEvent]]></programlisting>	
+create schema WebPageVisitEvent(userId String) inherits PageHitEvent
+
+// Declare a type with timestamp and duration taken from "ts" and from the "dur" property.
+create schema RoboticArmMovement (robotId string, ts long, dur long) timestamp ts duration dur]]></programlisting>	
 		</sect2>
 
 		<sect2 id="epl_createschema_class" revision="1">

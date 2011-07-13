@@ -74,7 +74,7 @@ public class TestSchema extends TestCase
                     "Error starting statement: Event type named 'MyEventType' has already been declared with differing column name or type information: Type by name 'MyEventType' expects 1 properties but receives 2 properties [create schema MyEventType as (col1 string, col2 string)]");
 
         tryInvalid("create schema MyEventType as () inherit ABC",
-                    "Error in expression: Expected 'inherits' keyword after create-schema clause but encountered 'inherit' [create schema MyEventType as () inherit ABC]");
+                    "Error in expression: Expected 'inherits', 'timestamp' or 'duration' keyword after create-schema clause but encountered 'inherit' [create schema MyEventType as () inherit ABC]");
 
         tryInvalid("create schema MyEventType as () inherits ABC",
                     "Error starting statement: Map supertype by name 'ABC' could not be found [create schema MyEventType as () inherits ABC]");

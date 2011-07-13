@@ -349,7 +349,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         Set<String> dependentMapOrder;
         try
         {
-            dependentMapOrder = GraphUtil.getTopDownOrder(configSnapshot.getMapSuperTypes());
+            dependentMapOrder = GraphUtil.getTopDownOrder(configSnapshot.getMapTypeConfigurations());
         }
         catch (GraphCircularDependencyException e)
         {
@@ -364,18 +364,18 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         {
             for (String mapName : dependentMapOrder)
             {
-                Set<String> superTypes = configSnapshot.getMapSuperTypes().get(mapName);
+                ConfigurationEventTypeMap mapConfig = configSnapshot.getMapTypeConfigurations().get(mapName);
                 Properties propertiesUnnested = mapNames.get(mapName);
                 if (propertiesUnnested != null)
                 {
                     Map<String, Object> propertyTypes = createPropertyTypes(propertiesUnnested);
-                    eventAdapterService.addNestableMapType(mapName, propertyTypes, superTypes, true, true, true, false, false);
+                    eventAdapterService.addNestableMapType(mapName, propertyTypes, mapConfig, true, true, true, false, false);
                 }
 
                 Map<String, Object> propertiesNestable = nestableMapNames.get(mapName);
                 if (propertiesNestable != null)
                 {
-                    eventAdapterService.addNestableMapType(mapName, propertiesNestable, superTypes, true, true, true, false, false);
+                    eventAdapterService.addNestableMapType(mapName, propertiesNestable, mapConfig, true, true, true, false, false);
                 }
             }
         }

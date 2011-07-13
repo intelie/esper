@@ -263,7 +263,7 @@ public class ExprDotNode extends ExprNodeBase implements ExprNodeInnerNodeProvid
                 }
                 catch(Exception e)
                 {
-                    String message = "Failed to resolve '" + firstItem.getName() + "' to a property or class name: " + e.getMessage();
+                    String message = "Failed to resolve '" + firstItem.getName() + "' to a property, stream or class name: " + e.getMessage();
                     throw new ExprValidationException(message, e);
                 }
 

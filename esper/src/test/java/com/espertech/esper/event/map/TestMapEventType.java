@@ -36,7 +36,7 @@ public class TestMapEventType extends TestCase
         testTypesMap.put("myComplexBean", SupportBeanComplexProps.class);
         testTypesMap.put("myNullableSupportBean", SupportBean.class);
         testTypesMap.put("myNullType", null);
-        eventType = new MapEventType(metadata, "", 1, eventAdapterService, testTypesMap, null, null);
+        eventType = new MapEventType(metadata, "", 1, eventAdapterService, testTypesMap, null, null, null);
     }
 
     public void testGetPropertyNames()
@@ -149,33 +149,33 @@ public class TestMapEventType extends TestCase
         mapTwo.put("mySupportBean", SupportBean.class);
         mapTwo.put("myNullableSupportBean", SupportBean.class);
         mapTwo.put("myComplexBean", SupportBeanComplexProps.class);
-        assertFalse((new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null)).equals(eventType));
+        assertFalse((new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null, null)).equals(eventType));
         mapTwo.put("myString", String.class);
         mapTwo.put("myNullableString", String.class);
         mapTwo.put("myNullType", null);
 
         // compare, should equal
-        assertEquals(new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null), eventType);
-        assertFalse((new MapEventType(metadata, "google", 1, eventAdapterService, mapTwo, null, null)).equals(eventType));
+        assertEquals(new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null, null), eventType);
+        assertFalse((new MapEventType(metadata, "google", 1, eventAdapterService, mapTwo, null, null, null)).equals(eventType));
 
         mapTwo.put("xx", int.class);
-        assertFalse(eventType.equals(new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null)));
+        assertFalse(eventType.equals(new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null, null)));
         mapTwo.remove("xx");
-        assertTrue(eventType.equals(new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null)));
+        assertTrue(eventType.equals(new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null, null)));
 
         mapTwo.put("myInt", Integer.class);
-        assertTrue(eventType.equals(new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null)));
+        assertTrue(eventType.equals(new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null, null)));
         mapTwo.remove("myInt");
-        assertFalse(eventType.equals(new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null)));
+        assertFalse(eventType.equals(new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null, null)));
         mapTwo.put("myInt", int.class);
-        assertTrue(eventType.equals(new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null)));
+        assertTrue(eventType.equals(new MapEventType(metadata, "", 1, eventAdapterService, mapTwo, null, null, null)));
 
         // Test boxed and primitive compatible
         Map<String, Object> mapOne = new LinkedHashMap<String, Object>();
         mapOne.put("myInt", int.class);
         mapTwo = new LinkedHashMap<String, Object>();
         mapTwo.put("myInt", Integer.class);
-        assertEquals(new MapEventType(metadata, "T1", 1, eventAdapterService, mapOne, null, null), new MapEventType(metadata, "T1", 1, eventAdapterService, mapTwo, null, null));
+        assertEquals(new MapEventType(metadata, "T1", 1, eventAdapterService, mapOne, null, null, null), new MapEventType(metadata, "T1", 1, eventAdapterService, mapTwo, null, null, null));
     }
 
     public void testGetFromMap()
@@ -222,7 +222,7 @@ public class TestMapEventType extends TestCase
         levelZero.put("nodefmap", Map.class);
         levelZero.put("map", levelOne);
 
-        MapEventType mapType = new MapEventType(null, "M1", 1, eventAdapterService, levelZero, null, null);
+        MapEventType mapType = new MapEventType(null, "M1", 1, eventAdapterService, levelZero, null, null, null);
         Map<String, Object> testData = getTestData();
         MapEventBean event = new MapEventBean(testData, mapType);
 

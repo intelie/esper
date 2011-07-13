@@ -37,7 +37,7 @@ public class TestMapEventBean extends TestCase
         testValuesMap.put("anInt", 10);
         testValuesMap.put("myComplexBean", supportBean);
 
-        eventType = new MapEventType(null, "", 1, SupportEventAdapterService.getService(), testTypesMap, null, null);
+        eventType = new MapEventType(null, "", 1, SupportEventAdapterService.getService(), testTypesMap, null, null, null);
         eventBean = new MapEventBean(testValuesMap, eventType);
     }
 

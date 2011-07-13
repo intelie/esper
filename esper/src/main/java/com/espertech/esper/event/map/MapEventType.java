@@ -47,6 +47,9 @@ public class MapEventType implements EventTypeSPI
     private Map<String, Pair<EventPropertyDescriptor, EventPropertyWriter>> propertyWriters;
     private EventPropertyDescriptor[] writablePropertyDescriptors;
 
+    private String timstampPropertyName;
+    private String durationPropertyName;
+
     private int hashCode;
 
     /**
@@ -67,7 +70,8 @@ public class MapEventType implements EventTypeSPI
                         EventAdapterService eventAdapterService,
                         Map<String, Object> propertyTypes,
                         EventType[] optionalSuperTypes,
-                        Set<EventType> optionalDeepSupertypes
+                        Set<EventType> optionalDeepSupertypes,
+                        ConfigurationEventTypeMap configMapType
                         )
     {
         this.metadata = metadata;
@@ -113,6 +117,12 @@ public class MapEventType implements EventTypeSPI
 
         // Copy parent properties to child
         copySuperTypes();
+
+        if (configMapType != null) {
+            timstampPropertyName = configMapType.getTimestampPropertyName();
+            durationPropertyName = configMapType.getDurationPropertyName();
+            EventTypeUtility.validateTimestampAndDuration(this, timstampPropertyName, durationPropertyName);
+        }
     }
 
     public String getName()
@@ -129,13 +139,12 @@ public class MapEventType implements EventTypeSPI
         return eventTypeId;
     }
 
-    // TODO - add property name
-    public String getTimestampProperty() {
-        return null;
+    public String getTimestampPropertyName() {
+        return timstampPropertyName;
     }
 
-    public String getDurationProperty() {
-        return null;
+    public String getDurationPropertyName() {
+        return durationPropertyName;
     }
 
     public final Class getPropertyType(String propertyName)

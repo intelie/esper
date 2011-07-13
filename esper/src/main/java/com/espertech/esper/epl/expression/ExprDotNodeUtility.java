@@ -184,6 +184,6 @@ public class ExprDotNodeUtility
         Map<String, Object> propsResult = new HashMap<String, Object>();
         propsResult.put(propertyName, type);
         String typeName = enumMethod + "__" + propertyName;
-        return new MapEventType(EventTypeMetadata.createAnonymous(typeName), typeName, 0, null, propsResult, null, null);
+        return new MapEventType(EventTypeMetadata.createAnonymous(typeName), typeName, 0, null, propsResult, null, null, null);
     }
 }

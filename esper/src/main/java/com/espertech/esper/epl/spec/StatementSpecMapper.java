@@ -365,7 +365,10 @@ public class StatementSpecMapper
             return;
         }
         List<SchemaColumnDesc> columns = unmapColumns(desc.getColumns());
-        model.setCreateSchema(new CreateSchemaClause(desc.getSchemaName(), desc.getTypes(), columns, desc.getInherits(), desc.isVariant()));
+        CreateSchemaClause clause = new CreateSchemaClause(desc.getSchemaName(), desc.getTypes(), columns, desc.getInherits(), desc.isVariant());
+        clause.setTimestampProperty(desc.getTimestampProperty());
+        clause.setDurationProperty(desc.getDurationProperty());
+        model.setCreateSchema(clause);
     }
 
     private static void unmapOrderBy(List<OrderByItem> orderByList, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
@@ -1079,7 +1082,7 @@ public class StatementSpecMapper
             return;
         }
         List<ColumnDesc> columns = mapColumns(clause.getColumns());
-        raw.setCreateSchemaDesc(new CreateSchemaDesc(clause.getSchemaName(), clause.getTypes(), columns, clause.getInherits(), clause.isVariant()));
+        raw.setCreateSchemaDesc(new CreateSchemaDesc(clause.getSchemaName(), clause.getTypes(), columns, clause.getInherits(), clause.isVariant(), clause.getTimestampProperty(), clause.getDurationProperty()));
     }
 
     private static List<ColumnDesc> mapColumns(List<SchemaColumnDesc> columns) {

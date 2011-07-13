@@ -1,11 +1,14 @@
 package com.espertech.esper.epl.datetime.interval;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.datetime.DateTimeUtil;
 import com.espertech.esper.epl.datetime.DatetimeMethodEnum;
 import com.espertech.esper.epl.expression.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.StringWriter;
+import java.util.Calendar;
 import java.util.List;
 
 public class IntervalComputerFactory {
@@ -62,30 +65,28 @@ public class IntervalComputerFactory {
             if (params.length == 0) {
                 return new IntervalComputerFinishesNoParam();
             }
-            if (params[0].getOptionalConstant() != null && (params[0].getOptionalConstant()).longValue() < 0) {
-                throw new ExprValidationException("The finishes date-time method does not allow negative threshold value");
-            }
+            validateConstantThreshold("finishes", params[0]);
             return new IntervalComputerFinishesThreshold(params[0].getEvaluator());
         }
         else if (method == DatetimeMethodEnum.FINISHEDBY) {
             if (params.length == 0) {
                 return new IntervalComputerFinishedByNoParam();
             }
-            if (params[0].getOptionalConstant() != null && (params[0].getOptionalConstant()).longValue() < 0) {
-                throw new ExprValidationException("The finishedby date-time method does not allow negative threshold value");
-            }
+            validateConstantThreshold("finishedby", params[0]);
             return new IntervalComputerFinishedByThreshold(params[0].getEvaluator());
         }
         else if (method == DatetimeMethodEnum.MEETS) {
             if (params.length == 0) {
                 return new IntervalComputerMeetsNoParam();
             }
+            validateConstantThreshold("meets", params[0]);
             return new IntervalComputerMeetsThreshold(params[0].getEvaluator());
         }
         else if (method == DatetimeMethodEnum.METBY) {
             if (params.length == 0) {
                 return new IntervalComputerMetByNoParam();
             }
+            validateConstantThreshold("metBy", params[0]);
             return new IntervalComputerMetByThreshold(params[0].getEvaluator());
         }
         else if (method == DatetimeMethodEnum.OVERLAPS || method == DatetimeMethodEnum.OVERLAPPEDBY) {
@@ -104,15 +105,23 @@ public class IntervalComputerFactory {
             if (params.length == 0) {
                 return new IntervalComputerStartsNoParam();
             }
+            validateConstantThreshold("starts", params[0]);
             return new IntervalComputerStartsThreshold(params[0].getEvaluator());
         }
         else if (method == DatetimeMethodEnum.STARTEDBY) {
             if (params.length == 0) {
                 return new IntervalComputerStartedByNoParam();
             }
+            validateConstantThreshold("startedBy", params[0]);
             return new IntervalComputerStartedByThreshold(params[0].getEvaluator());
         }
         throw new IllegalArgumentException("Unknown datetime method '" + method + "'");
+    }
+
+    private static void validateConstantThreshold(String method, ExprOptionalConstant param) throws ExprValidationException {
+        if (param.getOptionalConstant() != null && (param.getOptionalConstant()).longValue() < 0) {
+            throw new ExprValidationException("The " + method + " date-time method does not allow negative threshold value");
+        }
     }
 
     private static ExprOptionalConstant[] getParameters(List<ExprNode> expressions) {
@@ -546,6 +555,7 @@ public class IntervalComputerFactory {
 
     public static class IntervalComputerMeetsThreshold implements IntervalComputer {
 
+        private static final Log log = LogFactory.getLog(IntervalComputerMeetsThreshold.class);
         private final ExprEvaluator threshold;
 
         public IntervalComputerMeetsThreshold(ExprEvaluator threshold) {
@@ -560,6 +570,10 @@ public class IntervalComputerFactory {
             }
 
             long threshold = IntervalComputerExprBase.toLong(thresholdValue);
+            if (threshold < 0) {
+                log.warn("The 'finishes' date-time method does not allow negative threshold");
+                return null;
+            }
 
             long delta = Math.abs(right - (left + leftDuration));
             return delta <= threshold;
@@ -578,6 +592,7 @@ public class IntervalComputerFactory {
 
     public static class IntervalComputerMetByThreshold implements IntervalComputer {
 
+        private static final Log log = LogFactory.getLog(IntervalComputerMetByThreshold.class);
         private final ExprEvaluator threshold;
 
         public IntervalComputerMetByThreshold(ExprEvaluator threshold) {
@@ -592,6 +607,10 @@ public class IntervalComputerFactory {
             }
 
             long threshold = IntervalComputerExprBase.toLong(thresholdValue);
+            if (threshold < 0) {
+                log.warn("The 'finishes' date-time method does not allow negative threshold");
+                return null;
+            }
 
             long delta = Math.abs(left - (right + rightDuration));
             return delta <= threshold;
@@ -708,6 +727,8 @@ public class IntervalComputerFactory {
 
     public static class IntervalComputerStartsThreshold implements IntervalComputer {
 
+        private static final Log log = LogFactory.getLog(IntervalComputerStartsThreshold.class);
+
         private final ExprEvaluator threshold;
 
         public IntervalComputerStartsThreshold(ExprEvaluator threshold) {
@@ -722,6 +743,11 @@ public class IntervalComputerFactory {
             }
 
             long threshold = IntervalComputerExprBase.toLong(thresholdValue);
+            if (threshold < 0) {
+                log.warn("The 'finishes' date-time method does not allow negative threshold");
+                return null;
+            }
+
             long delta = Math.abs(left - right);
             return delta <= threshold && ((left + leftDuration) < (right + rightDuration));
         }
@@ -739,6 +765,8 @@ public class IntervalComputerFactory {
 
     public static class IntervalComputerStartedByThreshold implements IntervalComputer {
 
+        private static final Log log = LogFactory.getLog(IntervalComputerStartedByThreshold.class);
+
         private final ExprEvaluator threshold;
 
         public IntervalComputerStartedByThreshold(ExprEvaluator threshold) {
@@ -753,6 +781,11 @@ public class IntervalComputerFactory {
             }
 
             long threshold = IntervalComputerExprBase.toLong(thresholdValue);
+            if (threshold < 0) {
+                log.warn("The 'finishes' date-time method does not allow negative threshold");
+                return null;
+            }
+
             long delta = Math.abs(left - right);
             return delta <= threshold && ((left + leftDuration) > (right + rightDuration));
         }

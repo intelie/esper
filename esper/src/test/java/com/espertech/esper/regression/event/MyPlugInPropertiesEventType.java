@@ -111,12 +111,11 @@ public class MyPlugInPropertiesEventType implements EventType
         return null;    // sample does not provide a getter for indexed properties
     }
 
-    // TODO - add property name
-    public String getTimestampProperty() {
+    public String getTimestampPropertyName() {
         return null;
     }
 
-    public String getDurationProperty() {
+    public String getDurationPropertyName() {
         return null;
     }
 }

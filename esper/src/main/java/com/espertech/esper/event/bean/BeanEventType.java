@@ -90,29 +90,16 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
 
         if (optionalLegacyDef != null && optionalLegacyDef.getTimestampProperty() != null) {
             timestampProperty = optionalLegacyDef.getTimestampProperty();
-            if (getGetter(timestampProperty) == null) {
-                throw new ConfigurationException("Declared timestamp property name '" + timestampProperty + "' was not found");
-            }
-            if (!JavaClassHelper.isDatetimeClass(getPropertyType(timestampProperty))) {
-                throw new ConfigurationException("Declared timestamp property does not return a Date, Calendar or long-typed value for property '" + timestampProperty + "'");
-            }
-        }
-        if (optionalLegacyDef != null && optionalLegacyDef.getDurationProperty() != null) {
             durationProperty = optionalLegacyDef.getDurationProperty();
-            if (getGetter(durationProperty) == null) {
-                throw new ConfigurationException("Declared duration property name '" + durationProperty + "' was not found");
-            }
-            if (!JavaClassHelper.isDatetimeClass(getPropertyType(durationProperty))) {
-                throw new ConfigurationException("Declared duration property does not return a long-typed value for property '" + durationProperty + "'");
-            }
+            EventTypeUtility.validateTimestampAndDuration(this, timestampProperty, durationProperty);
         }
     }
 
-    public String getTimestampProperty() {
+    public String getTimestampPropertyName() {
         return timestampProperty;
     }
 
-    public String getDurationProperty() {
+    public String getDurationPropertyName() {
         return durationProperty;
     }
 

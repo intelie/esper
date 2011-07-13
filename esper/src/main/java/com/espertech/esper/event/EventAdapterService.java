@@ -9,13 +9,13 @@
 package com.espertech.esper.event;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.core.EPRuntimeEventSender;
-import com.espertech.esper.plugin.PlugInEventRepresentation;
 import com.espertech.esper.collection.Pair;
-import com.espertech.esper.event.xml.SchemaModel;
-import com.espertech.esper.event.bean.BeanEventTypeFactory;
+import com.espertech.esper.core.EPRuntimeEventSender;
 import com.espertech.esper.core.thread.ThreadingService;
 import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.event.bean.BeanEventTypeFactory;
+import com.espertech.esper.event.xml.SchemaModel;
+import com.espertech.esper.plugin.PlugInEventRepresentation;
 import org.w3c.dom.Node;
 
 import java.io.Serializable;
@@ -90,14 +90,14 @@ public interface EventAdapterService
      * If the name does not already exists, adds the name and constructs a new {@link com.espertech.esper.event.map.MapEventType}.
      * @param eventTypeName is the name for the event type
      * @param propertyTypes is the names and types of event properties
-     * @param optionalSupertype an optional set of Map event type names that are supertypes to the type
+     * @param optionalConfig an optional set of Map event type names that are supertypes to the type
      * @return event type is the type added
      * @param isConfigured if the type is application-configured
      * @param namedWindow if the type is from a named window
      * @param insertInto if inserting into a stream
      * @throws EventAdapterException if name already exists and doesn't match property type info
      */
-    public EventType addNestableMapType(String eventTypeName, Map<String, Object> propertyTypes, Set<String> optionalSupertype, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException;
+    public EventType addNestableMapType(String eventTypeName, Map<String, Object> propertyTypes, ConfigurationEventTypeMap optionalConfig, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException;
 
     /**
      * Add an event type with the given name and the given underlying event type,
@@ -242,6 +242,12 @@ public interface EventAdapterService
      * @param classLegacyInfo is configured legacy
      */
     public void setClassLegacyConfigs(Map<String, ConfigurationEventTypeLegacy> classLegacyInfo);
+
+    /**
+     * Returns the configured legacy Java class information or null if none defined.
+     * @param className is the fully-qualified class name
+     */
+    public ConfigurationEventTypeLegacy getClassLegacyConfigs(String className);
 
     /**
      * Sets the resolution style for case-sentitivity.

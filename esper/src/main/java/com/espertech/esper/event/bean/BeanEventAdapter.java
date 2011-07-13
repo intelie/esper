@@ -153,4 +153,8 @@ public class BeanEventAdapter implements BeanEventTypeFactory
 
         return eventType;
     }
+
+    public ConfigurationEventTypeLegacy getClassToLegacyConfigs(String className) {
+        return classToLegacyConfigs.get(className);
+    }
 }

@@ -147,12 +147,11 @@ public class AxiomXMLEventType implements EventTypeSPI
         return null;
     }
 
-    // TODO - add property name
-    public String getTimestampProperty() {
+    public String getTimestampPropertyName() {
         return null;
     }
 
-    public String getDurationProperty() {
+    public String getDurationPropertyName() {
         return null;
     }
 

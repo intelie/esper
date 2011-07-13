@@ -153,7 +153,7 @@ public interface ConfigurationOperations
             throws ConfigurationException;
 
     /**
-     * Add an name for an event type that represents java.util.Map events,
+     * Add a name for an event type that represents java.util.Map events,
      * and for which each property may itself be a Map of further properties,
      * with unlimited nesting levels.
      * <p>
@@ -167,6 +167,23 @@ public interface ConfigurationOperations
      * @throws ConfigurationException if the name is already in used for a different type
      */
     public void addEventType(String eventTypeName, Map<String, Object> typeMap, String[] superTypes)
+            throws ConfigurationException;
+
+    /**
+     * Add a name for an event type that represents java.util.Map events,
+     * and for which each property may itself be a Map of further properties,
+     * with unlimited nesting levels.
+     * <p>
+     * Each entry in the type mapping must contain the String property name as the key value,
+     * and either a Class, or a further Map<String, Object>, or the name
+     * of another previously-register Map event type (append [] for array of Map).
+     * @param eventTypeName is the name for the event type
+     * @param typeMap maps the name of each property in the Map event to the type
+     * (fully qualified classname) of its value in Map event instances.
+     * @param mapConfig is the Map-event type configuration that may defined super-types, timestamp-property-name etc.
+     * @throws ConfigurationException if the name is already in used for a different type
+     */
+    public void addEventType(String eventTypeName, Map<String, Object> typeMap, ConfigurationEventTypeMap mapConfig)
             throws ConfigurationException;
 
     /**

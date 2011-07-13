@@ -155,7 +155,7 @@
 						<entry>includes(event or timestamp)</entry>
 						<entry>
 							<para>
-								Returns true if the parameter event happens during the occurance of the event, or when a timestamps falls within the occurance of the parameter event.
+								Returns true if the parameter event happens during the occurance of the event, or when a timestamps falls within the occurance of an event.
 							</para>
 							<para>
 								<xref linkend="datetime-method-includes"/>.
@@ -221,7 +221,7 @@
 						<entry>overlappedBy(event or timestamp)</entry>
 						<entry>
 							<para>
-								Returns true if the parameter event starts before the input event starts and the parameter event finishes after the input event starts, but before the parameter event finishes (events have an overlapping period of time).
+								Returns true if the parameter event starts before the input event starts and the parameter event finishes after the input event starts, but before the input event finishes (events have an overlapping period of time).
 							</para>
 							<para>
 								<xref linkend="datetime-method-overlappedby"/>.
@@ -449,7 +449,8 @@ from MyEvent]]></programlisting>
 			<para>
 				You may apply a date-time method to events. This examples assumes that the RFIDEvent and WifiEvent event types both have a timestamp property defined. The EPL compares the timestamps of the RFIDEvent and the WifiEvent: 
 			</para>			
-			<programlisting><![CDATA[select rfid.after(wifi) as isAfter from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programlisting>
+			<programlisting><![CDATA[select rfid.after(wifi) as isAfter 
+from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programlisting>
 
 			<para>
 			   For comparing date-time values and considering duration we recommend any of the interval algebra methods. You may also compare millisecond values using the <literal>between</literal> or <literal>in</literal> ranges and inverted ranges or relational operators (<literal>&gt; , &lt;, &gt;=, &lt;=)</literal>.
@@ -823,7 +824,7 @@ from MyEvent]]></programlisting>
 		</para>
 
 		<para>
-			Interval algebra methods all return <literal>Boolean</literal>-type value. When the input value is null or the value of the first parameter (the compare-to timestamp and duration) are null, the result value is null.
+			Interval algebra methods all return <literal>Boolean</literal>-type value. When the input value timestamp is null, or the duration (if defined) is null or the value of the first parameter (the compare-to timestamp and duration) is null, the result value is null.
 		</para>
 
 		<sect4 id="datetime-method-examples">
@@ -863,7 +864,7 @@ from MyEvent]]></programlisting>
 			<orderedlist>
 				<listitem>
 					<para>
-						A constant, and event property or more generally any expression returning a numeric value that is the number of seconds. For example: <literal>a.before(b, 2)</literal> (the parameter 2 means 2 seconds). <literal>a.before(b, myIntervalProperty)</literal>.
+						A constant, an event property or more generally any expression returning a numeric value that is the number of seconds. For example: <literal>a.before(b, 2)</literal> (the parameter 2 means 2 seconds). <literal>a.before(b, myIntervalProperty)</literal>.
 					</para>
 				</listitem>
 				<listitem>
@@ -872,6 +873,10 @@ from MyEvent]]></programlisting>
 					</para>
 				</listitem>
 			</orderedlist>		   
+
+			<para>
+				When an Interval parameter is provided and is null, the method result value is null.
+			</para>
 		 </sect4>
 
 		<sect4 id="datetime-method-limitations">
@@ -1073,8 +1078,8 @@ from MyEvent]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.during(b, 5 sec)
 // Above matches when:
-//   0 < (a.startTimestamp - b.startTimestamp) <= 5 sec and 
-//   0 < (a.endTimestamp - b.endTimestamp) <= 5 sec]]></programlisting>
+//   0 < a.startTimestamp - b.startTimestamp <= 5 sec and 
+//   0 < a.endTimestamp - b.endTimestamp <= 5 sec]]></programlisting>
 
 			<para>
 				If providing three parameters, for example in <literal>a.during(b, 5 sec, 10 sec)</literal>, the method returns true if the difference between the start timestamps of A and B and the difference between the end timestamps of A and B is between 5 and 10 seconds.
@@ -1085,8 +1090,8 @@ from MyEvent]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.during(b, 5 sec, 10 sec)
 // Above matches when:
-//   5 seconds <= (a.startTimestamp - b.startTimestamp) <= 10 seconds and 
-//   5 seconds <= (a.endTimestamp - b.endTimestamp) <= 10 seconds]]></programlisting>
+//   5 seconds <= a.startTimestamp - b.startTimestamp <= 10 seconds and 
+//   5 seconds <= a.endTimestamp - b.endTimestamp <= 10 seconds]]></programlisting>
 
 			<para>
 				If providing five parameters, for example in <literal>a.during(b, 5 sec, 10 sec, 20 sec, 30 sec)</literal>, the method returns true if the difference between the start timestamps of A and B is between 5 seconds and 10 seconds and the difference between the end timestamps of A and B is between 20 seconds and 30 seconds.
@@ -1098,8 +1103,8 @@ from MyEvent]]></programlisting>
 			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b
   where a.during(b, 5 sec, 10 sec, 20 sec, 30 sec)
 // Above matches when:
-//   5 seconds <= (a.startTimestamp - b.startTimestamp) <= 10 seconds and 
-//   20 seconds < (a.endTimestamp - b.endTimestamp) <= 30 seconds]]></programlisting>
+//   5 seconds <= a.startTimestamp - b.startTimestamp <= 10 seconds and 
+//   20 seconds < a.endTimestamp - b.endTimestamp <= 30 seconds]]></programlisting>
 
 		</sect2>
 		
@@ -1134,7 +1139,7 @@ from MyEvent]]></programlisting>
 			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.finishes(b, 5 sec)
 // Above matches when:
 //   b.startTimestamp < a.startTimestamp and 
-//   abs(a.endTimestamp - b.endTimestamp ) < 5 seconds]]></programlisting>
+//   abs(a.endTimestamp - b.endTimestamp ) <= 5 seconds]]></programlisting>
 
 			<para>
 			  A negative value for interval parameters is not allowed. If your interval parameter is itself an expression that returns a negative value the engine logs a warning message and returns null.
@@ -1173,13 +1178,13 @@ from MyEvent]]></programlisting>
 			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.finishedBy(b, 5 sec)
 // Above matches when:
 //   a.startTimestamp < b.startTimestamp and 
-//   abs(a.endTimestamp - b.endTimestamp ) < 5 seconds]]></programlisting>
+//   abs(a.endTimestamp - b.endTimestamp ) <= 5 seconds]]></programlisting>
 		</sect2>
 		
 		<sect2 id="datetime-method-includes">
 		  <title>Includes</title>
 		  	<para>
-				The <literal>includes</literal> date-time method returns true if the parameter event happens during the occurance of the input event, or when a timestamps falls within the occurance of the parameter event.
+				The <literal>includes</literal> date-time method returns true if the parameter event happens during the occurance of the input event, or when a timestamps falls within the occurance of an event.
 			</para>
 
 		  	<para>
@@ -1187,7 +1192,7 @@ from MyEvent]]></programlisting>
 			</para>
 			
 			<para>
-				If used with one parameter, for example in <literal>a.includes(b)</literal>, the method returns true if the start timestamp of B is after the start timestamp of A and the end timestamp of B and is before the end timestamp of A.
+				If used with one parameter, for example in <literal>a.includes(b)</literal>, the method returns true if the start timestamp of B is after the start timestamp of A and the end timestamp of B is before the end timestamp of A.
 			</para>
 
 			<para>
@@ -1206,8 +1211,8 @@ from MyEvent]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.includes(b, 5 sec)
 // Above matches when:
-//   0 < (b.startTimestamp - a.startTimestamp) <= 5 sec and 
-//   (a.endTimestamp - b.endTimestamp) <= 5 sec]]></programlisting>
+//   0 < b.startTimestamp - a.startTimestamp <= 5 sec and 
+//   0 < a.endTimestamp - b.endTimestamp <= 5 sec]]></programlisting>
 
 			<para>
 				If providing three parameters, for example in <literal>a.includes(b, 5 sec, 10 sec)</literal>, the method returns true if the difference between the start timestamps of A and B and the difference between the end timestamps of A and B is between 5 and 10 seconds.
@@ -1218,8 +1223,8 @@ from MyEvent]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.includes(b, 5 sec, 10 sec)
 // Above matches when:
-//   5 seconds <= (a.startTimestamp - b.startTimestamp) <= 10 seconds and 
-//   5 seconds < (a.endTimestamp - b.endTimestamp) <= 10 seconds]]></programlisting>
+//   5 seconds <= a.startTimestamp - b.startTimestamp <= 10 seconds and 
+//   5 seconds <= a.endTimestamp - b.endTimestamp <= 10 seconds]]></programlisting>
 
 			<para>
 				If providing five parameters, for example in <literal>a.includes(b, 5 sec, 10 sec, 20 sec, 30 sec)</literal>, the method returns true if the difference between the start timestamps of A and B is between 5 seconds and 10 seconds and the difference between the end timestamps of A and B is between 20 seconds and 30 seconds.
@@ -1228,10 +1233,11 @@ from MyEvent]]></programlisting>
 			<para>
 				Sample EPL:
 			</para>
-			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.includes(b, 5 sec, 10 sec, 20 sec, 30 sec)
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b
+  where a.includes(b, 5 sec, 10 sec, 20 sec, 30 sec)
 // Above matches when:
-//   5 seconds <= (a.startTimestamp - b.startTimestamp) <= 10 seconds and 
-//   20 seconds < (a.endTimestamp - b.endTimestamp) <= 30 seconds]]></programlisting>
+//   5 seconds <= a.startTimestamp - b.startTimestamp <= 10 seconds and 
+//   20 seconds <= a.endTimestamp - b.endTimestamp <= 30 seconds]]></programlisting>
 		</sect2>
 		
 		<sect2 id="datetime-method-meets">
@@ -1245,7 +1251,7 @@ from MyEvent]]></programlisting>
 			</para>
 			
 			<para>
-				If used with one parameter, for example in <literal>a.meets(b)</literal>, the method returns true if the end timestamp of A is the same as the start timestamp of A.
+				If used with one parameter, for example in <literal>a.meets(b)</literal>, the method returns true if the end timestamp of A is the same as the start timestamp of B.
 			</para>
 
 			<para>
@@ -1264,8 +1270,11 @@ from MyEvent]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.meets(b, 5 sec)
 // Above matches when:
-//   abs(b.startTimestamp - a.endTimestamp) < 5 seconds]]></programlisting>
+//   abs(b.startTimestamp - a.endTimestamp) <= 5 seconds]]></programlisting>
 
+			<para>
+			  A negative value for the interval parameter is not allowed. If your interval parameter is itself an expression that returns a negative value the engine logs a warning message and returns null.
+			</para>
 		</sect2>
 		
 		<sect2 id="datetime-method-metby">
@@ -1287,7 +1296,7 @@ from MyEvent]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.metBy(b)
 // Above matches when:
-//   b.endTimestamp = a.startTimestamp]]></programlisting>
+//   a.startTimestamp = b.endTimestamp]]></programlisting>
 
 			<para>
 				If providing two parameters, for example in <literal>a.metBy(b, 5 sec)</literal>, the method returns true if the difference between the end timestamps of B and the start timestamp of A is equal to or less then 5 seconds.
@@ -1298,7 +1307,11 @@ from MyEvent]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.metBy(b, 5 sec)
 // Above matches when:
-//   abs(a.startTimestamp - b.endTimestamp) < 5 seconds]]></programlisting>
+//   abs(a.startTimestamp - b.endTimestamp) <= 5 seconds]]></programlisting>
+
+			<para>
+			  A negative value for the interval parameter is not allowed. If your interval parameter is itself an expression that returns a negative value the engine logs a warning message and returns null.
+			</para>
 		</sect2>
 		
 		<sect2 id="datetime-method-overlaps">
@@ -1350,7 +1363,7 @@ from MyEvent]]></programlisting>
 		<sect2 id="datetime-method-overlappedby">
 		  <title>Overlapped By</title>
 		  	<para>
-				The <literal>overlappedBy</literal> date-time method returns true if the parameter event starts before the input event starts and the parameter event finishes after the input event starts, but before the parameter event finishes (events have an overlapping period of time).
+				The <literal>overlappedBy</literal> date-time method returns true if the parameter event starts before the input event starts and the parameter event finishes after the input event starts, but before the input event finishes (events have an overlapping period of time).
 			</para>
 
 		  	<para>
@@ -1424,8 +1437,11 @@ from MyEvent]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.starts(b, 5 sec)
 // Above matches when:
-//   abs(a.startTimestamp - b.startTimestamp) < 5 seconds and 
-//    a.endTimestamp < b.endTimestamp]]></programlisting>
+//   abs(a.startTimestamp - b.startTimestamp) <= 5 seconds and 
+//   a.endTimestamp < b.endTimestamp]]></programlisting>
+			<para>
+			  A negative value for the interval parameter is not allowed. If your interval parameter is itself an expression that returns a negative value the engine logs a warning message and returns null.
+			</para>
 		</sect2>
 		
 		<sect2 id="datetime-method-startedby">
@@ -1447,7 +1463,7 @@ from MyEvent]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.startedBy(b)
 // Above matches when:
-//   a.startTimestamp = b.startTimestamp and B.endTimestamp < a.endTimestamp]]></programlisting>
+//   a.startTimestamp = b.startTimestamp and b.endTimestamp < a.endTimestamp]]></programlisting>
 
 			<para>
 				If providing two parameters, for example in <literal>a.startedBy(b, 5 sec)</literal>, the method returns true if the difference between the start timestamps of A and B is between is equal to or less then 5 seconds.
@@ -1458,8 +1474,12 @@ from MyEvent]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.startedBy(b, 5 sec)
 // Above matches when:
-//   abs(a.startTimestamp - b.startTimestamp) < 5 seconds and 
+//   abs(a.startTimestamp - b.startTimestamp) <= 5 seconds and 
 //    b.endTimestamp < a.endTimestamp]]></programlisting>
+
+			<para>
+			  A negative value for the interval parameter is not allowed. If your interval parameter is itself an expression that returns a negative value the engine logs a warning message and returns null.
+			</para>
 		</sect2>
 	</sect1>
 

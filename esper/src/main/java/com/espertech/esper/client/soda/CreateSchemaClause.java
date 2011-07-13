@@ -27,6 +27,8 @@ public class CreateSchemaClause implements Serializable
     private List<SchemaColumnDesc> columns;
     private Set<String> inherits;
     private boolean variant;
+    private String timestampProperty;
+    private String durationProperty;
 
     /**
      * Ctor.
@@ -167,6 +169,22 @@ public class CreateSchemaClause implements Serializable
         this.variant = variant;
     }
 
+    public String getTimestampProperty() {
+        return timestampProperty;
+    }
+
+    public void setTimestampProperty(String timestampProperty) {
+        this.timestampProperty = timestampProperty;
+    }
+
+    public String getDurationProperty() {
+        return durationProperty;
+    }
+
+    public void setDurationProperty(String durationProperty) {
+        this.durationProperty = durationProperty;
+    }
+
     /**
      * Render as EPL.
      * @param writer to output to
@@ -207,6 +225,15 @@ public class CreateSchemaClause implements Serializable
                 writer.append(name);
                 delimiter = ", ";
             }
+        }
+
+        if (timestampProperty != null) {
+            writer.append(" timestamp ");
+            writer.append(timestampProperty);
+        }
+        if (durationProperty != null) {
+            writer.append(" duration ");
+            writer.append(durationProperty);
         }
     }
 }

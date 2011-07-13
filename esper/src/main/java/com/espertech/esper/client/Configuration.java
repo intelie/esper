@@ -73,9 +73,9 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     protected Map<String, Map<String, Object>> nestableMapNames;
 
     /**
-     * Map event types that are subtypes of one or more Map event types
+     * Map event types additional configuration information.
      */
-    protected Map<String, Set<String>> mapSuperTypes;
+    protected Map<String, ConfigurationEventTypeMap> mapTypeConfigurations;
 
 	/**
 	 * The class and package name imports that
@@ -291,6 +291,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         }
     }
 
+    public void addEventType(String eventTypeName, Map<String, Object> typeMap, ConfigurationEventTypeMap mapConfig) throws ConfigurationException {
+        nestableMapNames.put(eventTypeName, typeMap);
+        mapTypeConfigurations.put(eventTypeName, mapConfig);
+    }
+
     /**
      * Add, for a given Map event type identified by the first parameter, the supertype (by its event type name).
      * <p>
@@ -300,13 +305,17 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
      */
     public void addMapSuperType(String mapeventTypeName, String mapSupertypeName)
     {
-        Set<String> superTypes = mapSuperTypes.get(mapeventTypeName);
-        if (superTypes == null)
-        {
-            superTypes = new HashSet<String>();
-            mapSuperTypes.put(mapeventTypeName, superTypes);
+        ConfigurationEventTypeMap current = mapTypeConfigurations.get(mapeventTypeName);
+        if (current == null) {
+            current = new ConfigurationEventTypeMap();
+            mapTypeConfigurations.put(mapeventTypeName, current);
         }
+        Set<String> superTypes = current.getSuperTypes();
         superTypes.add(mapSupertypeName);
+    }
+
+    public void addMapConfiguration(String mapeventTypeName, ConfigurationEventTypeMap config) {
+        mapTypeConfigurations.put(mapeventTypeName, config);
     }
 
     /**
@@ -461,9 +470,9 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         return revisionEventTypes;
     }
 
-    public Map<String, Set<String>> getMapSuperTypes()
+    public Map<String, ConfigurationEventTypeMap> getMapTypeConfigurations()
     {
-        return mapSuperTypes;
+        return mapTypeConfigurations;
     }
 
     /**
@@ -837,7 +846,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         eventTypesLegacy.remove(eventTypeName);
         mapNames.remove(eventTypeName);
         nestableMapNames.remove(eventTypeName);
-        mapSuperTypes.remove(eventTypeName);
+        mapTypeConfigurations.remove(eventTypeName);
         plugInEventTypes.remove(eventTypeName);
         revisionEventTypes.remove(eventTypeName);
         variantStreams.remove(eventTypeName);
@@ -943,7 +952,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         plugInEventTypes = new HashMap<String, ConfigurationPlugInEventType>();
         revisionEventTypes = new HashMap<String, ConfigurationRevisionEventType>();
         variantStreams = new HashMap<String, ConfigurationVariantStream>();
-        mapSuperTypes = new HashMap<String, Set<String>>();
+        mapTypeConfigurations = new HashMap<String, ConfigurationEventTypeMap>();
     }
 
     /**

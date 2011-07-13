@@ -81,6 +81,18 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return new HashMap<String, EventType>(nameToTypeMap);
     }
 
+    /**
+     * Set the legacy Java class type information.
+     * @param classToLegacyConfigs is the legacy class configs
+     */
+    public void setClassLegacyConfigs(Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs) {
+        beanEventAdapter.setClassToLegacyConfigs(classToLegacyConfigs);
+    }
+
+    public ConfigurationEventTypeLegacy getClassLegacyConfigs(String className) {
+        return beanEventAdapter.getClassToLegacyConfigs(className);
+    }
+
     public Set<WriteablePropertyDescriptor> getWriteableProperties(EventType eventType)
     {
         return EventAdapterServiceHelper.getWriteableProperties(eventType);
@@ -277,15 +289,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
     }
 
     /**
-     * Set the legacy Java class type information.
-     * @param classToLegacyConfigs is the legacy class configs
-     */
-    public void setClassLegacyConfigs(Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
-    {
-        beanEventAdapter.setClassToLegacyConfigs(classToLegacyConfigs);
-    }
-
-    /**
      * Sets the default property resolution style.
      * @param defaultPropertyResolutionStyle is the default style
      */
@@ -429,13 +432,13 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return eventType;
     }
 
-    public synchronized EventType addNestableMapType(String eventTypeName, Map<String, Object> propertyTypes, Set<String> optionalSuperType, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException
+    public synchronized EventType addNestableMapType(String eventTypeName, Map<String, Object> propertyTypes, ConfigurationEventTypeMap optionalConfig, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException
     {
-        Pair<EventType[], Set<EventType>> mapSuperTypes = getMapSuperTypes(optionalSuperType);
+        Pair<EventType[], Set<EventType>> mapSuperTypes = getMapSuperTypes(optionalConfig);
         EventTypeMetadata metadata = EventTypeMetadata.createMapType(eventTypeName, isPreconfiguredStatic, isPreconfigured, isConfigured, namedWindow, insertInto);
 
         int typeId = eventTypeIdGenerator.getTypeId(eventTypeName);
-        MapEventType newEventType = new MapEventType(metadata, eventTypeName, typeId, this, propertyTypes, mapSuperTypes.getFirst(), mapSuperTypes.getSecond());
+        MapEventType newEventType = new MapEventType(metadata, eventTypeName, typeId, this, propertyTypes, mapSuperTypes.getFirst(), mapSuperTypes.getSecond(), optionalConfig);
 
         EventType existingType = nameToTypeMap.get(eventTypeName);
         if (existingType != null)
@@ -678,7 +681,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
     {
         String assignedTypeName = EventAdapterService.ANONYMOUS_TYPE_NAME_PREFIX + typeName;
         EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(assignedTypeName);
-        return new MapEventType(metadata, assignedTypeName, eventTypeIdGenerator.getTypeId(assignedTypeName), this, propertyTypes, null, null);
+        return new MapEventType(metadata, assignedTypeName, eventTypeIdGenerator.getTypeId(assignedTypeName), this, propertyTypes, null, null, null);
     }
 
     public EventType createSemiAnonymousMapType(String typeName, Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes, boolean isUsedByChildViews)
@@ -741,19 +744,19 @@ public class EventAdapterServiceImpl implements EventAdapterService
         javaPackageNames.add(javaPackageName);
     }
 
-    private Pair<EventType[], Set<EventType>> getMapSuperTypes(Set<String> optionalSuperTypes)
+    private Pair<EventType[], Set<EventType>> getMapSuperTypes(ConfigurationEventTypeMap optionalConfig)
             throws EventAdapterException
     {
-        if ((optionalSuperTypes == null) || (optionalSuperTypes.isEmpty()))
+        if (optionalConfig == null || optionalConfig.getSuperTypes() == null || optionalConfig.getSuperTypes().isEmpty())
         {
             return new Pair<EventType[], Set<EventType>>(null,null);
         }
 
-        EventType[] superTypes = new EventType[optionalSuperTypes.size()];
+        EventType[] superTypes = new EventType[optionalConfig.getSuperTypes().size()];
         Set<EventType> deepSuperTypes = new LinkedHashSet<EventType>();
 
         int count = 0;
-        for (String superName : optionalSuperTypes)
+        for (String superName : optionalConfig.getSuperTypes())
         {
             EventType type = this.nameToTypeMap.get(superName);
             if (type == null)

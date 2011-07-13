@@ -726,37 +726,50 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
         }
 
-        // get inherited
-        Set<String> inherited = new LinkedHashSet<String>();
-        for (int i = 0; i < node.getChildCount(); i++) {
-            Tree p = node.getChild(i);
-            if (p.getType() == CREATE_SCHEMA_EXPR_INH) {
-                if (!p.getChild(0).getText().toLowerCase().equals("inherits")) {
-                    throw new EPException("Expected 'inherits' keyword after create-schema clause but encountered '" + p.getChild(0).getText() + "'");
-                }
-                for (int j = 1; j < p.getChildCount(); j++) {
-                    if (p.getChild(j).getType() == EXPRCOL) {
-                        for (int k = 0; k < p.getChild(j).getChildCount(); k++) {
-                            inherited.add(p.getChild(j).getChild(k).getText());
-                        }
-                    }
-                }
-            }
-        }
-
-        // get qualifier
+        // get variant keyword
         boolean variant = false;
         for (int i = 0; i < node.getChildCount(); i++) {
             Tree p = node.getChild(i);
-            if (p.getType() == CREATE_SCHEMA_EXPR_QUAL) {
+            if (p.getType() == CREATE_SCHEMA_EXPR_VAR) {
                 if (!p.getChild(0).getText().toLowerCase().equals("variant")) {
                     throw new EPException("Expected 'variant' keyword after create-schema clause but encountered '" + p.getChild(0).getText() + "'");
                 }
                 variant = true;
             }
         }
+
+        // get inherited and timestamp and duration
+        String timestamp = null;
+        String duration = null;
+        Set<String> inherited = new LinkedHashSet<String>();
+        for (int i = 0; i < node.getChildCount(); i++) {
+            Tree p = node.getChild(i);
+            if (p.getType() == CREATE_SCHEMA_EXPR_QUAL) {
+                String childName = p.getChild(0).getText().toLowerCase();
+                if (childName.equals("inherits")) {
+                    for (int j = 1; j < p.getChildCount(); j++) {
+                        if (p.getChild(j).getType() == EXPRCOL) {
+                            for (int k = 0; k < p.getChild(j).getChildCount(); k++) {
+                                inherited.add(p.getChild(j).getChild(k).getText());
+                            }
+                        }
+                    }
+                    continue;
+                }
+                else if (childName.equals("timestamp")) {
+                    timestamp = p.getChild(1).getChild(0).getText();
+                    continue;
+                }
+                else if (childName.equals("duration")) {
+                    duration = p.getChild(1).getChild(0).getText();
+                    continue;
+                }
+                throw new EPException("Expected 'inherits', 'timestamp' or 'duration' keyword after create-schema clause but encountered '" + p.getChild(0).getText() + "'");
+            }
+        }
+
         statementSpec.getStreamSpecs().add(new FilterStreamSpecRaw(new FilterSpecRaw(Object.class.getName(), Collections.<ExprNode>emptyList(), null), Collections.<ViewSpec>emptyList(), null, new StreamSpecOptions()));
-        statementSpec.setCreateSchemaDesc(new CreateSchemaDesc(schemaName, typeNames, columnTypes, inherited, variant));
+        statementSpec.setCreateSchemaDesc(new CreateSchemaDesc(schemaName, typeNames, columnTypes, inherited, variant, timestamp, duration));
     }
 
     private void leaveCreateVariable(Tree node)

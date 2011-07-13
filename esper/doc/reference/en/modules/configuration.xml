@@ -362,6 +362,24 @@ config.addEventType("MyLegacyEvent", MyLegacyEventClass.class.getName(), legacyD
 </event-type>]]></programlisting>
 			</sect3>
 
+			<sect3 id="config-java-timestampandduration" revision="1">
+				<title>Timestamp and Duration</title>
+				
+				<para>
+					For use with date-time interval methods, for example, you may let the engine know which property of your class carries the timestamp value and which property carries the duration value.
+				</para>
+								
+				<para>
+					The <literal>update</literal> clause can change event properties on an event object. For the purpose of maintaining consistency, the engine may have to copy your event object via serialization (implement the <literal>java.io.Serializable</literal> interface). If instead you do not want any copy operations to occur, or your application needs to control the copy operation, you may configure a copy method. The copy method is the name of a method on the event object that copies the event object.
+				</para>
+				<para>
+					The sample below shows this option in XML configuration, however the setting can also be changed via API:
+				</para>
+				<programlisting><![CDATA[<event-type name="MyLegacyEvent" class="com.mycompany.package.MyLegacyEventClass"
+  factory-method="com.mycompany.myapp.MySampleEventFactory.createMyLegacyTypeEvent" copy-method="myCopyMethod"> 
+</event-type>]]></programlisting>
+			</sect3>
+
 		</sect2>
 			
 		<sect2 id="config-java-util-map" revision="1">
@@ -426,6 +444,13 @@ configuration.addEventType("MyMapEvent", properties);]]></programlisting>
 			<para>
 				For initialization time configuration, the <literal>addMapSuperType</literal> method can be used to add Map hierarchy information. For runtime configuration, pass the supertype names to the <literal>addEventType</literal> method in <literal>ConfigurationOperations</literal>.
 			</para>
+
+			<para>
+				A Map event type may declare a timestamp and duration property name. The XML shown next instructs the engine that the <literal>ts</literal> property carries the event timestamp and the <literal>dur</literal> property carries the event duration:
+			</para>
+			<programlisting><![CDATA[<event-type name="AccountUpdate">
+<java-util-map timestamp-property="ts" duration-property="dur">
+...]]></programlisting>			
 		</sect2>
 		
 		<sect2 id="config-xml-dom" revision="1">
@@ -702,6 +727,23 @@ desc.setXPathPropertyExpr(true);]]></programlisting>
 
 				<programlisting><![CDATA[ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
 desc.setEventSenderValidatesRoot(false);]]></programlisting>
+						
+		  </sect3>
+
+		  <sect3 id="config-xml-dom-timestampandduration" revision="1">
+				<title>Timestamp and Duration</title>
+				
+				<para>
+					You may configure the name of the propetry that provides event timestamp and event duration as part of the configuration. Both properties must provide a long-type return value.
+				</para>
+
+				<para>
+					An example:
+				</para>
+
+				<programlisting><![CDATA[ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+desc.setTimestampProperty("mytimestamp");
+desc.setDurationProperty("myduration");]]></programlisting>
 						
 		  </sect3>
 		</sect2>

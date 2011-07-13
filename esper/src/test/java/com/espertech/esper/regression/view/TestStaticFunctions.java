@@ -173,7 +173,7 @@ public class TestStaticFunctions extends TestCase
             epService.getEPAdministrator().createEPL(query);
         }
         catch (EPStatementException ex) {
-            assertEquals("Failed to resolve 'Math' to a property or class name: Could not load class by name 'Math', please check imports [select * from SupportBean(Math.abs(-1) = 1) ]", ex.getMessage());
+            assertEquals("Failed to resolve 'Math' to a property, stream or class name: Could not load class by name 'Math', please check imports [select * from SupportBean(Math.abs(-1) = 1) ]", ex.getMessage());
         }
 
 		configuration.addImport("java.lang.*");
@@ -201,7 +201,7 @@ public class TestStaticFunctions extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting statement: Failed to resolve 'SupportStaticMethodLib' to a property or class name: Could not load class by name 'SupportStaticMethodLib', please check imports [select SupportStaticMethodLib.minusOne(doublePrimitive) from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
+            assertEquals("Error starting statement: Failed to resolve 'SupportStaticMethodLib' to a property, stream or class name: Could not load class by name 'SupportStaticMethodLib', please check imports [select SupportStaticMethodLib.minusOne(doublePrimitive) from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
         }
 
         epService.getEPAdministrator().getConfiguration().addImport(SupportStaticMethodLib.class.getName());

@@ -213,6 +213,6 @@ public interface EventType
 
     public int getEventTypeId();
 
-    public String getTimestampProperty();
-    public String getDurationProperty();
+    public String getTimestampPropertyName();
+    public String getDurationPropertyName();
 }

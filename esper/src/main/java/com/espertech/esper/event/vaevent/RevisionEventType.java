@@ -65,12 +65,11 @@ public class RevisionEventType implements EventTypeSPI
         return eventTypeId;
     }
 
-    // TODO - add property name
-    public String getTimestampProperty() {
+    public String getTimestampPropertyName() {
         return null;
     }
 
-    public String getDurationProperty() {
+    public String getDurationPropertyName() {
         return null;
     }
 

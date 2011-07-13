@@ -26,10 +26,10 @@ public class ExprDotEvalDTFactory {
         String inputPropertyName = null;
         String message = "Date-time enumeration method '" + dtMethodName + "' requires either a Calendar, Date or long value as input or events of an event type that declares a timestamp property";
         if (inputType.getEventType() != null) {
-            if (inputType.getEventType().getTimestampProperty() == null) {
+            if (inputType.getEventType().getTimestampPropertyName() == null) {
                 throw new ExprValidationException(message);
             }
-            inputPropertyName = inputType.getEventType().getTimestampProperty();
+            inputPropertyName = inputType.getEventType().getTimestampPropertyName();
         }
         else {
             if (!inputType.isScalar() || inputType.getScalar() == null) {

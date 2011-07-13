@@ -75,8 +75,7 @@ public class SupportDateTime {
 
     public static Calendar parseGetCal(String datestr) {
         Calendar cal = Calendar.getInstance();
-        parse(datestr);
-        cal.setTimeInMillis(cal.getTimeInMillis());
+        cal.setTimeInMillis(parseGetMSec(datestr));
         return cal;
     }
 

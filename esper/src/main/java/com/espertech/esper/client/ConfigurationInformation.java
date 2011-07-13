@@ -181,7 +181,7 @@ public interface ConfigurationInformation
      * Returns for each Map event type name the set of supertype event type names (Map types only).
      * @return map of name to set of supertype names
      */
-    public Map<String, Set<String>> getMapSuperTypes();
+    public Map<String, ConfigurationEventTypeMap> getMapTypeConfigurations();
 }
 
 

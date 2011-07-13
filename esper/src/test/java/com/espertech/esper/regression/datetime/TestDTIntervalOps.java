@@ -1,6 +1,7 @@
 package com.espertech.esper.regression.datetime;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportDateTime;
 import com.espertech.esper.support.bean.SupportTimeDurationA;
@@ -10,6 +11,10 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
+
+import javax.xml.xpath.XPathConstants;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TestDTIntervalOps extends TestCase {
 
@@ -30,23 +35,88 @@ public class TestDTIntervalOps extends TestCase {
         epService.getEPAdministrator().getConfiguration().addEventType("B", SupportTimeDurationB.class.getName(), configBean);
     }
 
-    // TODO
-    // test configuration returns Date or Calendar object
-    // test bean actually returns null for duration or timestamp
-    // test "a.getTime(xxx)" and "a.toCalendar()"
-    // test "a.get(b.timestamp)"
+    public void testCreateSchema() {
 
-    // TODO
-    // doc ConfigurationEventTypeLegacy "timestamp" and "duration" property names, all others
-    // all types of datetime expression
+        // test Map type Long-type timestamps
+        epService.getEPAdministrator().createEPL("create schema TypeA as (ts long, dur long) timestamp ts duration dur");
+        epService.getEPAdministrator().createEPL("create schema TypeB as (ts long, dur long) timestamp ts duration dur");
 
-    // TODO
-    // remaining event types and their configs for timestamp and duration
-    // create-schema support for timestamp and duration
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select a.includes(b) as val0 from TypeA.std:lastevent() as a, TypeB.std:lastevent() as b");
+        stmt.addListener(listener);
 
-    // TODO - performance
-    // all operators
-    // test outer join performance
+        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetMSec("2002-05-30T9:00:00.000"), 1000), "TypeA");
+        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetMSec("2002-05-30T9:00:00.500"), 200), "TypeB");
+        assertEquals(true, listener.assertOneGetNewAndReset().get("val0"));
+
+        epService.getEPAdministrator().destroyAllStatements();
+        epService.getEPAdministrator().getConfiguration().removeEventType("TypeA", true);
+        epService.getEPAdministrator().getConfiguration().removeEventType("TypeB", true);
+
+        // test Map type Calendar-type timestamps
+        epService.getEPAdministrator().createEPL("create schema TypeA as (ts java.util.Calendar, dur long) timestamp ts duration dur");
+        epService.getEPAdministrator().createEPL("create schema TypeB as (ts java.util.Calendar, dur long) timestamp ts duration dur");
+
+        stmt = epService.getEPAdministrator().createEPL("select a.includes(b) as val0 from TypeA.std:lastevent() as a, TypeB.std:lastevent() as b");
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetCal("2002-05-30T9:00:00.000"), 1000), "TypeA");
+        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetCal("2002-05-30T9:00:00.500"), 200), "TypeB");
+        assertEquals(true, listener.assertOneGetNewAndReset().get("val0"));
+
+        epService.getEPAdministrator().destroyAllStatements();
+        epService.getEPAdministrator().getConfiguration().removeEventType("TypeA", true);
+        epService.getEPAdministrator().getConfiguration().removeEventType("TypeB", true);
+
+        // test Map type Date-type timestamps
+        epService.getEPAdministrator().createEPL("create schema TypeA as (ts java.util.Date, dur long) timestamp ts duration dur");
+        epService.getEPAdministrator().createEPL("create schema TypeB as (ts java.util.Date, dur long) timestamp ts duration dur");
+
+        stmt = epService.getEPAdministrator().createEPL("select a.includes(b) as val0 from TypeA.std:lastevent() as a, TypeB.std:lastevent() as b");
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetDate("2002-05-30T9:00:00.000"), 1000), "TypeA");
+        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetDate("2002-05-30T9:00:00.500"), 200), "TypeB");
+        assertEquals(true, listener.assertOneGetNewAndReset().get("val0"));
+        epService.getEPAdministrator().destroyAllStatements();
+
+        // test Bean-type Date-type timestamps
+        String epl = "create schema SupportBean as " + SupportBean.class.getName() + " timestamp longPrimitive duration longBoxed";
+        epService.getEPAdministrator().createEPL(epl);
+
+        stmt = epService.getEPAdministrator().createEPL("select a.get('month') as val0 from SupportBean a");
+        stmt.addListener(listener);
+
+        SupportBean event = new SupportBean();
+        event.setLongPrimitive(SupportDateTime.parseGetMSec("2002-05-30T9:00:00.000"));
+        epService.getEPRuntime().sendEvent(event);
+        assertEquals(4, listener.assertOneGetNewAndReset().get("val0"));
+
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(epl);
+        assertEquals(epl, model.toEPL());
+        stmt = epService.getEPAdministrator().create(model);
+        assertEquals(epl, stmt.getText());
+        
+        // try XML
+        ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+        desc.setRootElementName("ABC");
+        desc.setTimestampProperty("mytimestamp");
+        desc.setDurationProperty("myduration");
+        desc.addXPathProperty("mytimestamp", "/test/prop", XPathConstants.NUMBER);
+        try {
+            epService.getEPAdministrator().getConfiguration().addEventType("TypeXML", desc);
+            fail();
+        }
+        catch (ConfigurationException ex) {
+            assertEquals("Declared timestamp property 'mytimestamp' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.Double'", ex.getMessage());
+        }
+    }
+
+    private Map<String, Object> makeEvent(Object ts, long duration) {
+        Map<String, Object> event = new HashMap<String, Object>();
+        event.put("ts", ts);
+        event.put("dur", duration);
+        return event;
+    }
 
     public void testCalendarOps() {
         String seedTime = "2002-05-30T9:00:00.000"; // seed is time for B
@@ -141,6 +211,10 @@ public class TestDTIntervalOps extends TestCase {
         // test meets+met-by
         tryInvalid("select a.meets(b, 1, 2) from A.std:lastevent() as a, B.std:lastevent() as b",
                    "Error starting statement: Parameters mismatch for date-time method 'meets', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between start and end timestamps, but receives 3 expressions [select a.meets(b, 1, 2) from A.std:lastevent() as a, B.std:lastevent() as b]");
+        tryInvalid("select a.meets(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: The meets date-time method does not allow negative threshold value [select a.meets(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b]");
+        tryInvalid("select a.metBy(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: The metBy date-time method does not allow negative threshold value [select a.metBy(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b]");
 
         // test overlaps+overlapped-by
         tryInvalid("select a.overlaps(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b",
@@ -149,6 +223,10 @@ public class TestDTIntervalOps extends TestCase {
         // test start/startedby
         tryInvalid("select a.starts(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b",
                    "Error starting statement: Parameters mismatch for date-time method 'starts', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between start timestamps, but receives 4 expressions [select a.starts(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b]");
+        tryInvalid("select a.starts(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: The starts date-time method does not allow negative threshold value [select a.starts(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b]");
+        tryInvalid("select a.startedBy(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: The startedBy date-time method does not allow negative threshold value [select a.startedBy(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b]");
     }
 
     public void testInvalidConfig() {
@@ -167,7 +245,7 @@ public class TestDTIntervalOps extends TestCase {
 
         configBean.setTimestampProperty("longPrimitive");
         configBean.setDurationProperty("string");
-        tryInvalidConfig(configBean, "Declared duration property does not return a long-typed value for property 'string'");
+        tryInvalidConfig(configBean, "Declared duration property does not return a Date, Calendar or long-typed value for property 'string'");
     }
 
     private void tryInvalidConfig(ConfigurationEventTypeLegacy config, String message) {

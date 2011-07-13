@@ -204,15 +204,27 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
 
     public void addEventType(String eventTypeName, Map<String, Object> typeMap, String[] superTypes) throws ConfigurationException
     {
-        Set<String> superTypeNames = null;
+        ConfigurationEventTypeMap optionalConfig = null;
         if ((superTypes != null) && (superTypes.length > 0))
         {
-            superTypeNames = new HashSet<String>(Arrays.asList(superTypes));
+            optionalConfig = new ConfigurationEventTypeMap();
+            optionalConfig.getSuperTypes().addAll(Arrays.asList(superTypes));
         }
 
         try
         {
-            eventAdapterService.addNestableMapType(eventTypeName, typeMap, superTypeNames, false, true, true, false, false);
+            eventAdapterService.addNestableMapType(eventTypeName, typeMap, optionalConfig, false, true, true, false, false);
+        }
+        catch (EventAdapterException t)
+        {
+            throw new ConfigurationException(t.getMessage(), t);
+        }
+    }
+
+    public void addEventType(String eventTypeName, Map<String, Object> typeMap, ConfigurationEventTypeMap mapConfig) throws ConfigurationException {
+        try
+        {
+            eventAdapterService.addNestableMapType(eventTypeName, typeMap, mapConfig, false, true, true, false, false);
         }
         catch (EventAdapterException t)
         {

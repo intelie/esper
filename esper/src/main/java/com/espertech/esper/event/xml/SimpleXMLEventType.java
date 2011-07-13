@@ -59,6 +59,7 @@ public class SimpleXMLEventType extends BaseXMLEventType {
     {
         super(eventTypeMetadata, eventTypeId, configurationEventTypeXMLDOM, eventAdapterService);
         isResolvePropertiesAbsolute = configurationEventTypeXMLDOM.isXPathResolvePropertiesAbsolute();
+        propertyGetterCache = new HashMap<String, EventPropertyGetter>();
 
         // Set of namespace context for XPath expressions
         XPathNamespaceContext xPathNamespaceContext = new XPathNamespaceContext();
@@ -84,8 +85,6 @@ public class SimpleXMLEventType extends BaseXMLEventType {
         }
         super.setNamespaceContext(xPathNamespaceContext);
         super.initialize(configurationEventTypeXMLDOM.getXPathProperties().values(), Collections.EMPTY_LIST);
-
-        propertyGetterCache = new HashMap<String, EventPropertyGetter>();
     }
 
     protected Class doResolvePropertyType(String propertyExpression) {

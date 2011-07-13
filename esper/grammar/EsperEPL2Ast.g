@@ -215,10 +215,12 @@ createVariableExpr
 	;
 
 createSchemaExpr
-	:	^(s=CREATE_SCHEMA_EXPR IDENT (variantList|createColTypeList?) 
-				(^(CREATE_SCHEMA_EXPR_QUAL IDENT))?
-				(^(CREATE_SCHEMA_EXPR_INH IDENT exprCol))? { leaveNode($s); } )
+	:	^(s=CREATE_SCHEMA_EXPR IDENT (variantList|createColTypeList?) (^(CREATE_SCHEMA_EXPR_VAR IDENT))? createSchemaQual* { leaveNode($s); } )
 	;
+	
+createSchemaQual
+	:	^(CREATE_SCHEMA_EXPR_QUAL IDENT exprCol)
+	;	
 
 variantList 	
 	:	^(VARIANT_LIST (STAR|CLASS_IDENT)+)

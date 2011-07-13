@@ -270,7 +270,7 @@ tokens
 	ON_SET_EXPR_ITEM;
 	CREATE_SCHEMA_EXPR;
 	CREATE_SCHEMA_EXPR_QUAL;
-	CREATE_SCHEMA_EXPR_INH;
+	CREATE_SCHEMA_EXPR_VAR;
 	VARIANT_LIST;
 	MERGE_UNM;
 	MERGE_MAT;
@@ -868,11 +868,15 @@ createSchemaExpr
 	:	CREATE keyword=IDENT? SCHEMA name=IDENT AS? 
 		  (
 			variantList
-		  |   	LPAREN createColumnList? RPAREN (inherits=IDENT columnList)?
-		  )		  
-		-> {$inherits != null}? ^(CREATE_SCHEMA_EXPR $name createColumnList? ^(CREATE_SCHEMA_EXPR_INH $inherits columnList))
-		-> {$keyword != null}? ^(CREATE_SCHEMA_EXPR $name variantList ^(CREATE_SCHEMA_EXPR_QUAL $keyword))
-		-> ^(CREATE_SCHEMA_EXPR $name variantList? createColumnList?)
+		  |   	LPAREN createColumnList? RPAREN 
+		  ) createSchemaQual*		  
+		-> {$keyword != null}? ^(CREATE_SCHEMA_EXPR $name variantList ^(CREATE_SCHEMA_EXPR_VAR $keyword) createSchemaQual*)
+		-> ^(CREATE_SCHEMA_EXPR $name variantList? createColumnList? createSchemaQual*)
+	;
+
+createSchemaQual
+	:	i=IDENT columnList
+		-> ^(CREATE_SCHEMA_EXPR_QUAL $i columnList)
 	;
 
 variantList 	

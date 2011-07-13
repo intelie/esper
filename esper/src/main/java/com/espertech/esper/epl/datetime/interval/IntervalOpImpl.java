@@ -29,7 +29,7 @@ public class IntervalOpImpl implements IntervalOp {
             ExprStreamUnderlyingNode und = (ExprStreamUnderlyingNode) expressions.get(0);
             streamId = und.getStreamId();
             EventType type = typesPerStream[streamId];
-            timestampPropertyName = type.getTimestampProperty();
+            timestampPropertyName = type.getTimestampPropertyName();
             if (timestampPropertyName == null) {
                 throw new ExprValidationException("For date-time method '" + methodNameUse + "' the first parameter is event type '" + type.getName() + "', however no timestamp property has been defined for this event type");
             }
@@ -38,8 +38,8 @@ public class IntervalOpImpl implements IntervalOp {
             EventPropertyGetter getter = type.getGetter(timestampPropertyName);
             evaluatorTimestamp = new ExprEvaluatorStreamLongProp(streamId, getter);
 
-            if (type.getDurationProperty() != null) {
-                EventPropertyGetter getterDuration = type.getGetter(type.getDurationProperty());
+            if (type.getDurationPropertyName() != null) {
+                EventPropertyGetter getterDuration = type.getGetter(type.getDurationPropertyName());
                 evaluatorDuration = new ExprEvaluatorStreamLongProp(streamId, getterDuration);
             }
         }

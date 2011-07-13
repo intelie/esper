@@ -115,7 +115,7 @@ public class TestInvalidView extends TestCase
 
         // invalid property in select
         exceptionText = getStatementExceptionView("select a[2].m('a') from " + EVENT_ALLTYPES + ".win:length(1)");
-        assertEquals("Error starting statement: Failed to resolve enumeration method, date-time method or mapped property 'a[2].m('a')': Failed to resolve 'a[2]' to a property or class name: Could not load class by name 'a[2]', please check imports [select a[2].m('a') from com.espertech.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
+        assertEquals("Error starting statement: Failed to resolve enumeration method, date-time method or mapped property 'a[2].m('a')': Failed to resolve 'a[2]' to a property, stream or class name: Could not load class by name 'a[2]', please check imports [select a[2].m('a') from com.espertech.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
 
         // select clause uses same "as" name twice
         exceptionText = getStatementExceptionView("select 2 as m, 2 as m from " + EVENT_ALLTYPES + ".win:length(1)");
@@ -123,11 +123,11 @@ public class TestInvalidView extends TestCase
 
         // class in method invocation not found
         exceptionText = getStatementExceptionView("select unknownClass.method() from " + EVENT_NUM + ".win:length(10)");
-        assertEquals("Error starting statement: Failed to resolve 'unknownClass' to a property or class name: Could not load class by name 'unknownClass', please check imports [select unknownClass.method() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
+        assertEquals("Error starting statement: Failed to resolve 'unknownClass' to a property, stream or class name: Could not load class by name 'unknownClass', please check imports [select unknownClass.method() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
 
         // method not found
         exceptionText = getStatementExceptionView("select Math.unknownMethod() from " + EVENT_NUM + ".win:length(10)");
-        assertEquals("Error starting statement: Failed to resolve 'Math' to a property or class name: Could not find static method named 'unknownMethod' in class 'java.lang.Math' taking no parameters [select Math.unknownMethod() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
+        assertEquals("Error starting statement: Failed to resolve 'Math' to a property, stream or class name: Could not find static method named 'unknownMethod' in class 'java.lang.Math' taking no parameters [select Math.unknownMethod() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
 
         // invalid property in group-by
         exceptionText = getStatementExceptionView("select intPrimitive from " + EVENT_ALLTYPES + ".win:length(1) group by xxx");

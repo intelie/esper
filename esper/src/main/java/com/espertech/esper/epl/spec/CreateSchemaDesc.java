@@ -26,6 +26,8 @@ public class CreateSchemaDesc implements MetaDefItem, Serializable
     private final List<ColumnDesc> columns;
     private final Set<String> inherits;
     private final boolean variant;
+    private final String timestampProperty;
+    private final String durationProperty;
 
     /**
      * Ctor.
@@ -35,13 +37,14 @@ public class CreateSchemaDesc implements MetaDefItem, Serializable
      * @param inherits supertypes
      * @param variant variant streams
      */
-    public CreateSchemaDesc(String schemaName, Set<String> types, List<ColumnDesc> columns, Set<String> inherits, boolean variant)
-    {
+    public CreateSchemaDesc(String schemaName, Set<String> types, List<ColumnDesc> columns, Set<String> inherits, boolean variant, String timestampProperty, String durationProperty) {
         this.schemaName = schemaName;
         this.types = types;
         this.columns = columns;
         this.inherits = inherits;
         this.variant = variant;
+        this.timestampProperty = timestampProperty;
+        this.durationProperty = durationProperty;
     }
 
     /**
@@ -87,5 +90,13 @@ public class CreateSchemaDesc implements MetaDefItem, Serializable
     public boolean isVariant()
     {
         return variant;
+    }
+
+    public String getTimestampProperty() {
+        return timestampProperty;
+    }
+
+    public String getDurationProperty() {
+        return durationProperty;
     }
 }
