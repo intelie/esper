@@ -10,6 +10,7 @@ Major API or EPL changes
   - Support for @Audit to output nested expression results
   - Support for {} array operator to be input to enumeration methods
   - Support for subqueries that return multiple result columns to be used in an expression definition  
+  - Support for interval algebra methods among the existing date-time methods
 
 Changes in version 4.2.0
 ------------------------

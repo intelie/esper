@@ -362,6 +362,9 @@ public class TestEnumDataSources extends TestCase {
     }
 
     private SupportBean_ST0[] toArray(Collection<SupportBean_ST0> it) {
+        if (!it.isEmpty() && it.iterator().next() instanceof EventBean) {
+            fail("Iterator provides EventBean instances");
+        }
         return it.toArray(new SupportBean_ST0[it.size()]);
     }
 }

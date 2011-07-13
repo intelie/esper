@@ -311,7 +311,7 @@ public class TestStreamExpr extends TestCase
         tryInvalid("select s0.getString(1,2,3) from " + SupportBean.class.getName() + " as s0", null);
 
         tryInvalid("select s0.abc() from " + SupportBean.class.getName() + " as s0",
-                   "Error starting statement: Could not find enumeration method, date-time method or instance method named 'abc' in class 'com.espertech.esper.support.bean.SupportBean' taking no parameters [select s0.abc() from com.espertech.esper.support.bean.SupportBean as s0]");
+                   "Error starting statement: Failed to solve 'abc' to either an date-time or enumeration method, an event property or a method on the event underlying object [select s0.abc() from com.espertech.esper.support.bean.SupportBean as s0]");
     }
 
     private void tryInvalid(String clause, String message)

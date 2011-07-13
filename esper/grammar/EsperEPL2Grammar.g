@@ -1841,51 +1841,51 @@ timePeriod
 	;
 
 yearPart
-	:	(number|i=IDENT|substitution) (TIMEPERIOD_YEARS | TIMEPERIOD_YEAR)
+	:	(numberconstant|i=IDENT|substitution) (TIMEPERIOD_YEARS | TIMEPERIOD_YEAR)
 		-> {i!= null}? ^(YEAR_PART ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
-		-> ^(YEAR_PART number? substitution?)
+		-> ^(YEAR_PART numberconstant? substitution?)
 	;
 
 monthPart
-	:	(number|i=IDENT|substitution) (TIMEPERIOD_MONTHS | TIMEPERIOD_MONTH)
+	:	(numberconstant|i=IDENT|substitution) (TIMEPERIOD_MONTHS | TIMEPERIOD_MONTH)
 		-> {i!= null}? ^(MONTH_PART ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
-		-> ^(MONTH_PART number? substitution?)
+		-> ^(MONTH_PART numberconstant? substitution?)
 	;
 
 weekPart
-	:	(number|i=IDENT|substitution) (TIMEPERIOD_WEEKS | TIMEPERIOD_WEEK)
+	:	(numberconstant|i=IDENT|substitution) (TIMEPERIOD_WEEKS | TIMEPERIOD_WEEK)
 		-> {i!= null}? ^(WEEK_PART ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
-		-> ^(WEEK_PART number? substitution?)
+		-> ^(WEEK_PART numberconstant? substitution?)
 	;
 
 dayPart
-	:	(number|i=IDENT|substitution) (TIMEPERIOD_DAYS | TIMEPERIOD_DAY)
+	:	(numberconstant|i=IDENT|substitution) (TIMEPERIOD_DAYS | TIMEPERIOD_DAY)
 		-> {i!= null}? ^(DAY_PART ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
-		-> ^(DAY_PART number? substitution?)
+		-> ^(DAY_PART numberconstant? substitution?)
 	;
 
 hourPart 
-	:	(number|i=IDENT|substitution) (TIMEPERIOD_HOURS | TIMEPERIOD_HOUR)
+	:	(numberconstant|i=IDENT|substitution) (TIMEPERIOD_HOURS | TIMEPERIOD_HOUR)
 		-> {i!= null}? ^(HOUR_PART ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
-		-> ^(HOUR_PART number? substitution?)
+		-> ^(HOUR_PART numberconstant? substitution?)
 	;
 
 minutePart 
-	:	(number|i=IDENT|substitution) (TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN)
+	:	(numberconstant|i=IDENT|substitution) (TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN)
 		-> {i!= null}? ^(MINUTE_PART ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
-		-> ^(MINUTE_PART number? substitution?)
+		-> ^(MINUTE_PART numberconstant? substitution?)
 	;
 	
 secondPart 
-	:	(number|i=IDENT|substitution) (TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC)
+	:	(numberconstant|i=IDENT|substitution) (TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC)
 		-> {i!= null}? ^(SECOND_PART ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
-		-> ^(SECOND_PART number? substitution?)
+		-> ^(SECOND_PART numberconstant? substitution?)
 	;
 	
 millisecondPart 
-	:	(number|i=IDENT|substitution) (TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC)
+	:	(numberconstant|i=IDENT|substitution) (TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC)
 		-> {i!= null}? ^(MILLISECOND_PART ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
-		-> ^(MILLISECOND_PART number? substitution?)
+		-> ^(MILLISECOND_PART numberconstant? substitution?)
 	;
 	
 number

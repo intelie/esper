@@ -80,7 +80,9 @@ public class TestDTIntervalOps extends TestCase {
                 {"2002-05-30T9:00:01.001", 0, true},
         };
         assertExpression(seedTime, 1000, "a.after(b)", expected, null);
-        assertExpression(seedTime, 0, "a.after(b.withTime(9, 0, 0, 0))", expected, null);   // the "b.withTime(...) must retain the duration
+
+        // NOT YET SUPPORTED (a documented limitation of datetime methods)
+        // assertExpression(seedTime, 0, "a.after(b.withTime(9, 0, 0, 0))", expected, null);   // the "b.withTime(...) must retain the duration
     }
 
     public void testInvalid() {
@@ -121,6 +123,8 @@ public class TestDTIntervalOps extends TestCase {
         // test coincides
         tryInvalid("select a.coincides(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b",
                    "Error starting statement: Parameters mismatch for date-time method 'coincides', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing threshold for start and end value, or an expression providing timestamp or timestamped-event and an expression providing threshold for start value and an expression providing threshold for end value, but receives 4 expressions [select a.coincides(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b]");
+        tryInvalid("select a.coincides(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: The coincides date-time method does not allow negative start and end values [select a.coincides(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b]");
 
         // test during+interval
         tryInvalid("select a.during(b, 1, 2, 3) from A.std:lastevent() as a, B.std:lastevent() as b",
@@ -129,6 +133,10 @@ public class TestDTIntervalOps extends TestCase {
         // test finishes+finished-by
         tryInvalid("select a.finishes(b, 1, 2) from A.std:lastevent() as a, B.std:lastevent() as b",
                    "Error starting statement: Parameters mismatch for date-time method 'finishes', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between end timestamps, but receives 3 expressions [select a.finishes(b, 1, 2) from A.std:lastevent() as a, B.std:lastevent() as b]");
+        tryInvalid("select a.finishes(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: The finishes date-time method does not allow negative threshold value [select a.finishes(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b]");
+        tryInvalid("select a.finishedby(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b",
+                   "Error starting statement: The finishedby date-time method does not allow negative threshold value [select a.finishedby(b, -1) from A.std:lastevent() as a, B.std:lastevent() as b]");
 
         // test meets+met-by
         tryInvalid("select a.meets(b, 1, 2) from A.std:lastevent() as a, B.std:lastevent() as b",
@@ -295,6 +303,18 @@ public class TestDTIntervalOps extends TestCase {
         };
         expectedValidator = new BeforeValidator(200L, 800L);
         assertExpression(seedTime, 0, "a.before(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
+
+        // test negative and reversed max and min
+        expected = new Object[][] {
+                {"2002-05-30T8:59:59.500", 0, false},
+                {"2002-05-30T9:00:00.99", 0, false},
+                {"2002-05-30T9:00:00.100", 0, true},
+                {"2002-05-30T9:00:00.500", 0, true},
+                {"2002-05-30T9:00:00.501", 0, false},
+        };
+        expectedValidator = new BeforeValidator(-500L, -100L);
+        assertExpression(seedTime, 0, "a.before(b, -100 milliseconds, -500 milliseconds)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.before(b, -500 milliseconds, -100 milliseconds)", expected, expectedValidator);
     }
 
     public void testAfterWhereClause() {
@@ -309,6 +329,7 @@ public class TestDTIntervalOps extends TestCase {
         assertExpression(seedTime, 0, "a.after(b)", expected, expectedValidator);
         assertExpression(seedTime, 0, "a.after(b, 1 millisecond)", expected, expectedValidator);
         assertExpression(seedTime, 0, "a.after(b, 1 millisecond, 1000000000L)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.after(b, 1000000000L, 1 millisecond)", expected, expectedValidator);
         assertExpression(seedTime, 0, "a.msecdate.after(b)", expected, expectedValidator);
         assertExpression(seedTime, 0, "a.after(b.utildate)", expected, expectedValidator);
 
@@ -357,6 +378,17 @@ public class TestDTIntervalOps extends TestCase {
         };
         expectedValidator = new AfterValidator(200L, 800L);
         assertExpression(seedTime, 0, "a.after(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
+
+        // test negative distances
+        expected = new Object[][] {
+                {"2002-05-30T8:59:59.599", 0, false},
+                {"2002-05-30T8:59:59.600", 0, true},
+                {"2002-05-30T8:59:59.1000", 0, true},
+                {"2002-05-30T8:59:59.1001", 0, false},
+        };
+        expectedValidator = new AfterValidator(-500L, -100L);
+        assertExpression(seedTime, 100, "a.after(b, -100 milliseconds, -500 milliseconds)", expected, expectedValidator);
+        assertExpression(seedTime, 100, "a.after(b, -500 milliseconds, -100 milliseconds)", expected, expectedValidator);
     }
 
     public void testCoincidesWhereClause() {

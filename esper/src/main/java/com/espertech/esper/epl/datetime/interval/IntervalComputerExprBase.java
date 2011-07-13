@@ -29,7 +29,12 @@ public abstract class IntervalComputerExprBase implements IntervalComputer {
         long start = toLong(startValue);
         long end = toLong(endValue);
 
-        return compute(left, leftDuration, right, rightDuration, start, end);
+        if (start > end) {
+            return compute(left, leftDuration, right, rightDuration, end, start);
+        }
+        else {
+            return compute(left, leftDuration, right, rightDuration, start, end);
+        }
     }
 
     public static long toLong(Object value) {

@@ -99,7 +99,7 @@ Core Esper Features
 		
 		[]
 		
-	* Enumeration methods, date-time methods, lambda-expressions, expression definition and reuse, 'new' operator for returning multiple results from an expression
+	* Enumeration methods, date-time methods, Allan's interval algebra, lambda-expressions, expression definition and reuse, 'new' operator for returning multiple results from an expression
 	
 	[]
 		

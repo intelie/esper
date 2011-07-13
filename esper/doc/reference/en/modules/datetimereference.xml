@@ -6,12 +6,25 @@
 		<indexterm><primary>methods</primary><secondary>date-time</secondary></indexterm>
 		
 		<para>
-			EPL date-time methods work on date-time values to perform common tasks such as adding or subtracting time periods, setting or rounding calendar fields and querying fields.
+			EPL date-time methods work on date-time values to perform common tasks such as comparing times and time periods, adding or subtracting time periods, setting or rounding calendar fields and querying fields.
 		</para>
 		
 		<para>
-			Date-time methods operate on any expression or event property that returns either a long-type millisecond value, a <literal>java.util.Calendar</literal> or <literal>java.util.Date</literal>. Consider the built-in single-row function <literal>current_timestamp</literal> for use with date-time methods.
+			Date-time methods operate on:
 		</para>
+		
+		<orderedlist>
+			<listitem>
+				<para>
+                    Any expression or event property that returns either a long-type millisecond value, a <literal>java.util.Calendar</literal> or <literal>java.util.Date</literal> including subclasses. Consider the built-in single-row function <literal>current_timestamp</literal> for use with date-time methods.
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Any event for which the event type declares a timestamp property name and optionally also a duration property name. Date-time methods operate on events by means of the <emphasis>stream-alias</emphasis>.<emphasis>method-name</emphasis> syntax.
+                </para>
+			</listitem>
+		</orderedlist>
 
 		<para>
 			The below table summarizes the built-in date-time methods available:
@@ -29,6 +42,72 @@
 					</row>
 				</thead>
 				<tbody>
+					<row>
+						<entry>after(event or timestamp)</entry>
+						<entry>
+							<para>
+								Returns true if an event happens after another event considering event durations, or a timestamp is after another timestamp.
+							</para>
+							<para>
+								<xref linkend="datetime-method-after"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>before(event or timestamp)</entry>
+						<entry>
+							<para>
+								Returns true if an event happens before another event considering event durations, or a timestamp is before another timestamp.
+							</para>
+							<para>
+								<xref linkend="datetime-method-before"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>coincides(event or timestamp)</entry>
+						<entry>
+							<para>
+								Returns true if an event and another event happen at the same time, or two timestamps are the same value.
+							</para>
+							<para>
+								<xref linkend="datetime-method-coincides"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>during(event or timestamp)</entry>
+						<entry>
+							<para>
+								Returns true if an event happens during the occurance of another event, or when a timestamps falls within the occurance of an event.
+							</para>
+							<para>
+								<xref linkend="datetime-method-during"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>finishes(event or timestamp)</entry>
+						<entry>
+							<para>
+								Returns true if an event starts after another event starts and the event ends at the same time as the other event.
+							</para>
+							<para>
+								<xref linkend="datetime-method-finishes"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>finishedBy(event or timestamp)</entry>
+						<entry>
+							<para>
+								Returns true if an event starts before another event starts and ends at the same time as the other event.
+							</para>
+							<para>
+								<xref linkend="datetime-method-finishedby"/>.
+							</para>
+						</entry>
+					</row>
 					<row>
 						<entry>format()</entry>
 						<entry>
@@ -73,6 +152,39 @@
 						</entry>
 					</row>
 					<row>
+						<entry>includes(event or timestamp)</entry>
+						<entry>
+							<para>
+								Returns true if the parameter event happens during the occurance of the event, or when a timestamps falls within the occurance of the parameter event.
+							</para>
+							<para>
+								<xref linkend="datetime-method-includes"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>meets(event or timestamp)</entry>
+						<entry>
+							<para>
+								Returns true if the event's end time is the same as another event's start time.
+							</para>
+							<para>
+								<xref linkend="datetime-method-meets"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>metBy(event or timestamp)</entry>
+						<entry>
+							<para>
+								Returns true if the event's start time is the same as another event's end time.
+							</para>
+							<para>
+								<xref linkend="datetime-method-metby"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry>minus(duration-millis)</entry>
 						<entry>
 							<para>
@@ -91,6 +203,28 @@
 							</para>
 							<para>
 								<xref linkend="datetime-method-minus"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>overlaps(event or timestamp)</entry>
+						<entry>
+							<para>
+								Returns true if the event starts before another event starts and finishes after the other event starts, but before the other event finishes (events have an overlapping period of time).
+							</para>
+							<para>
+								<xref linkend="datetime-method-overlaps"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>overlappedBy(event or timestamp)</entry>
+						<entry>
+							<para>
+								Returns true if the parameter event starts before the input event starts and the parameter event finishes after the input event starts, but before the parameter event finishes (events have an overlapping period of time).
+							</para>
+							<para>
+								<xref linkend="datetime-method-overlappedby"/>.
 							</para>
 						</entry>
 					</row>
@@ -157,6 +291,28 @@
 							</para>
 							<para>
 								<xref linkend="datetime-method-set"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>starts(event or timestamp)</entry>
+						<entry>
+							<para>
+								Returns true if an event and another event start at the same time and the event's end happens before the other event's end.
+							</para>
+							<para>
+								<xref linkend="datetime-method-starts"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>startedBy(event or timestamp)</entry>
+						<entry>
+							<para>
+									Returns true if an event and another event start at the same time and the other event's end happens before the input event's end.
+							</para>
+							<para>
+								<xref linkend="datetime-method-startedby"/>.
 							</para>
 						</entry>
 					</row>
@@ -647,144 +803,664 @@ from MyEvent]]></programlisting>
 		</para>
 		
 		<para>
-		  When expression input or parameter is only a timestamp value, such as a long-type value or a <literal>Date</literal> or <literal>Calendar</literal> object, the duration is zero and the start and end timestamp represented by that value are the same.
+		  When the expression input is only a timestamp value, such as a long-type value or a <literal>Date</literal> or <literal>Calendar</literal> object, the duration is zero and the start and end timestamp represented by that value are the same timestamp value.
 		</para>
 		
 		<para>
-		  When expression input or parameter is an event that has the special timestamp property and the special duration property declared, the timestamp and duration are taken from the event. 
+		  When expression input is a event stream alias, the engine determine the event type for the stream. If the event type declares a timestamp property name, the engine uses that timestamp that has been desclared and assignes a duration of zero. If the event type also declares a duration property name, the engine takes the long-type duration value from the event.
 		</para>
 		
+		<para>
+		  We use the following terminology:
+		</para>
+
+		<para>
+		  The start timestamp (or <literal>startTimestamp</literal>) is the event's timestamp provided by the event or the timestamp value provided by the expression or event property.
+		</para>
+
+		<para>
+		  The end timestamp (or <literal>endTimestamp</literal>) is defined as start timestamp plus the duration: <literal>endTimestamp = startTimestamp + duration</literal>.
+		</para>
+
 		<para>
 			Interval algebra methods all return <literal>Boolean</literal>-type value. When the input value is null or the value of the first parameter (the compare-to timestamp and duration) are null, the result value is null.
 		</para>
-		
+
+		<sect4 id="datetime-method-examples">
+		  <title>Examples</title>
+		  
+		   <para>
+			  The examples in this section simply use <literal>A</literal> and <literal>B</literal> as event type names. The alias <literal>a</literal> is used to represent <literal>A</literal>-type events and respectively the alias <literal>b</literal> represents <literal>B</literal>-type events.
+		   </para>		  
+		   
+		   <para>
+		     The <literal>create-schema</literal> for types <literal>A</literal> and <literal>B</literal> is shown next. The example declares the property providing timestamp values as <literal>ts</literal> and the property providing duration values as <literal>dur</literal>.
+		   </para>
+		   <programlisting><![CDATA[create schema A as (ts long, dur long) timestamp 'ts' duration 'dur']]></programlisting>
+		   <programlisting><![CDATA[create schema B as (ts long, dur long) timestamp 'ts' duration 'dur']]></programlisting>
+
+		   <para>
+		     The sample EPL below joins the last A and the last B event. It detects A-B event combinations for which, when comparing timestamps, the last A event that occurs before the last B event. The example employs the <literal>before</literal> method:
+		   </para>
+		   <programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.before(b)]]></programlisting>
+
+			<para>
+			  For simplicity, the examples in this section refer to <literal>A</literal> and the alias <literal>a</literal> as the input event. The examples refer to <literal>B</literal> and the alias <literal>b</literal> as the parameter event.
+			</para>
+		 </sect4>
+				
+		<sect4 id="datetime-method-parameters">
+		  <title>Interval Algebra Parameters</title>
+		  
+		   <para>
+			  The first parameter of each interval algebra methods is the event or timestamp to compare to.
+		   </para>		  
+		   
+		   <para>
+		     All remaining parameters to interval algebra methods are intervals and can be any of the following:
+		   </para>
+		   
+			<orderedlist>
+				<listitem>
+					<para>
+						A constant, and event property or more generally any expression returning a numeric value that is the number of seconds. For example: <literal>a.before(b, 2)</literal> (the parameter 2 means 2 seconds). <literal>a.before(b, myIntervalProperty)</literal>.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						A time period expression as described in <xref linkend="datetime-method-includes"/>. For example: <literal>a.before(b, 1 hour 2 minutes)</literal>.
+					</para>
+				</listitem>
+			</orderedlist>		   
+		 </sect4>
+
+		<sect4 id="datetime-method-limitations">
+		  <title>Limitations</title>
+		  
+		   <para>
+			  Date-time method that change date or time fields, such as <literal>withTime</literal>, <literal>withDate</literal>, <literal>set</literal> or <literal>round</literal> methods set the duration to zero.
+		   </para>
+		  
+		   <para>
+		      For example, in the following expression the parameter to the <literal>after</literal> method has a zero duration, and not the duration that the event B duration property provides.
+		   </para>
+		   <programlisting><![CDATA[a.after(b.withTime(9, 0, 0, 0))]]></programlisting>		  
+		 </sect4>
+		 
 		<sect2 id="datetime-method-after">
 		  <title>After</title>
 		  
 		  	<para>
-				The <literal>after</literal> date-time method compares the input value's start timestamp and the first parameter's end timestamp.
+				The <literal>after</literal> date-time method returns true if an event happens after another event considering event durations, or a timestamp is after another timestamp.
+			</para>
+
+		  	<para>
+				The method compares the input value's start timestamp (a.startTimestamp) to the first parameter's end timestamp (b.endTimestamp) to determine whether A happens after B.
 			</para>
 			
 			<para>
-				If used with one parameter, for example in <literal>a.after(b)</literal>, the method returns true if A starts after B ends. The engine applies the formula <literal>a.startTimestamp - b.endTimeStamp &gt; 0</literal>.
+				If used with one parameter, for example in <literal>a.after(b)</literal>, the method returns true if A starts after B ends.
 			</para>
 
 			<para>
-				If providing two parameters, for example in <literal>a.after(b, 5 sec)</literal>, the method returns true if A starts at least 5 seconds after B ends. The engine applies the formula <literal>a.startTimestamp - b.endTimeStamp &gt;= N</literal>.
+				Sample EPL: 
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.after(b)
+// Above matches when:
+//   a.startTimestamp - b.endTimestamp > 0]]></programlisting>
+
+			<para>
+				If providing two parameters, for example in <literal>a.after(b, 5 sec)</literal>, the method returns true if A starts at least 5 seconds after B ends.
 			</para>
 
 			<para>
-				If providing three parameters, for example in <literal>a.after(b, 5 sec, 10 sec)</literal>, the method returns true if A starts at least 5 seconds but no more then 10 seconds after B ends. The engine applies the formula <literal>MIN &lt;= a.startTimestamp - b.endTimeStamp &lt;= MAX</literal>.
+				Sample EPL: 
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.after(b, 5 sec)
+// Above matches when:
+//   a.startTimestamp - b.endTimestamp >= 5 seconds]]></programlisting>
+
+			<para>
+				If providing three parameters, for example in <literal>a.after(b, 5 sec, 10 sec)</literal>, the method returns true if A starts at least 5 seconds but no more then 10 seconds after B ends.
+			</para>
+
+			<para>
+				Sample EPL: 
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.after(b, 5 sec, 10 sec)
+// Above matches when:
+//   5 seconds <= a.startTimestamp - b.endTimestamp <= 10 seconds]]></programlisting>
+			
+			<para>
+			    Negative values for the range are allowed. For example in <literal>a.after(b, -5 sec, -10 sec)</literal>, the method returns true if A starts at least 5 seconds but no more then 10 seconds before B ends.
+			</para>
+			
+			<para>
+				If the range low endpoint is greater than the range high endpoint, the engine automatically reverses them. Thus <literal>a.after(b, 10 sec, 5 sec)</literal> is the same semantics as <literal>a.after(b, 5 sec, 10 sec)</literal>.
 			</para>
 		</sect2>
 				
 		<sect2 id="datetime-method-before">
 		  <title>Before</title>
+		  
+			 <para>
+				 The <literal>before</literal> date-time method returns true if an event happens before another event considering event durations, or a timestamp is before another timestamp.
+			 </para>
+			 
 		  	<para>
-				The <literal>before</literal> date-time method compares the input value's end timestamp and the first parameter's start timestamp.
+				The method compares the input value's end timestamp (a.endTimestamp) and the first parameter's start timestamp (b.startTimestamp) to determine whether A happens before B.
 			</para>
 			
 			<para>
-				If used with one parameter, for example in <literal>a.before(b)</literal>, the method returns true if A ends before B starts. The engine applies the formula <literal>b.startTimestamp - a.endTimeStamp &gt; 0</literal>.
+				If used with one parameter, for example in <literal>a.before(b)</literal>, the method returns true if A ends before B starts. 
 			</para>
 
 			<para>
-				If providing two parameters, for example in <literal>a.before(b, 5 sec)</literal>, the method returns true if A ends at least 5 seconds before B starts. The engine applies the formula <literal>b.startTimestamp - a.endTimeStamp &gt;= N</literal>.
+				Sample EPL: 
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.before(b)
+// Above matches when:
+//   b.startTimestamp - a.endTimestamp > 0]]></programlisting>
+
+			<para>
+				If providing two parameters, for example in <literal>a.before(b, 5 sec)</literal>, the method returns true if A ends at least 5 seconds before B starts.
 			</para>
 
 			<para>
-				If providing three parameters, for example in <literal>a.before(b, 5 sec, 10 sec)</literal>, the method returns true if A ends at least 5 seconds but no more then 10 seconds before B starts. The engine applies the formula <literal>MIN &lt;= a.startTimestamp - b.endTimeStamp &lt;= MAX</literal>.
+				Sample EPL: 
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.before(b, 5 sec)
+// Above matches when:
+//   b.startTimestamp - a.endTimestamp >= 5 seconds]]></programlisting>
+
+			<para>
+				If providing three parameters, for example in <literal>a.before(b, 5 sec, 10 sec)</literal>, the method returns true if A ends at least 5 seconds but no more then 10 seconds before B starts.
+			</para>
+
+			<para>
+				Sample EPL: 
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.before(b, 5 sec, 10 sec)
+// Above matches when:
+//   5 seconds <= b.startTimestamp - a.endTimestamp <= 10 seconds]]></programlisting>
+
+			<para>
+			    Negative values for the range are allowed. For example in <literal>a.before(b, -5 sec, -10 sec)</literal>, the method returns true if A starts at least 5 seconds but no more then 10 seconds after B starts.
+			</para>
+			
+			<para>
+				If the range low endpoint is greater than the range high endpoint, the engine automatically reverses them. Thus <literal>a.before(b, 10 sec, 5 sec)</literal> is the same semantics as <literal>a.before(b, 5 sec, 10 sec)</literal>.
 			</para>
 		</sect2>
 		
 		<sect2 id="datetime-method-coincides">
 		  <title>Coincides</title>
 		  	<para>
-				The <literal>coincides</literal> date-time method compares the input value's end timestamp and the first parameter's start timestamp.
+				The <literal>coincides</literal> date-time method returns true if an event and another event happen at the same time, or two timestamps are the same value.
+			</para>
+
+		  	<para>
+				The method compares the input value's start and end timestamp with the first parameter's start and end timestamp and determines if they equal.
 			</para>
 			
 			<para>
-				If used with one parameter, for example in <literal>a.before(b)</literal>, the method returns true if A ends before B starts. The engine applies the formula <literal>b.startTimestamp - a.endTimeStamp &gt; 0</literal>.
+				If used with one parameter, for example in <literal>a.coincides(b)</literal>, the method returns true if the start timestamp of A and B are the same and the end timestamps of A and B are also the same.
 			</para>
 
 			<para>
-				If providing two parameters, for example in <literal>a.before(b, 5 sec)</literal>, the method returns true if A ends at least 5 seconds before B starts. The engine applies the formula <literal>b.startTimestamp - a.endTimeStamp &gt;= N</literal>.
+				Sample EPL: 
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.coincides(b)
+// Above matches when:
+//   a.startTimestamp = b.startTimestamp and a.endTimestamp = b.endTimestamp]]></programlisting>
+
+			<para>
+				If providing two parameters, for example in <literal>a.coincides(b, 5 sec)</literal>, the method returns true if the difference between the start timestamps of A and B is equal to or less then 5 seconds and the difference between the end timestamps of A and B is also equal to or less then 5 seconds.
 			</para>
 
 			<para>
-				If providing three parameters, for example in <literal>a.before(b, 5 sec, 10 sec)</literal>, the method returns true if A ends at least 5 seconds but no more then 10 seconds before B starts. The engine applies the formula <literal>MIN &lt;= a.startTimestamp - b.endTimeStamp &lt;= MAX</literal>.
+				Sample EPL: 
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.coincides(b, 5 sec)
+// Above matches when:
+//   abs(a.startTimestamp - b.startTimestamp) <= 5 sec and 
+//   abs(a.endTimestamp - b.endTimestamp) <= 5 sec]]></programlisting>
+
+			<para>
+				If providing three parameters, for example in <literal>a.coincides(b, 5 sec, 10 sec)</literal>, the method returns true if the difference between the start timestamps of A and B is equal to or less then 5 seconds and the difference between the end timestamps of A and B is equal to or less then 10 seconds. 
+			</para>
+
+			<para>
+				Sample EPL: 
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.coincides(b, 5 sec, 10 sec)
+// Above matches when:
+//   abs(a.startTimestamp - b.startTimestamp) <= 5 seconds and 
+//   abs(a.endTimestamp - b.endTimestamp) <= 10 seconds]]></programlisting>
+			
+			<para>
+			  A negative value for interval parameters is not allowed. If your interval parameter is itself an expression that returns a negative value the engine logs a warning message and returns null.
 			</para>
 		</sect2>
 		
 		<sect2 id="datetime-method-during">
 		  <title>During</title>
 		  	<para>
-				The <literal>during</literal> date-time method ......
+				The <literal>during</literal> date-time method returns true if an event happens during the occurance of another event, or when a timestamps falls within the occurance of an event..
 			</para>
+
+		  	<para>
+				The method determines whether the input value's start and end timestamp are during the first parameter's start and end timestamp. The symmetrical opposite is <xref linkend="datetime-method-includes"/>.
+			</para>
+			
+			<para>
+				If used with one parameter, for example in <literal>a.during(b)</literal>, the method returns true if the start timestamp of A is after the start timestamp of B and the end timestamp of A is before the end timestamp of B.
+			</para>
+
+			<para>
+				Sample EPL: 
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.during(b)
+// Above matches when:
+//   b.startTimestamp < a.startTimestamp <= a.endTimestamp < b.endTimestamp]]></programlisting>
+
+			<para>
+				If providing two parameters, for example in <literal>a.during(b, 5 sec)</literal>, the method returns true if the difference between the start timestamps of A and B is equal to or less then 5 seconds and the difference between the end timestamps of A and B is also equal to or less then 5 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.during(b, 5 sec)
+// Above matches when:
+//   0 < (a.startTimestamp - b.startTimestamp) <= 5 sec and 
+//   0 < (a.endTimestamp - b.endTimestamp) <= 5 sec]]></programlisting>
+
+			<para>
+				If providing three parameters, for example in <literal>a.during(b, 5 sec, 10 sec)</literal>, the method returns true if the difference between the start timestamps of A and B and the difference between the end timestamps of A and B is between 5 and 10 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.during(b, 5 sec, 10 sec)
+// Above matches when:
+//   5 seconds <= (a.startTimestamp - b.startTimestamp) <= 10 seconds and 
+//   5 seconds <= (a.endTimestamp - b.endTimestamp) <= 10 seconds]]></programlisting>
+
+			<para>
+				If providing five parameters, for example in <literal>a.during(b, 5 sec, 10 sec, 20 sec, 30 sec)</literal>, the method returns true if the difference between the start timestamps of A and B is between 5 seconds and 10 seconds and the difference between the end timestamps of A and B is between 20 seconds and 30 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b
+  where a.during(b, 5 sec, 10 sec, 20 sec, 30 sec)
+// Above matches when:
+//   5 seconds <= (a.startTimestamp - b.startTimestamp) <= 10 seconds and 
+//   20 seconds < (a.endTimestamp - b.endTimestamp) <= 30 seconds]]></programlisting>
+
 		</sect2>
 		
 		<sect2 id="datetime-method-finishes">
 		  <title>Finishes</title>
 		  	<para>
-				The <literal>finishes</literal> date-time method ......
+				The <literal>finishes</literal> date-time method returns true if an event starts after another event starts and the event ends at the same time as the other event.
+			</para>
+
+		  	<para>
+				The method determines whether the input value's start timestamp is after the first parameter's start timestamp and the end timestamp of the input value and the first parameter are the same. The symmetrical opposite is <xref linkend="datetime-method-finishedby"/>.
+			</para>
+			
+			<para>
+				If used with one parameter, for example in <literal>a.finishes(b)</literal>, the method returns true if the start timestamp of A is after the start timestamp of B and the end timestamp of A and B are the same.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.finishes(b)
+// Above matches when:
+//   b.startTimestamp < a.startTimestamp and a.endTimestamp = b.endTimestamp]]></programlisting>
+
+			<para>
+				If providing two parameters, for example in <literal>a.finishes(b, 5 sec)</literal>, the method returns true if the start timestamp of A is after the start timestamp of B and the difference between the end timestamps of A and B is equal to or less then 5 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.finishes(b, 5 sec)
+// Above matches when:
+//   b.startTimestamp < a.startTimestamp and 
+//   abs(a.endTimestamp - b.endTimestamp ) < 5 seconds]]></programlisting>
+
+			<para>
+			  A negative value for interval parameters is not allowed. If your interval parameter is itself an expression that returns a negative value the engine logs a warning message and returns null.
 			</para>
 		</sect2>
 		
 		<sect2 id="datetime-method-finishedby">
 		  <title>Finished By</title>
+
 		  	<para>
-				The <literal>finishedBy</literal> date-time method ......
+				The <literal>finishedBy</literal> date-time method returns true if an event starts before another event starts and the event ends at the same time as the other event.
 			</para>
+
+		  	<para>
+				The method determines whether the input value's start timestamp happens before the first parameter's start timestamp and the end timestamp of the input value and the first parameter are the same. The symmetrical opposite is <xref linkend="datetime-method-finishes"/>.
+			</para>
+			
+			<para>
+				If used with one parameter, for example in <literal>a.finishedBy(b)</literal>, the method returns true if the start timestamp of A is before the start timestamp of B and the end timestamp of A and B are the same.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.finishedBy(b)
+// Above matches when:
+//   a.startTimestamp < b.startTimestamp and a.endTimestamp = b.endTimestamp]]></programlisting>
+
+			<para>
+				If providing two parameters, for example in <literal>a.finishedBy(b, 5 sec)</literal>, the method returns true if the start timestamp of A is before the start timestamp of B and the difference between the end timestamps of A and B is equal to or less then 5 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.finishedBy(b, 5 sec)
+// Above matches when:
+//   a.startTimestamp < b.startTimestamp and 
+//   abs(a.endTimestamp - b.endTimestamp ) < 5 seconds]]></programlisting>
 		</sect2>
 		
 		<sect2 id="datetime-method-includes">
 		  <title>Includes</title>
 		  	<para>
-				The <literal>includes</literal> date-time method ......
+				The <literal>includes</literal> date-time method returns true if the parameter event happens during the occurance of the input event, or when a timestamps falls within the occurance of the parameter event.
 			</para>
+
+		  	<para>
+				The method determines whether the first parameter's start and end timestamp are during the input value's start and end timestamp. The symmetrical opposite is <xref linkend="datetime-method-during"/>.
+			</para>
+			
+			<para>
+				If used with one parameter, for example in <literal>a.includes(b)</literal>, the method returns true if the start timestamp of B is after the start timestamp of A and the end timestamp of B and is before the end timestamp of A.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.includes(b)
+// Above matches when:
+//   a.startTimestamp < b.startTimestamp <= b.endTimestamp < a.endTimestamp ]]></programlisting>
+
+			<para>
+				If providing two parameters, for example in <literal>a.includes(b, 5 sec)</literal>, the method returns true if the difference between the start timestamps of A and B is equal to or less then 5 seconds and the difference between the end timestamps of A and B is also equal to or less then 5 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.includes(b, 5 sec)
+// Above matches when:
+//   0 < (b.startTimestamp - a.startTimestamp) <= 5 sec and 
+//   (a.endTimestamp - b.endTimestamp) <= 5 sec]]></programlisting>
+
+			<para>
+				If providing three parameters, for example in <literal>a.includes(b, 5 sec, 10 sec)</literal>, the method returns true if the difference between the start timestamps of A and B and the difference between the end timestamps of A and B is between 5 and 10 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.includes(b, 5 sec, 10 sec)
+// Above matches when:
+//   5 seconds <= (a.startTimestamp - b.startTimestamp) <= 10 seconds and 
+//   5 seconds < (a.endTimestamp - b.endTimestamp) <= 10 seconds]]></programlisting>
+
+			<para>
+				If providing five parameters, for example in <literal>a.includes(b, 5 sec, 10 sec, 20 sec, 30 sec)</literal>, the method returns true if the difference between the start timestamps of A and B is between 5 seconds and 10 seconds and the difference between the end timestamps of A and B is between 20 seconds and 30 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.includes(b, 5 sec, 10 sec, 20 sec, 30 sec)
+// Above matches when:
+//   5 seconds <= (a.startTimestamp - b.startTimestamp) <= 10 seconds and 
+//   20 seconds < (a.endTimestamp - b.endTimestamp) <= 30 seconds]]></programlisting>
 		</sect2>
 		
 		<sect2 id="datetime-method-meets">
 		  <title>Meets</title>
 		  	<para>
-				The <literal>meets</literal> date-time method ......
+				The <literal>meets</literal> date-time method returns true if the event's end time is the same as another event's start time.
 			</para>
+
+		  	<para>
+				The method compares the input value's end timestamp and the first parameter's start timestamp and determines whether they equal.
+			</para>
+			
+			<para>
+				If used with one parameter, for example in <literal>a.meets(b)</literal>, the method returns true if the end timestamp of A is the same as the start timestamp of A.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.meets(b)
+// Above matches when:
+//   a.endTimestamp = b.startTimestamp]]></programlisting>
+
+			<para>
+				If providing two parameters, for example in <literal>a.meets(b, 5 sec)</literal>, the method returns true if the difference between the end timestamp of A and the start timestamp of B is equal to or less then 5 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.meets(b, 5 sec)
+// Above matches when:
+//   abs(b.startTimestamp - a.endTimestamp) < 5 seconds]]></programlisting>
+
 		</sect2>
 		
 		<sect2 id="datetime-method-metby">
 		  <title>Met By</title>
 		  	<para>
-				The <literal>metBy</literal> date-time method ......
+				The <literal>metBy</literal> date-time method returns true if the event's start time is the same as another event's end time.
 			</para>
+
+		  	<para>
+				The method compares the input value's start timestamp and the first parameter's end timestamp and determines whether they equal.
+			</para>
+			
+			<para>
+				If used with one parameter, for example in <literal>a.metBy(b)</literal>, the method returns true if the start timestamp of A is the same as the end timestamp of B.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.metBy(b)
+// Above matches when:
+//   b.endTimestamp = a.startTimestamp]]></programlisting>
+
+			<para>
+				If providing two parameters, for example in <literal>a.metBy(b, 5 sec)</literal>, the method returns true if the difference between the end timestamps of B and the start timestamp of A is equal to or less then 5 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.metBy(b, 5 sec)
+// Above matches when:
+//   abs(a.startTimestamp - b.endTimestamp) < 5 seconds]]></programlisting>
 		</sect2>
 		
 		<sect2 id="datetime-method-overlaps">
 		  <title>Overlaps</title>
 		  	<para>
-				The <literal>overlaps</literal> date-time method ......
+				The <literal>overlaps</literal> date-time method returns true if the event starts before another event starts and finishes after the other event starts, but before the other event finishes (events have an overlapping period of time).
 			</para>
+
+		  	<para>
+				The method determines whether the input value's start and end timestamp indicate an overlap with the first parameter's start and end timestamp, such that A starts before B starts and A ends after B started but before B ends.
+			</para>
+			
+			<para>
+				If used with one parameter, for example in <literal>a.overlaps(b)</literal>, the method returns true if the start timestamp of A is before the start timestamp of B and the end timestamp of A and is before the end timestamp of B.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.overlaps(b)
+// Above matches when:
+//   a.startTimestamp < b.startTimestamp < a.endTimestamp < b.endTimestamp]]></programlisting>
+
+			<para>
+				If providing two parameters, for example in <literal>a.overlaps(b, 5 sec)</literal>, the method returns true if, in addition, the difference between the end timestamp of A and the start timestamp of B is equal to or less then 5 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.overlaps(b, 5 sec)
+// Above matches when:
+//   a.startTimestamp < b.startTimestamp < a.endTimestamp < b.endTimestamp and 
+//   0 <= a.endTimestamp - b.startTimestamp <= 5 seconds]]></programlisting>
+
+			<para>
+				If providing three parameters, for example in <literal>a.overlaps(b, 5 sec, 10 sec)</literal>, the method returns true if, in addition, the difference between the end timestamp of A and the start timestamp of B is between 5 and 10 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.overlaps(b, 5 sec, 10 sec)
+// Above matches when:
+//   a.startTimestamp < b.startTimestamp < a.endTimestamp < b.endTimestamp and 
+//   5 seconds <= a.endTimestamp - b.startTimestamp <= 10 seconds]]></programlisting>
 		</sect2>
 		
 		<sect2 id="datetime-method-overlappedby">
 		  <title>Overlapped By</title>
 		  	<para>
-				The <literal>overlappedBy</literal> date-time method ......
+				The <literal>overlappedBy</literal> date-time method returns true if the parameter event starts before the input event starts and the parameter event finishes after the input event starts, but before the parameter event finishes (events have an overlapping period of time).
 			</para>
+
+		  	<para>
+				The method determines whether the input value's start and end timestamp indicate an overlap with the first parameter's start and end timestamp, such that B starts before A starts and B ends after A started but before A ends.
+			</para>
+			
+			<para>
+				If used with one parameter, for example in <literal>a.overlappedBy(b)</literal>, the method returns true if the start timestamp of B is before the start timestamp of A and the end timestamp of B and is before the end timestamp of A.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.overlappedBy(b)
+// Above matches when:
+//   b.startTimestamp < a.startTimestamp < b.endTimestamp < a.endTimestamp]]></programlisting>
+
+			<para>
+				If providing two parameters, for example in <literal>a.overlappedBy(b, 5 sec)</literal>, the method returns true if, in addition, the difference between the end timestamp of B and the start timestamp of A is equal to or less then 5 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.overlappedBy(b, 5 sec)
+// Above matches when:
+//   b.startTimestamp < a.startTimestamp < b.endTimestamp < a.endTimestamp and 
+//   0 <= b.endTimestamp - a.startTimestamp <= 5 seconds]]></programlisting>
+
+			<para>
+				If providing three parameters, for example in <literal>a.overlappedBy(b, 5 sec, 10 sec)</literal>, the method returns true if, in addition, the difference between the end timestamp of B and the start timestamp of A is between 5 and 10 seconds. 
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.overlappedBy(b, 5 sec, 10 sec)
+// Above matches when:
+//   b.startTimestamp < a.startTimestamp < b.endTimestamp < a.endTimestamp and 
+//   5 seconds <= b.endTimestamp - a.startTimestamp <= 10 seconds]]></programlisting>
+
 		</sect2>
 
 		<sect2 id="datetime-method-starts">
 		  <title>Starts</title>
 		  	<para>
-				The <literal>starts</literal> date-time method ......
+				The <literal>starts</literal> date-time method returns true if an event and another event start at the same time and the event's end happens before the other event's end.
 			</para>
+
+		  	<para>
+				The method determines whether the start timestamps of the input value and the first parameter are the same and the end timestamp of the input value is before the end timestamp of the first parameter.
+			</para>
+			
+			<para>
+				If used with one parameter, for example in <literal>a.starts(b)</literal>, the method returns true if the start timestamp of A and B are the same and the end timestamp of A is before the end timestamp of B.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.starts(b)
+// Above matches when:
+//   a.startTimestamp = b.startTimestamp and a.endTimestamp < b.endTimestamp]]></programlisting>
+
+			<para>
+				If providing two parameters, for example in <literal>a.starts(b, 5 sec)</literal>, the method returns true if the difference between the start timestamps of A and B is between is equal to or less then 5 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.starts(b, 5 sec)
+// Above matches when:
+//   abs(a.startTimestamp - b.startTimestamp) < 5 seconds and 
+//    a.endTimestamp < b.endTimestamp]]></programlisting>
 		</sect2>
 		
 		<sect2 id="datetime-method-startedby">
 		  <title>Started By</title>
 		  	<para>
-				The <literal>startedby</literal> date-time method ......
+				The <literal>startedBy</literal> date-time method returns returns true if an event and another event start at the same time and the other event's end happens before the input event's end.
 			</para>
-		</sect2>		
+
+		  	<para>
+				The method determines whether the start timestamp of the input value and the first parameter are the same and the end timestamp of the first parameter is before the end timestamp of the input value.
+			</para>
+			
+			<para>
+				If used with one parameter, for example in <literal>a.startedBy(b)</literal>, the method returns true if the start timestamp of A and B are the same and the end timestamp of B is before the end timestamp of A.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.startedBy(b)
+// Above matches when:
+//   a.startTimestamp = b.startTimestamp and B.endTimestamp < a.endTimestamp]]></programlisting>
+
+			<para>
+				If providing two parameters, for example in <literal>a.startedBy(b, 5 sec)</literal>, the method returns true if the difference between the start timestamps of A and B is between is equal to or less then 5 seconds.
+			</para>
+
+			<para>
+				Sample EPL:
+			</para>
+			<programlisting><![CDATA[select * from A.std:lastevent() as a, B.std:lastevent() as b where a.startedBy(b, 5 sec)
+// Above matches when:
+//   abs(a.startTimestamp - b.startTimestamp) < 5 seconds and 
+//    b.endTimestamp < a.endTimestamp]]></programlisting>
+		</sect2>
 	</sect1>
 
 </chapter>
