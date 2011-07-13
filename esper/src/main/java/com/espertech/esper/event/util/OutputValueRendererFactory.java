@@ -21,7 +21,7 @@ public class OutputValueRendererFactory
         {
             type = type.getComponentType();
         }
-        if ((type == String.class) || (type == Character.class) || (type == char.class))
+        if ((type == String.class) || (type == Character.class) || (type == char.class) || type.isEnum())
         {
             if (options.isXMLOutput())
             {

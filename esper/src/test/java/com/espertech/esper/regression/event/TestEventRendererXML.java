@@ -5,10 +5,10 @@ import com.espertech.esper.client.util.XMLRenderingOptions;
 import com.espertech.esper.event.util.OutputValueRendererXMLString;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
+import com.espertech.esper.support.bean.SupportEnum;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import junit.framework.TestCase;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -29,6 +29,7 @@ public class TestEventRendererXML extends TestCase
         bean.setIntPrimitive(1);
         bean.setIntBoxed(992);
         bean.setCharPrimitive('x');
+        bean.setEnumValue(SupportEnum.ENUM_VALUE_2);
 
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         EPStatement statement = epService.getEPAdministrator().createEPL("select * from SupportBean");
@@ -42,6 +43,7 @@ public class TestEventRendererXML extends TestCase
                 "  <bytePrimitive>0</bytePrimitive>\n" +
                 "  <charPrimitive>x</charPrimitive>\n" +
                 "  <doublePrimitive>0.0</doublePrimitive>\n" +
+                "  <enumValue>ENUM_VALUE_2</enumValue>\n" +
                 "  <floatPrimitive>0.0</floatPrimitive>\n" +
                 "  <intBoxed>992</intBoxed>\n" +
                 "  <intPrimitive>1</intPrimitive>\n" +
@@ -53,6 +55,7 @@ public class TestEventRendererXML extends TestCase
                 "    <bytePrimitive>0</bytePrimitive>\n" +
                 "    <charPrimitive>x</charPrimitive>\n" +
                 "    <doublePrimitive>0.0</doublePrimitive>\n" +
+                "    <enumValue>ENUM_VALUE_2</enumValue>\n" +
                 "    <floatPrimitive>0.0</floatPrimitive>\n" +
                 "    <intBoxed>992</intBoxed>\n" +
                 "    <intPrimitive>1</intPrimitive>\n" +
@@ -65,10 +68,7 @@ public class TestEventRendererXML extends TestCase
 
         result = epService.getEPRuntime().getEventRenderer().renderXML("supportBean", statement.iterator().next(), new XMLRenderingOptions().setDefaultAsAttribute(true));
         // System.out.println(result);
-        expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<supportBean boolPrimitive=\"false\" bytePrimitive=\"0\" charPrimitive=\"x\" doublePrimitive=\"0.0\" floatPrimitive=\"0.0\" intBoxed=\"992\" intPrimitive=\"1\" longPrimitive=\"0\" shortPrimitive=\"0\" string=\"a\\u000ac\">\n" +
-                "    <this boolPrimitive=\"false\" bytePrimitive=\"0\" charPrimitive=\"x\" doublePrimitive=\"0.0\" floatPrimitive=\"0.0\" intBoxed=\"992\" intPrimitive=\"1\" longPrimitive=\"0\" shortPrimitive=\"0\" string=\"a\\u000ac\"/>\n" +
-                "</supportBean>";
+        expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <supportBean boolPrimitive=\"false\" bytePrimitive=\"0\" charPrimitive=\"x\" doublePrimitive=\"0.0\" enumValue=\"ENUM_VALUE_2\" floatPrimitive=\"0.0\" intBoxed=\"992\" intPrimitive=\"1\" longPrimitive=\"0\" shortPrimitive=\"0\" string=\"a\\u000ac\"> <this boolPrimitive=\"false\" bytePrimitive=\"0\" charPrimitive=\"x\" doublePrimitive=\"0.0\" enumValue=\"ENUM_VALUE_2\" floatPrimitive=\"0.0\" intBoxed=\"992\" intPrimitive=\"1\" longPrimitive=\"0\" shortPrimitive=\"0\" string=\"a\\u000ac\"/> </supportBean>";
         assertEquals(removeNewline(expected), removeNewline(result));
     }
 
