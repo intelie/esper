@@ -55,8 +55,8 @@ public class WrapperEventType implements EventTypeSPI
     private EventPropertyDescriptor[] writableProperties;
     private Map<String, Pair<EventPropertyDescriptor, EventPropertyWriter>> writers;
 
-    private String timestampPropertyName;
-    private String durationPropertyName;
+    private String startTimestampPropertyName;
+    private String endTimestampPropertyName;
 
     /**
      * Ctor.
@@ -100,18 +100,18 @@ public class WrapperEventType implements EventTypeSPI
 		this.propertyDesc = propertyDesc.toArray(new EventPropertyDescriptor[propertyDesc.size()]);
 
         if (metadata.getTypeClass() == EventTypeMetadata.TypeClass.NAMED_WINDOW) {
-            timestampPropertyName = eventType.getTimestampPropertyName();
-            durationPropertyName = eventType.getDurationPropertyName();
-            EventTypeUtility.validateTimestampAndDuration(this, timestampPropertyName, durationPropertyName);
+            startTimestampPropertyName = eventType.getStartTimestampPropertyName();
+            endTimestampPropertyName = eventType.getEndTimestampPropertyName();
+            EventTypeUtility.validateTimestampProperties(this, startTimestampPropertyName, endTimestampPropertyName);
         }
     }
 
-    public String getTimestampPropertyName() {
-        return timestampPropertyName;
+    public String getStartTimestampPropertyName() {
+        return startTimestampPropertyName;
     }
 
-    public String getDurationPropertyName() {
-        return durationPropertyName;
+    public String getEndTimestampPropertyName() {
+        return endTimestampPropertyName;
     }
 
     public Iterator<EventType> getDeepSuperTypes()

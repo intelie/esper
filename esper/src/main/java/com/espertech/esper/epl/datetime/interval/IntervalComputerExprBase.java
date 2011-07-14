@@ -13,9 +13,9 @@ public abstract class IntervalComputerExprBase implements IntervalComputer {
         this.finish = pair.getEnd().getEvaluator();
     }
 
-    public abstract boolean compute(long left, long leftDuration, long right, long rightDuration, long start, long end);
+    public abstract boolean compute(long leftStartTs, long leftEndTs, long rightStartTs, long rightEndTs, long start, long end);
 
-    public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+    public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
         Object startValue = start.evaluate(eventsPerStream, newData, context);
         if (startValue == null) {
             return null;
@@ -30,10 +30,10 @@ public abstract class IntervalComputerExprBase implements IntervalComputer {
         long end = toLong(endValue);
 
         if (start > end) {
-            return compute(left, leftDuration, right, rightDuration, end, start);
+            return compute(leftStart, leftEnd, rightStart, rightEnd, end, start);
         }
         else {
-            return compute(left, leftDuration, right, rightDuration, start, end);
+            return compute(leftStart, leftEnd, rightStart, rightEnd, start, end);
         }
     }
 

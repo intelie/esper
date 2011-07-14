@@ -4,8 +4,8 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportDateTime;
-import com.espertech.esper.support.bean.SupportTimeDurationA;
-import com.espertech.esper.support.bean.SupportTimeDurationB;
+import com.espertech.esper.support.bean.SupportTimeStartEndA;
+import com.espertech.esper.support.bean.SupportTimeStartEndB;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -29,23 +29,23 @@ public class TestDTIntervalOps extends TestCase {
         listener = new SupportUpdateListener();
 
         ConfigurationEventTypeLegacy configBean = new ConfigurationEventTypeLegacy();
-        configBean.setTimestampProperty("msecdate");
-        configBean.setDurationProperty("duration");
-        epService.getEPAdministrator().getConfiguration().addEventType("A", SupportTimeDurationA.class.getName(), configBean);
-        epService.getEPAdministrator().getConfiguration().addEventType("B", SupportTimeDurationB.class.getName(), configBean);
+        configBean.setStartTimestampPropertyName("msecdateStart");
+        configBean.setEndTimestampPropertyName("msecdateEnd");
+        epService.getEPAdministrator().getConfiguration().addEventType("A", SupportTimeStartEndA.class.getName(), configBean);
+        epService.getEPAdministrator().getConfiguration().addEventType("B", SupportTimeStartEndB.class.getName(), configBean);
     }
 
     public void testCreateSchema() {
 
         // test Map type Long-type timestamps
-        epService.getEPAdministrator().createEPL("create schema TypeA as (ts long, dur long) timestamp ts duration dur");
-        epService.getEPAdministrator().createEPL("create schema TypeB as (ts long, dur long) timestamp ts duration dur");
+        epService.getEPAdministrator().createEPL("create schema TypeA as (startts long, endts long) starttimestamp startts endtimestamp endts");
+        epService.getEPAdministrator().createEPL("create schema TypeB as (startts long, endts long) starttimestamp startts endtimestamp endts");
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select a.includes(b) as val0 from TypeA.std:lastevent() as a, TypeB.std:lastevent() as b");
         stmt.addListener(listener);
 
-        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetMSec("2002-05-30T9:00:00.000"), 1000), "TypeA");
-        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetMSec("2002-05-30T9:00:00.500"), 200), "TypeB");
+        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetMSec("2002-05-30T9:00:00.000"), SupportDateTime.parseGetMSec("2002-05-30T9:00:01.000")), "TypeA");
+        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetMSec("2002-05-30T9:00:00.500"), SupportDateTime.parseGetMSec("2002-05-30T9:00:00.700")), "TypeB");
         assertEquals(true, listener.assertOneGetNewAndReset().get("val0"));
 
         epService.getEPAdministrator().destroyAllStatements();
@@ -53,14 +53,14 @@ public class TestDTIntervalOps extends TestCase {
         epService.getEPAdministrator().getConfiguration().removeEventType("TypeB", true);
 
         // test Map type Calendar-type timestamps
-        epService.getEPAdministrator().createEPL("create schema TypeA as (ts java.util.Calendar, dur long) timestamp ts duration dur");
-        epService.getEPAdministrator().createEPL("create schema TypeB as (ts java.util.Calendar, dur long) timestamp ts duration dur");
+        epService.getEPAdministrator().createEPL("create schema TypeA as (startts java.util.Calendar, endts java.util.Calendar) starttimestamp startts endtimestamp endts");
+        epService.getEPAdministrator().createEPL("create schema TypeB as (startts java.util.Calendar, endts java.util.Calendar) starttimestamp startts endtimestamp endts");
 
         stmt = epService.getEPAdministrator().createEPL("select a.includes(b) as val0 from TypeA.std:lastevent() as a, TypeB.std:lastevent() as b");
         stmt.addListener(listener);
 
-        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetCal("2002-05-30T9:00:00.000"), 1000), "TypeA");
-        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetCal("2002-05-30T9:00:00.500"), 200), "TypeB");
+        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetCal("2002-05-30T9:00:00.000"), SupportDateTime.parseGetCal("2002-05-30T9:00:01.000")), "TypeA");
+        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetCal("2002-05-30T9:00:00.500"), SupportDateTime.parseGetCal("2002-05-30T9:00:00.700")), "TypeB");
         assertEquals(true, listener.assertOneGetNewAndReset().get("val0"));
 
         epService.getEPAdministrator().destroyAllStatements();
@@ -68,19 +68,19 @@ public class TestDTIntervalOps extends TestCase {
         epService.getEPAdministrator().getConfiguration().removeEventType("TypeB", true);
 
         // test Map type Date-type timestamps
-        epService.getEPAdministrator().createEPL("create schema TypeA as (ts java.util.Date, dur long) timestamp ts duration dur");
-        epService.getEPAdministrator().createEPL("create schema TypeB as (ts java.util.Date, dur long) timestamp ts duration dur");
+        epService.getEPAdministrator().createEPL("create schema TypeA as (startts java.util.Date, endts java.util.Date) starttimestamp startts endtimestamp endts");
+        epService.getEPAdministrator().createEPL("create schema TypeB as (startts java.util.Date, endts java.util.Date) starttimestamp startts endtimestamp endts");
 
         stmt = epService.getEPAdministrator().createEPL("select a.includes(b) as val0 from TypeA.std:lastevent() as a, TypeB.std:lastevent() as b");
         stmt.addListener(listener);
 
-        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetDate("2002-05-30T9:00:00.000"), 1000), "TypeA");
-        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetDate("2002-05-30T9:00:00.500"), 200), "TypeB");
+        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetDate("2002-05-30T9:00:00.000"), SupportDateTime.parseGetDate("2002-05-30T9:00:01.000")), "TypeA");
+        epService.getEPRuntime().sendEvent(makeEvent(SupportDateTime.parseGetDate("2002-05-30T9:00:00.500"), SupportDateTime.parseGetDate("2002-05-30T9:00:00.700")), "TypeB");
         assertEquals(true, listener.assertOneGetNewAndReset().get("val0"));
         epService.getEPAdministrator().destroyAllStatements();
 
         // test Bean-type Date-type timestamps
-        String epl = "create schema SupportBean as " + SupportBean.class.getName() + " timestamp longPrimitive duration longBoxed";
+        String epl = "create schema SupportBean as " + SupportBean.class.getName() + " starttimestamp longPrimitive endtimestamp longBoxed";
         epService.getEPAdministrator().createEPL(epl);
 
         stmt = epService.getEPAdministrator().createEPL("select a.get('month') as val0 from SupportBean a");
@@ -99,22 +99,22 @@ public class TestDTIntervalOps extends TestCase {
         // try XML
         ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
         desc.setRootElementName("ABC");
-        desc.setTimestampProperty("mytimestamp");
-        desc.setDurationProperty("myduration");
-        desc.addXPathProperty("mytimestamp", "/test/prop", XPathConstants.NUMBER);
+        desc.setStartTimestampPropertyName("mystarttimestamp");
+        desc.setEndTimestampPropertyName("myendtimestamp");
+        desc.addXPathProperty("mystarttimestamp", "/test/prop", XPathConstants.NUMBER);
         try {
             epService.getEPAdministrator().getConfiguration().addEventType("TypeXML", desc);
             fail();
         }
         catch (ConfigurationException ex) {
-            assertEquals("Declared timestamp property 'mytimestamp' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.Double'", ex.getMessage());
+            assertEquals("Declared start timestamp property 'mystarttimestamp' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.Double'", ex.getMessage());
         }
     }
 
-    private Map<String, Object> makeEvent(Object ts, long duration) {
+    private Map<String, Object> makeEvent(Object startTs, Object endTs) {
         Map<String, Object> event = new HashMap<String, Object>();
-        event.put("ts", ts);
-        event.put("dur", duration);
+        event.put("startts", startTs);
+        event.put("endts", endTs);
         return event;
     }
 
@@ -132,8 +132,7 @@ public class TestDTIntervalOps extends TestCase {
         };
         assertExpression(seedTime, 0, "a.withDate(2001, 1, 1).before(b.withDate(2001, 1, 1))", expected, null);
 
-        // Test duration preserved when using calendar ops
-        // Test target preserves duration.
+        // Test end-timestamp preserved when using calendar ops
         expected = new Object[][] {
                 {"2002-05-30T8:59:59.000", 2000, false},
         };
@@ -143,8 +142,7 @@ public class TestDTIntervalOps extends TestCase {
         };
         assertExpression(seedTime, 0, "a.withTime(8, 59, 59, 0).before(b)", expected, null);
 
-        // Test duration preserved when using calendar ops
-        // Parameter preserves duration.
+        // Test end-timestamp preserved when using calendar ops
         expected = new Object[][] {
                 {"2002-05-30T9:00:01.000", 0, false},
                 {"2002-05-30T9:00:01.001", 0, true},
@@ -152,7 +150,7 @@ public class TestDTIntervalOps extends TestCase {
         assertExpression(seedTime, 1000, "a.after(b)", expected, null);
 
         // NOT YET SUPPORTED (a documented limitation of datetime methods)
-        // assertExpression(seedTime, 0, "a.after(b.withTime(9, 0, 0, 0))", expected, null);   // the "b.withTime(...) must retain the duration
+        // assertExpression(seedTime, 0, "a.after(b.withTime(9, 0, 0, 0))", expected, null);   // the "b.withTime(...) must retain the end-timestamp correctness (a documented limitation)
     }
 
     public void testInvalid() {
@@ -232,25 +230,34 @@ public class TestDTIntervalOps extends TestCase {
     public void testInvalidConfig() {
         ConfigurationEventTypeLegacy configBean = new ConfigurationEventTypeLegacy();
 
-        configBean.setTimestampProperty("xyz");
-        tryInvalidConfig(configBean, "Declared timestamp property name 'xyz' was not found");
+        configBean.setStartTimestampPropertyName(null);
+        configBean.setEndTimestampPropertyName("caldate");
+        tryInvalidConfig(SupportDateTime.class, configBean, "Declared end timestamp property requires that a start timestamp property is also declared");
 
-        configBean.setTimestampProperty("longPrimitive");
-        configBean.setDurationProperty("xyz");
-        tryInvalidConfig(configBean, "Declared duration property name 'xyz' was not found");
+        configBean.setStartTimestampPropertyName("xyz");
+        configBean.setEndTimestampPropertyName(null);
+        tryInvalidConfig(SupportBean.class, configBean, "Declared start timestamp property name 'xyz' was not found");
 
-        configBean.setDurationProperty(null);
-        configBean.setTimestampProperty("string");
-        tryInvalidConfig(configBean, "Declared timestamp property 'string' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.String'");
+        configBean.setStartTimestampPropertyName("longPrimitive");
+        configBean.setEndTimestampPropertyName("xyz");
+        tryInvalidConfig(SupportBean.class, configBean, "Declared end timestamp property name 'xyz' was not found");
 
-        configBean.setTimestampProperty("longPrimitive");
-        configBean.setDurationProperty("string");
-        tryInvalidConfig(configBean, "Declared duration property 'string' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.String'");
+        configBean.setEndTimestampPropertyName(null);
+        configBean.setStartTimestampPropertyName("string");
+        tryInvalidConfig(SupportBean.class, configBean, "Declared start timestamp property 'string' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.String'");
+
+        configBean.setStartTimestampPropertyName("longPrimitive");
+        configBean.setEndTimestampPropertyName("string");
+        tryInvalidConfig(SupportBean.class, configBean, "Declared end timestamp property 'string' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.String'");
+
+        configBean.setStartTimestampPropertyName("msecdate");
+        configBean.setEndTimestampPropertyName("caldate");
+        tryInvalidConfig(SupportDateTime.class, configBean, "Declared end timestamp property 'caldate' is expected to have the same property type as the start-timestamp property 'msecdate'");
     }
 
-    private void tryInvalidConfig(ConfigurationEventTypeLegacy config, String message) {
+    private void tryInvalidConfig(Class clazz, ConfigurationEventTypeLegacy config, String message) {
         try {
-            epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class.getName(), config);
+            epService.getEPAdministrator().getConfiguration().addEventType(clazz.getName(), clazz.getName(), config);
             fail();
         }
         catch (ConfigurationException ex) {
@@ -273,7 +280,7 @@ public class TestDTIntervalOps extends TestCase {
         String[] fields = "c0,c1".split(",");
         String epl =
                 "select " +
-                "a.msecdate.before(b.msecdate) as c0," +
+                "a.msecdateStart.before(b.msecdateStart) as c0," +
                 "a.before(b) as c1 " +
                 " from A.std:lastevent() as a, " +
                 "      B.std:lastevent() as b";
@@ -281,12 +288,12 @@ public class TestDTIntervalOps extends TestCase {
         stmt.addListener(listener);
         LambdaAssertionUtil.assertTypesAllSame(stmt.getEventType(), fields, Boolean.class);
 
-        epService.getEPRuntime().sendEvent(SupportTimeDurationB.make("B1", "2002-05-30T9:00:00.000", 0));
+        epService.getEPRuntime().sendEvent(SupportTimeStartEndB.make("B1", "2002-05-30T9:00:00.000", 0));
 
-        epService.getEPRuntime().sendEvent(SupportTimeDurationA.make("A1", "2002-05-30T8:59:59.000", 0));
+        epService.getEPRuntime().sendEvent(SupportTimeStartEndA.make("A1", "2002-05-30T8:59:59.000", 0));
         ArrayAssertionUtil.assertAllValuesSame(listener.assertOneGetNewAndReset(), fields, true);
 
-        epService.getEPRuntime().sendEvent(SupportTimeDurationA.make("A2", "2002-05-30T8:59:59.950", 0));
+        epService.getEPRuntime().sendEvent(SupportTimeStartEndA.make("A2", "2002-05-30T8:59:59.950", 0));
         ArrayAssertionUtil.assertAllValuesSame(listener.assertOneGetNewAndReset(), fields, true);
     }
 
@@ -303,20 +310,20 @@ public class TestDTIntervalOps extends TestCase {
         assertExpression(seedTime, 0, "a.before(b)", expected, expectedValidator);
         assertExpression(seedTime, 0, "a.before(b, 1 millisecond)", expected, expectedValidator);
         assertExpression(seedTime, 0, "a.before(b, 1 millisecond, 1000000000L)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.msecdate.before(b)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.utildate.before(b)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.caldate.before(b)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.before(b.msecdate)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.before(b.utildate)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.before(b.caldate)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.msecdate.before(b.msecdate)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.msecdate.before(b.msecdate)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.utildate.before(b.utildate)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.caldate.before(b.caldate)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.utildate.before(b.caldate)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.utildate.before(b.msecdate)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.caldate.before(b.utildate)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.caldate.before(b.msecdate)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.msecdateStart.before(b)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.utildateStart.before(b)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.caldateStart.before(b)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.before(b.msecdateStart)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.before(b.utildateStart)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.before(b.caldateStart)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.msecdateStart.before(b.msecdateStart)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.msecdateStart.before(b.msecdateStart)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.utildateStart.before(b.utildateStart)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.caldateStart.before(b.caldateStart)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.utildateStart.before(b.caldateStart)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.utildateStart.before(b.msecdateStart)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.caldateStart.before(b.utildateStart)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.caldateStart.before(b.msecdateStart)", expected, expectedValidator);
 
         expectedValidator = new BeforeValidator(1L, Long.MAX_VALUE);
         expected = new Object[][] {
@@ -400,16 +407,17 @@ public class TestDTIntervalOps extends TestCase {
         Validator expectedValidator = new AfterValidator(1L, Long.MAX_VALUE);
         String seedTime = "2002-05-30T9:00:00.000";
         Object[][] expected = {
-                {"2002-05-30T8:59:59.000", 0, false},
-                {"2002-05-30T9:00:00.000", 0, false},
+                // TODO
+                // {"2002-05-30T8:59:59.000", 0, false},
+                //{"2002-05-30T9:00:00.000", 0, false},
                 {"2002-05-30T9:00:00.001", 0, true},
         };
         assertExpression(seedTime, 0, "a.after(b)", expected, expectedValidator);
         assertExpression(seedTime, 0, "a.after(b, 1 millisecond)", expected, expectedValidator);
         assertExpression(seedTime, 0, "a.after(b, 1 millisecond, 1000000000L)", expected, expectedValidator);
         assertExpression(seedTime, 0, "a.after(b, 1000000000L, 1 millisecond)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.msecdate.after(b)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.after(b.utildate)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.msecdateStart.after(b)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.after(b.utildateStart)", expected, expectedValidator);
 
         expected = new Object[][] {
                 {"2002-05-30T9:00:00.000", 0, false},
@@ -481,8 +489,8 @@ public class TestDTIntervalOps extends TestCase {
         assertExpression(seedTime, 0, "a.coincides(b)", expected, expectedValidator);
         assertExpression(seedTime, 0, "a.coincides(b, 0 millisecond)", expected, expectedValidator);
         assertExpression(seedTime, 0, "a.coincides(b, 0, 0)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.msecdate.coincides(b)", expected, expectedValidator);
-        assertExpression(seedTime, 0, "a.coincides(b.utildate)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.msecdateStart.coincides(b)", expected, expectedValidator);
+        assertExpression(seedTime, 0, "a.coincides(b.utildateStart)", expected, expectedValidator);
 
         expected = new Object[][] {
                 {"2002-05-30T9:00:00.000", 1, true},
@@ -580,12 +588,11 @@ public class TestDTIntervalOps extends TestCase {
         };
         assertExpression(seedTime, 0, "a.during(b)", expected, expectedValidator);
 
-        // test msec-NO-duration
         expected = new Object[][] {
                 {"2002-05-30T9:00:00.001", 0, true},
                 {"2002-05-30T9:00:00.001", 2000000, true},
         };
-        assertExpression(seedTime, 100, "a.msecdate.during(b)", expected, null);    // want to use null-validator here
+        assertExpression(seedTime, 100, "a.msecdateStart.during(b)", expected, null);    // want to use null-validator here
 
         // test 1-parameter footprint
         expected = new Object[][] {
@@ -1070,22 +1077,24 @@ public class TestDTIntervalOps extends TestCase {
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
 
-        epService.getEPRuntime().sendEvent(SupportTimeDurationB.make("B", seedTime, seedDuration));
+        epService.getEPRuntime().sendEvent(SupportTimeStartEndB.make("B", seedTime, seedDuration));
 
         for (Object[] test : timestampsAndResult) {
             String testtime = (String) test[0];
             Long testduration = ((Number) test[1]).longValue();
             boolean expected = (Boolean) test[2];
 
-            long right = SupportDateTime.parse(seedTime).getTime();
-            long left = SupportDateTime.parse(testtime).getTime();
+            long rightStart = SupportDateTime.parse(seedTime).getTime();
+            long rightEnd = rightStart + seedDuration;
+            long leftStart = SupportDateTime.parse(testtime).getTime();
+            long leftEnd = leftStart + testduration;
             String message = "time " + testtime + " duration " + testduration + " for '" + whereClause + "'";
 
             if (validator != null) {
-                assertEquals("Validation of expected result failed for " + message, expected, validator.validate(left, testduration, right, seedDuration));
+                assertEquals("Validation of expected result failed for " + message, expected, validator.validate(leftStart, leftEnd, rightStart, rightEnd));
             }
 
-            epService.getEPRuntime().sendEvent(SupportTimeDurationA.make("A", testtime, testduration));
+            epService.getEPRuntime().sendEvent(SupportTimeStartEndA.make("A", testtime, testduration));
 
             if (!listener.isInvoked() && expected) {
                 fail("Expected but not received for " + message);
@@ -1100,7 +1109,7 @@ public class TestDTIntervalOps extends TestCase {
     }
 
     private interface Validator {
-        public boolean validate(long left, long durationLeft, long right, long durationRight);
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd);
     }
 
     private class BeforeValidator implements Validator {
@@ -1112,8 +1121,8 @@ public class TestDTIntervalOps extends TestCase {
             this.end = end;
         }
 
-        public boolean validate(long left, long durationLeft, long right, long durationRight) {
-            long delta = right - (left + durationLeft);
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
+            long delta = rightStart - leftEnd;
             return start <= delta && delta <= end;
         }
     }
@@ -1127,8 +1136,8 @@ public class TestDTIntervalOps extends TestCase {
             this.end = end;
         }
 
-        public boolean validate(long left, long durationLeft, long right, long durationRight) {
-            long delta = left - (right + durationRight);
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
+            long delta = leftStart - rightEnd;
             return start <= delta && delta <= end;
         }
     }
@@ -1152,9 +1161,9 @@ public class TestDTIntervalOps extends TestCase {
             this.endThreshold = endThreshold;
         }
 
-        public boolean validate(long left, long durationLeft, long right, long durationRight) {
-            long startDelta = Math.abs(left - right);
-            long endDelta = Math.abs((left + durationLeft) - (right + durationRight));
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
+            long startDelta = Math.abs(leftStart - rightStart);
+            long endDelta = Math.abs(leftEnd - rightEnd);
             return ((startDelta <= startThreshold) &&
                    (endDelta <= endThreshold));
         }
@@ -1194,33 +1203,33 @@ public class TestDTIntervalOps extends TestCase {
             this.maxEndThreshold = maxEndThreshold;
         }
 
-        public boolean validate(long left, long durationLeft, long right, long durationRight) {
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
             if (form == 1) {
-                return right < left &&
-                       (left + durationLeft) < (right + durationRight);
+                return rightStart < leftStart &&
+                       leftEnd < rightEnd;
             }
             else if (form == 2) {
-                long distanceStart = left - right;
+                long distanceStart = leftStart - rightStart;
                 if (distanceStart <= 0 || distanceStart > threshold) {
                     return false;
                 }
-                long distanceEnd = (right + durationRight) - (left + durationLeft);
+                long distanceEnd = rightEnd - leftEnd;
                 return !(distanceEnd <= 0 || distanceEnd > threshold);
             }
             else if (form == 3) {
-                long distanceStart = left - right;
+                long distanceStart = leftStart - rightStart;
                 if (distanceStart < minThreshold || distanceStart > maxThreshold) {
                     return false;
                 }
-                long distanceEnd = (right + durationRight) - (left + durationLeft);
+                long distanceEnd = rightEnd - leftEnd;
                 return !(distanceEnd < minThreshold || distanceEnd > maxThreshold);
             }
             else if (form == 4) {
-                long distanceStart = left - right;
+                long distanceStart = leftStart - rightStart;
                 if (distanceStart < minStartThreshold || distanceStart > maxStartThreshold) {
                     return false;
                 }
-                long distanceEnd = (right + durationRight) - (left + durationLeft);
+                long distanceEnd = rightEnd - leftEnd;
                 return !(distanceEnd < minEndThreshold || distanceEnd > maxEndThreshold);
             }
             throw new IllegalStateException("Invalid form: " + form);
@@ -1237,15 +1246,15 @@ public class TestDTIntervalOps extends TestCase {
             this.threshold = threshold;
         }
 
-        public boolean validate(long left, long durationLeft, long right, long durationRight) {
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
             if (threshold == null) {
-                return ((right < left) && ((left + durationLeft) == (right + durationRight)));
+                return ((rightStart < leftStart) && (leftEnd == rightEnd));
             }
             else {
-                if (right >= left) {
+                if (rightStart >= leftStart) {
                     return false;
                 }
-                long delta = Math.abs((left + durationLeft) - (right + durationRight));
+                long delta = Math.abs(leftEnd - rightEnd);
                 return delta <= threshold;
             }
         }
@@ -1261,16 +1270,16 @@ public class TestDTIntervalOps extends TestCase {
             this.threshold = threshold;
         }
 
-        public boolean validate(long left, long durationLeft, long right, long durationRight) {
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
 
             if (threshold == null) {
-                return ((left < right) && ((left + durationLeft) == (right + durationRight)));
+                return ((leftStart < rightStart) && (leftEnd == rightEnd));
             }
             else {
-                if (left >= right) {
+                if (leftStart >= rightStart) {
                     return false;
                 }
-                long delta = Math.abs((left + durationLeft) - (right + durationRight));
+                long delta = Math.abs(leftEnd - rightEnd);
                 return delta <= threshold;
             }
         }
@@ -1310,34 +1319,34 @@ public class TestDTIntervalOps extends TestCase {
             this.maxEndThreshold = maxEndThreshold;
         }
 
-        public boolean validate(long left, long durationLeft, long right, long durationRight) {
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
                                 
             if (form == 1) {
-                return left < right &&
-                       (right + durationRight) < (left + durationLeft);
+                return leftStart < rightStart &&
+                       rightEnd < leftEnd;
             }
             else if (form == 2) {
-                long distanceStart = right - left;
+                long distanceStart = rightStart - leftStart;
                 if (distanceStart <= 0 || distanceStart > threshold) {
                     return false;
                 }
-                long distanceEnd = (left + durationLeft) - (right + durationRight);
+                long distanceEnd = leftEnd - rightEnd;
                 return !(distanceEnd <= 0 || distanceEnd > threshold);
             }
             else if (form == 3) {
-                long distanceStart = right - left;
+                long distanceStart = rightStart - leftStart;
                 if (distanceStart < minThreshold || distanceStart > maxThreshold) {
                     return false;
                 }
-                long distanceEnd = (left + durationLeft) - (right + durationRight);
+                long distanceEnd = leftEnd - rightEnd;
                 return !(distanceEnd < minThreshold || distanceEnd > maxThreshold);
             }
             else if (form == 4) {
-                long distanceStart = right - left;
+                long distanceStart = rightStart - leftStart;
                 if (distanceStart < minStartThreshold || distanceStart > maxStartThreshold) {
                     return false;
                 }
-                long distanceEnd = (left + durationLeft) - (right + durationRight);
+                long distanceEnd = leftEnd - rightEnd;
                 return !(distanceEnd < minEndThreshold || distanceEnd > maxEndThreshold);
             }
             throw new IllegalStateException("Invalid form: " + form);
@@ -1354,13 +1363,13 @@ public class TestDTIntervalOps extends TestCase {
             this.threshold = threshold;
         }
 
-        public boolean validate(long left, long durationLeft, long right, long durationRight) {
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
 
             if (threshold == null) {
-                return right == (left + durationLeft);
+                return rightStart == leftEnd;
             }
             else {
-                long delta = Math.abs(right - (left + durationLeft));
+                long delta = Math.abs(rightStart - leftEnd);
                 return delta <= threshold;
             }
         }
@@ -1376,13 +1385,13 @@ public class TestDTIntervalOps extends TestCase {
             this.threshold = threshold;
         }
 
-        public boolean validate(long left, long durationLeft, long right, long durationRight) {
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
 
             if (threshold == null) {
-                return left == (right + durationRight);
+                return leftStart == rightEnd;
             }
             else {
-                long delta = Math.abs(left - (right + durationRight));
+                long delta = Math.abs(leftStart - rightEnd);
                 return delta <= threshold;
             }
         }
@@ -1409,11 +1418,11 @@ public class TestDTIntervalOps extends TestCase {
             this.maxThreshold = maxThreshold;
         }
 
-        public boolean validate(long left, long durationLeft, long right, long durationRight) {
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
 
-            boolean match = (left < right) &&
-                       (right < (left + durationLeft)) &&
-                       ((left + durationLeft) < (right + durationRight));
+            boolean match = (leftStart < rightStart) &&
+                       (rightStart < leftEnd) &&
+                       (leftEnd < rightEnd);
 
             if (form == 1) {
                 return match;
@@ -1422,14 +1431,14 @@ public class TestDTIntervalOps extends TestCase {
                 if (!match) {
                     return false;
                 }
-                long delta = (left + durationLeft) - right;
+                long delta = leftEnd - rightStart;
                 return 0 <= delta && delta <= threshold;
             }
             else if (form == 3) {
                 if (!match) {
                     return false;
                 }
-                long delta = (left + durationLeft) - right;
+                long delta = leftEnd - rightStart;
                 return minThreshold <= delta && delta <= maxThreshold;
             }
             throw new IllegalArgumentException("Invalid form " + form);
@@ -1457,11 +1466,11 @@ public class TestDTIntervalOps extends TestCase {
             this.maxThreshold = maxThreshold;
         }
 
-        public boolean validate(long left, long durationLeft, long right, long durationRight) {
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
 
-            boolean match = (right < left) &&
-                            (left < (right + durationRight)) &&
-                            ((right + durationRight) < (left + durationLeft));
+            boolean match = (rightStart < leftStart) &&
+                            (leftStart < rightEnd) &&
+                            (rightEnd < leftEnd);
 
             if (form == 1) {
                 return match;
@@ -1470,14 +1479,14 @@ public class TestDTIntervalOps extends TestCase {
                 if (!match) {
                     return false;
                 }
-                long delta = (right + durationRight) - left;
+                long delta = rightEnd - leftStart;
                 return 0 <= delta && delta <= threshold;
             }
             else if (form == 3) {
                 if (!match) {
                     return false;
                 }
-                long delta = (right + durationRight) - left;
+                long delta = rightEnd - leftStart;
                 return minThreshold <= delta && delta <= maxThreshold;
             }
             throw new IllegalArgumentException("Invalid form " + form);
@@ -1494,13 +1503,13 @@ public class TestDTIntervalOps extends TestCase {
             this.threshold = threshold;
         }
 
-        public boolean validate(long left, long durationLeft, long right, long durationRight) {
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
             if (threshold == null) {
-                return (left == right) && ((left + durationLeft) < (right + durationRight));
+                return (leftStart == rightStart) && (leftEnd < rightEnd);
             }
             else {
-                long delta = Math.abs(left - right);
-                return (delta <= threshold) && ((left + durationLeft) < (right + durationRight));
+                long delta = Math.abs(leftStart - rightStart);
+                return (delta <= threshold) && (leftEnd < rightEnd);
             }
         }
     }
@@ -1515,13 +1524,13 @@ public class TestDTIntervalOps extends TestCase {
             this.threshold = threshold;
         }
 
-        public boolean validate(long left, long durationLeft, long right, long durationRight) {
+        public boolean validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
             if (threshold == null) {
-                return (left == right) && ((left + durationLeft) > (right + durationRight));
+                return (leftStart == rightStart) && (leftEnd > rightEnd);
             }
             else {
-                long delta = Math.abs(left - right);
-                return (delta <= threshold) && ((left + durationLeft) > (right + durationRight));
+                long delta = Math.abs(leftStart - rightStart);
+                return (delta <= threshold) && (leftEnd > rightEnd);
             }
         }
     }

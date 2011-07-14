@@ -8,31 +8,34 @@ import java.util.Iterator;
 
 public class EventTypeUtility {
 
-    public static void validateTimestampAndDuration(EventType eventType, String timestampProperty, String durationProperty)
+    public static void validateTimestampProperties(EventType eventType, String startTimestampProperty, String endTimestampProperty)
             throws ConfigurationException {
 
-        if (timestampProperty != null) {
-            if (eventType.getGetter(timestampProperty) == null) {
-                throw new ConfigurationException("Declared timestamp property name '" + timestampProperty + "' was not found");
+        if (startTimestampProperty != null) {
+            if (eventType.getGetter(startTimestampProperty) == null) {
+                throw new ConfigurationException("Declared start timestamp property name '" + startTimestampProperty + "' was not found");
             }
-            Class type = eventType.getPropertyType(timestampProperty);
+            Class type = eventType.getPropertyType(startTimestampProperty);
             if (!JavaClassHelper.isDatetimeClass(type)) {
-                throw new ConfigurationException("Declared timestamp property '" + timestampProperty + "' is expected to return a Date, Calendar or long-typed value but returns '" + type.getName() + "'");
+                throw new ConfigurationException("Declared start timestamp property '" + startTimestampProperty + "' is expected to return a Date, Calendar or long-typed value but returns '" + type.getName() + "'");
             }
         }
 
-        if (durationProperty != null) {
-            if (eventType.getGetter(durationProperty) == null) {
-                throw new ConfigurationException("Declared duration property name '" + durationProperty + "' was not found");
+        if (endTimestampProperty != null) {
+            if (startTimestampProperty == null) {
+                throw new ConfigurationException("Declared end timestamp property requires that a start timestamp property is also declared");
             }
-            Class type = eventType.getPropertyType(durationProperty);
+            if (eventType.getGetter(endTimestampProperty) == null) {
+                throw new ConfigurationException("Declared end timestamp property name '" + endTimestampProperty + "' was not found");
+            }
+            Class type = eventType.getPropertyType(endTimestampProperty);
             if (!JavaClassHelper.isDatetimeClass(type)) {
-                throw new ConfigurationException("Declared duration property '" + durationProperty + "' is expected to return a Date, Calendar or long-typed value but returns '" + type.getName() + "'");
+                throw new ConfigurationException("Declared end timestamp property '" + endTimestampProperty + "' is expected to return a Date, Calendar or long-typed value but returns '" + type.getName() + "'");
             }
-        }
-
-        if (durationProperty != null && timestampProperty == null) {
-            throw new ConfigurationException("Declared duration property requires that a timestamp property is also declared for the same type");
+            Class startType = eventType.getPropertyType(startTimestampProperty);
+            if (JavaClassHelper.getBoxedType(startType) != JavaClassHelper.getBoxedType(type)) {
+                throw new ConfigurationException("Declared end timestamp property '" + endTimestampProperty + "' is expected to have the same property type as the start-timestamp property '" + startTimestampProperty + "'");
+            }
         }
     }
 

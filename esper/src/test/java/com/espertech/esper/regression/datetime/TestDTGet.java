@@ -2,7 +2,7 @@ package com.espertech.esper.regression.datetime;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportDateTime;
-import com.espertech.esper.support.bean.SupportTimeDurationA;
+import com.espertech.esper.support.bean.SupportTimeStartEndA;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -41,16 +41,16 @@ public class TestDTGet extends TestCase {
 
         // try event as input
         ConfigurationEventTypeLegacy configBean = new ConfigurationEventTypeLegacy();
-        configBean.setTimestampProperty("msecdate");
-        configBean.setDurationProperty("duration");
-        epService.getEPAdministrator().getConfiguration().addEventType("SupportTimeDurationA", SupportTimeDurationA.class.getName(), configBean);
+        configBean.setStartTimestampPropertyName("msecdateStart");
+        configBean.setEndTimestampPropertyName("msecdateEnd");
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportTimeStartEndA", SupportTimeStartEndA.class.getName(), configBean);
 
         stmt.destroy();
-        epl = "select abc.get('month') as val0 from SupportTimeDurationA as abc";
+        epl = "select abc.get('month') as val0 from SupportTimeStartEndA as abc";
         stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
         
-        epService.getEPRuntime().sendEvent(SupportTimeDurationA.make(startTime, 0));
+        epService.getEPRuntime().sendEvent(SupportTimeStartEndA.make("A0", startTime, 0));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "val0".split(","), new Object[]{4});
     }
 

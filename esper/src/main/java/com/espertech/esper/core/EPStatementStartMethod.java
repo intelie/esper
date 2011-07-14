@@ -184,22 +184,22 @@ public class EPStatementStartMethod
                     if (spec.getInherits() != null) {
                         config.getSuperTypes().addAll(spec.getInherits());
                     }
-                    config.setTimestampPropertyName(spec.getTimestampProperty());
-                    config.setDurationPropertyName(spec.getDurationProperty());
+                    config.setStartTimestampPropertyName(spec.getStartTimestampProperty());
+                    config.setEndTimestampPropertyName(spec.getEndTimestampProperty());
                     eventType = services.getEventAdapterService().addNestableMapType(spec.getSchemaName(), typing, config, false, false, true, false, false);
                 }
                 else {
                     if (spec.getTypes().size() == 1) {
                         String typeName = spec.getTypes().iterator().next();
                         try {
-                            // use the existing configuration, if any, possibly adding the timestamp and duration properties
+                            // use the existing configuration, if any, possibly adding the start and end timestamps
                             ConfigurationEventTypeLegacy config = services.getEventAdapterService().getClassLegacyConfigs(typeName);
-                            if (spec.getTimestampProperty() != null || spec.getDurationProperty() != null) {
+                            if (spec.getStartTimestampProperty() != null || spec.getEndTimestampProperty() != null) {
                                 if (config == null) {
                                     config = new ConfigurationEventTypeLegacy();
                                 }
-                                config.setTimestampProperty(spec.getTimestampProperty());
-                                config.setDurationProperty(spec.getDurationProperty());
+                                config.setStartTimestampPropertyName(spec.getStartTimestampProperty());
+                                config.setEndTimestampPropertyName(spec.getEndTimestampProperty());
                                 services.getEventAdapterService().setClassLegacyConfigs(Collections.singletonMap(typeName, config));
                             }
                             eventType = services.getEventAdapterService().addBeanType(spec.getSchemaName(), spec.getTypes().iterator().next(), false, false, false, true);

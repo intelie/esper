@@ -21,7 +21,7 @@
 			</listitem>
 			<listitem>
 				<para>
-                    Any event for which the event type declares a timestamp property name and optionally also a duration property name. Date-time methods operate on events by means of the <emphasis>stream-alias</emphasis>.<emphasis>method-name</emphasis> syntax.
+                    Any event for which the event type declares a start timestamp property name and optionally also a end timestamp property name. Date-time methods operate on events by means of the <emphasis>stream-alias</emphasis>.<emphasis>method-name</emphasis> syntax.
                 </para>
 			</listitem>
 		</orderedlist>
@@ -46,7 +46,7 @@
 						<entry>after(event or timestamp)</entry>
 						<entry>
 							<para>
-								Returns true if an event happens after another event considering event durations, or a timestamp is after another timestamp.
+								Returns true if an event happens after another event, or a timestamp is after another timestamp.
 							</para>
 							<para>
 								<xref linkend="datetime-method-after"/>.
@@ -57,7 +57,7 @@
 						<entry>before(event or timestamp)</entry>
 						<entry>
 							<para>
-								Returns true if an event happens before another event considering event durations, or a timestamp is before another timestamp.
+								Returns true if an event happens before another event, or a timestamp is before another timestamp.
 							</para>
 							<para>
 								<xref linkend="datetime-method-before"/>.
@@ -419,7 +419,7 @@
 			</para>
 			
 			<para>
-				The input value can also be an event. In this case the event type of the event must have the timestamp special property defined and optionally also the duration special property. 
+				The input value can also be an event. In this case the event type of the event must have the start timestamp property name defined and optionally also the end timestamp property name. 
 			</para>
 
 			<para>
@@ -453,7 +453,7 @@ from MyEvent]]></programlisting>
 from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programlisting>
 
 			<para>
-			   For comparing date-time values and considering duration we recommend any of the interval algebra methods. You may also compare millisecond values using the <literal>between</literal> or <literal>in</literal> ranges and inverted ranges or relational operators (<literal>&gt; , &lt;, &gt;=, &lt;=)</literal>.
+			   For comparing date-time values and considering event duration (event start and end timestamps) we recommend any of the interval algebra methods. You may also compare millisecond values using the <literal>between</literal> or <literal>in</literal> ranges and inverted ranges or relational operators (<literal>&gt; , &lt;, &gt;=, &lt;=)</literal>.
 			</para>
 						
 			<para>
@@ -800,31 +800,19 @@ from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programl
 		<title>Interval Algebra Reference</title>
 
 		<para>
-			Interval algebra methods compare start and end timestamps of events or timestamps in general. For an event with zero (0) duration the start and end timestamp of the event is the same. 
+			Interval algebra methods compare start and end timestamps of events or timestamps in general.
 		</para>
 		
 		<para>
-		  When the expression input is only a timestamp value, such as a long-type value or a <literal>Date</literal> or <literal>Calendar</literal> object, the duration is zero and the start and end timestamp represented by that value are the same timestamp value.
+		  When the expression input is only a timestamp value, such as a long-type value or a <literal>Date</literal> or <literal>Calendar</literal> object, the start and end timestamp represented by that value are the same timestamp value.
 		</para>
 		
 		<para>
-		  When expression input is a event stream alias, the engine determine the event type for the stream. If the event type declares a timestamp property name, the engine uses that timestamp that has been desclared and assignes a duration of zero. If the event type also declares a duration property name, the engine takes the long-type duration value from the event.
+		  When expression input is a event stream alias, the engine determine the event type for the stream. If the event type declares a start timestamp property name, the engine uses that start timestamp property to determine the start timestamp for the event. If the event type also declares an end timestamp property name, the engine uses that end timestamp property to determine the end timestamp for the event (i.e. an event with duration). If an end timestamp property name is not declared, the start and end timestamp for each event is the same value and the event is considered to have zero duration (i.e. a point-in-time event).
 		</para>
 		
 		<para>
-		  We use the following terminology:
-		</para>
-
-		<para>
-		  The start timestamp (or <literal>startTimestamp</literal>) is the event's timestamp provided by the event or the timestamp value provided by the expression or event property.
-		</para>
-
-		<para>
-		  The end timestamp (or <literal>endTimestamp</literal>) is defined as start timestamp plus the duration: <literal>endTimestamp = startTimestamp + duration</literal>.
-		</para>
-
-		<para>
-			Interval algebra methods all return <literal>Boolean</literal>-type value. When the input value timestamp is null, or the duration (if defined) is null or the value of the first parameter (the compare-to timestamp and duration) is null, the result value is null.
+			Interval algebra methods all return <literal>Boolean</literal>-type value. When the input value start timestamp is null, or the end timestamp (if defined) is null or any of the start timestamp and end timestamp values of the first parameter is null, the result value is null.
 		</para>
 
 		<sect4 id="datetime-method-examples">
@@ -835,10 +823,10 @@ from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programl
 		   </para>		  
 		   
 		   <para>
-		     The <literal>create-schema</literal> for types <literal>A</literal> and <literal>B</literal> is shown next. The example declares the property providing timestamp values as <literal>ts</literal> and the property providing duration values as <literal>dur</literal>.
+		     The <literal>create-schema</literal> for types <literal>A</literal> and <literal>B</literal> is shown next. The two types are declared the same. The example declares the property providing start timestamp values as <literal>startts</literal> and the property providing end timestamp values as <literal>endts</literal>:
 		   </para>
-		   <programlisting><![CDATA[create schema A as (ts long, dur long) timestamp 'ts' duration 'dur']]></programlisting>
-		   <programlisting><![CDATA[create schema B as (ts long, dur long) timestamp 'ts' duration 'dur']]></programlisting>
+		   <programlisting><![CDATA[create schema A as (startts long, endts long) starttimestamp 'startts' endtimestamp 'endts']]></programlisting>
+		   <programlisting><![CDATA[create schema B as (startts long, endts long) starttimestamp 'startts' endtimestamp 'endts']]></programlisting>
 
 		   <para>
 		     The sample EPL below joins the last A and the last B event. It detects A-B event combinations for which, when comparing timestamps, the last A event that occurs before the last B event. The example employs the <literal>before</literal> method:
@@ -883,11 +871,11 @@ from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programl
 		  <title>Limitations</title>
 		  
 		   <para>
-			  Date-time method that change date or time fields, such as <literal>withTime</literal>, <literal>withDate</literal>, <literal>set</literal> or <literal>round</literal> methods set the duration to zero.
+			  Date-time method that change date or time fields, such as <literal>withTime</literal>, <literal>withDate</literal>, <literal>set</literal> or <literal>round</literal> methods set the end timestamp to the start timestamp.
 		   </para>
 		  
 		   <para>
-		      For example, in the following expression the parameter to the <literal>after</literal> method has a zero duration, and not the duration that the event B duration property provides.
+		      For example, in the following expression the parameter to the <literal>after</literal> method has a zero duration, and not the end timestamp that the event B <literal>endts</literal> property provides.
 		   </para>
 		   <programlisting><![CDATA[a.after(b.withTime(9, 0, 0, 0))]]></programlisting>		  
 		 </sect4>
@@ -896,7 +884,7 @@ from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programl
 		  <title>After</title>
 		  
 		  	<para>
-				The <literal>after</literal> date-time method returns true if an event happens after another event considering event durations, or a timestamp is after another timestamp.
+				The <literal>after</literal> date-time method returns true if an event happens after another event, or a timestamp is after another timestamp.
 			</para>
 
 		  	<para>
@@ -949,7 +937,7 @@ from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programl
 		  <title>Before</title>
 		  
 			 <para>
-				 The <literal>before</literal> date-time method returns true if an event happens before another event considering event durations, or a timestamp is before another timestamp.
+				 The <literal>before</literal> date-time method returns true if an event happens before another event, or a timestamp is before another timestamp.
 			 </para>
 			 
 		  	<para>

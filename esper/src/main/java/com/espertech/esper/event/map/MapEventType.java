@@ -47,8 +47,8 @@ public class MapEventType implements EventTypeSPI
     private Map<String, Pair<EventPropertyDescriptor, EventPropertyWriter>> propertyWriters;
     private EventPropertyDescriptor[] writablePropertyDescriptors;
 
-    private String timstampPropertyName;
-    private String durationPropertyName;
+    private String startTimstampPropertyName;
+    private String endTimestampPropertyName;
 
     private int hashCode;
 
@@ -119,9 +119,9 @@ public class MapEventType implements EventTypeSPI
         copySuperTypes();
 
         if (configMapType != null) {
-            timstampPropertyName = configMapType.getTimestampPropertyName();
-            durationPropertyName = configMapType.getDurationPropertyName();
-            EventTypeUtility.validateTimestampAndDuration(this, timstampPropertyName, durationPropertyName);
+            startTimstampPropertyName = configMapType.getStartTimestampPropertyName();
+            endTimestampPropertyName = configMapType.getEndTimestampPropertyName();
+            EventTypeUtility.validateTimestampProperties(this, startTimstampPropertyName, endTimestampPropertyName);
         }
     }
 
@@ -139,12 +139,12 @@ public class MapEventType implements EventTypeSPI
         return eventTypeId;
     }
 
-    public String getTimestampPropertyName() {
-        return timstampPropertyName;
+    public String getStartTimestampPropertyName() {
+        return startTimstampPropertyName;
     }
 
-    public String getDurationPropertyName() {
-        return durationPropertyName;
+    public String getEndTimestampPropertyName() {
+        return endTimestampPropertyName;
     }
 
     public final Class getPropertyType(String propertyName)

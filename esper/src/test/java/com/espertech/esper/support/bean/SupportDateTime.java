@@ -47,6 +47,18 @@ public class SupportDateTime {
         this.key = key;
     }
 
+    public static Calendar toCalendar(long value) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(value);
+        return cal;
+    }
+
+    public static Date toDate(long value) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(value);
+        return cal.getTime();
+    }
+
     public static SupportDateTime make(String datestr) {
         if (datestr == null) {
             return new SupportDateTime(null, null, null);

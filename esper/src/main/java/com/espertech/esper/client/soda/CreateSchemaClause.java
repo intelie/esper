@@ -8,8 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.client.soda;
 
-import com.espertech.esper.epl.spec.ColumnDesc;
-
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Set;
@@ -27,8 +25,8 @@ public class CreateSchemaClause implements Serializable
     private List<SchemaColumnDesc> columns;
     private Set<String> inherits;
     private boolean variant;
-    private String timestampProperty;
-    private String durationProperty;
+    private String startTimestampProperty;
+    private String endTimestampProperty;
 
     /**
      * Ctor.
@@ -169,20 +167,20 @@ public class CreateSchemaClause implements Serializable
         this.variant = variant;
     }
 
-    public String getTimestampProperty() {
-        return timestampProperty;
+    public String getStartTimestampProperty() {
+        return startTimestampProperty;
     }
 
-    public void setTimestampProperty(String timestampProperty) {
-        this.timestampProperty = timestampProperty;
+    public void setStartTimestampProperty(String startTimestampProperty) {
+        this.startTimestampProperty = startTimestampProperty;
     }
 
-    public String getDurationProperty() {
-        return durationProperty;
+    public String getEndTimestampProperty() {
+        return endTimestampProperty;
     }
 
-    public void setDurationProperty(String durationProperty) {
-        this.durationProperty = durationProperty;
+    public void setEndTimestampProperty(String endTimestampProperty) {
+        this.endTimestampProperty = endTimestampProperty;
     }
 
     /**
@@ -227,13 +225,13 @@ public class CreateSchemaClause implements Serializable
             }
         }
 
-        if (timestampProperty != null) {
-            writer.append(" timestamp ");
-            writer.append(timestampProperty);
+        if (startTimestampProperty != null) {
+            writer.append(" starttimestamp ");
+            writer.append(startTimestampProperty);
         }
-        if (durationProperty != null) {
-            writer.append(" duration ");
-            writer.append(durationProperty);
+        if (endTimestampProperty != null) {
+            writer.append(" endtimestamp ");
+            writer.append(endTimestampProperty);
         }
     }
 }

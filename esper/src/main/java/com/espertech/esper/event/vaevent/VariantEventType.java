@@ -79,11 +79,11 @@ public class VariantEventType implements EventTypeSPI
         }
     }
 
-    public String getTimestampPropertyName() {
+    public String getStartTimestampPropertyName() {
         return null;
     }
 
-    public String getDurationPropertyName() {
+    public String getEndTimestampPropertyName() {
         return null;
     }
 

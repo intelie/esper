@@ -30,8 +30,8 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
     private final String rootElementName;
     private final ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM;
 
-    private String timestampProperty;
-    private String durationProperty;
+    private String startTimestampPropertyName;
+    private String endTimestampPropertyName;
 
     /**
      * XPath namespace context.
@@ -157,10 +157,10 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
 
         super.initialize(new ArrayList<ExplicitPropertyDescriptor>(namedProperties.values()));
 
-        // evaluate timestamp and duration property settings
-        timestampProperty = configurationEventTypeXMLDOM.getTimestampProperty();
-        durationProperty = configurationEventTypeXMLDOM.getDurationProperty();
-        EventTypeUtility.validateTimestampAndDuration(this, timestampProperty, durationProperty);
+        // evaluate start and end timestamp properties if any
+        startTimestampPropertyName = configurationEventTypeXMLDOM.getStartTimestampPropertyName();
+        endTimestampPropertyName = configurationEventTypeXMLDOM.getEndTimestampPropertyName();
+        EventTypeUtility.validateTimestampProperties(this, startTimestampPropertyName, endTimestampPropertyName);
     }
 
     /**
@@ -234,11 +234,11 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
         return null;
     }
 
-    public String getTimestampPropertyName() {
-        return timestampProperty;
+    public String getStartTimestampPropertyName() {
+        return startTimestampPropertyName;
     }
 
-    public String getDurationPropertyName() {
-        return durationProperty;
+    public String getEndTimestampPropertyName() {
+        return endTimestampPropertyName;
     }
 }

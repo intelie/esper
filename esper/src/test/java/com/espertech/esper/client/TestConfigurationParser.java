@@ -142,8 +142,8 @@ public class TestConfigurationParser extends TestCase
         assertTrue(schemaDesc.isXPathPropertyExpr());
         assertFalse(schemaDesc.isEventSenderValidatesRoot());
         assertFalse(schemaDesc.isAutoFragment());
-        assertEquals("ts", schemaDesc.getTimestampProperty());
-        assertEquals("dur", schemaDesc.getDurationProperty());
+        assertEquals("startts", schemaDesc.getStartTimestampPropertyName());
+        assertEquals("endts", schemaDesc.getEndTimestampPropertyName());
 
         // assert mapped events
         assertEquals(1, config.getEventTypesMapEvents().size());
@@ -155,8 +155,8 @@ public class TestConfigurationParser extends TestCase
         assertEquals(1, config.getMapTypeConfigurations().size());
         Set<String> superTypes = config.getMapTypeConfigurations().get("MyMapEvent").getSuperTypes();
         ArrayAssertionUtil.assertEqualsExactOrder(superTypes.toArray(), new Object[] {"MyMapSuperType1", "MyMapSuperType2"});
-        assertEquals("ts", config.getMapTypeConfigurations().get("MyMapEvent").getTimestampPropertyName());
-        assertEquals("dur", config.getMapTypeConfigurations().get("MyMapEvent").getDurationPropertyName());
+        assertEquals("startts", config.getMapTypeConfigurations().get("MyMapEvent").getStartTimestampPropertyName());
+        assertEquals("endts", config.getMapTypeConfigurations().get("MyMapEvent").getEndTimestampPropertyName());
 
         // assert legacy type declaration
         assertEquals(1, config.getEventTypesLegacy().size());
@@ -172,8 +172,8 @@ public class TestConfigurationParser extends TestCase
         assertEquals(Configuration.PropertyResolutionStyle.CASE_INSENSITIVE, legacy.getPropertyResolutionStyle());
         assertEquals("com.mycompany.myapp.MySampleEventFactory.createMyLegacyTypeEvent", legacy.getFactoryMethod());
         assertEquals("myCopyMethod", legacy.getCopyMethod());
-        assertEquals("ts", legacy.getTimestampProperty());
-        assertEquals("dur", legacy.getDurationProperty());
+        assertEquals("startts", legacy.getStartTimestampPropertyName());
+        assertEquals("endts", legacy.getEndTimestampPropertyName());
 
         // assert database reference - data source config
         assertEquals(3, config.getDatabaseReferences().size());

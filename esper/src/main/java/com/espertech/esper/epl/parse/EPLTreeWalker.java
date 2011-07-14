@@ -738,9 +738,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
         }
 
-        // get inherited and timestamp and duration
-        String timestamp = null;
-        String duration = null;
+        // get inherited and start timestamp and end timestamps
+        String startTimestamp = null;
+        String endTimestamp = null;
         Set<String> inherited = new LinkedHashSet<String>();
         for (int i = 0; i < node.getChildCount(); i++) {
             Tree p = node.getChild(i);
@@ -756,20 +756,20 @@ public class EPLTreeWalker extends EsperEPL2Ast
                     }
                     continue;
                 }
-                else if (childName.equals("timestamp")) {
-                    timestamp = p.getChild(1).getChild(0).getText();
+                else if (childName.equals("starttimestamp")) {
+                    startTimestamp = p.getChild(1).getChild(0).getText();
                     continue;
                 }
-                else if (childName.equals("duration")) {
-                    duration = p.getChild(1).getChild(0).getText();
+                else if (childName.equals("endtimestamp")) {
+                    endTimestamp = p.getChild(1).getChild(0).getText();
                     continue;
                 }
-                throw new EPException("Expected 'inherits', 'timestamp' or 'duration' keyword after create-schema clause but encountered '" + p.getChild(0).getText() + "'");
+                throw new EPException("Expected 'inherits', 'starttimestamp' or 'endtimestamp' keyword after create-schema clause but encountered '" + p.getChild(0).getText() + "'");
             }
         }
 
         statementSpec.getStreamSpecs().add(new FilterStreamSpecRaw(new FilterSpecRaw(Object.class.getName(), Collections.<ExprNode>emptyList(), null), Collections.<ViewSpec>emptyList(), null, new StreamSpecOptions()));
-        statementSpec.setCreateSchemaDesc(new CreateSchemaDesc(schemaName, typeNames, columnTypes, inherited, variant, timestamp, duration));
+        statementSpec.setCreateSchemaDesc(new CreateSchemaDesc(schemaName, typeNames, columnTypes, inherited, variant, startTimestamp, endTimestamp));
     }
 
     private void leaveCreateVariable(Tree node)

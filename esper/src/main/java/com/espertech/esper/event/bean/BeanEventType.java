@@ -52,8 +52,8 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
     private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
     private String factoryMethodName;
     private String copyMethodName;
-    private String timestampProperty;
-    private String durationProperty;
+    private String startTimestampPropertyName;
+    private String endTimestampPropertyName;
 
     /**
      * Constructor takes a java bean class as an argument.
@@ -88,19 +88,19 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
 
         initialize(false);
 
-        if (optionalLegacyDef != null && optionalLegacyDef.getTimestampProperty() != null) {
-            timestampProperty = optionalLegacyDef.getTimestampProperty();
-            durationProperty = optionalLegacyDef.getDurationProperty();
-            EventTypeUtility.validateTimestampAndDuration(this, timestampProperty, durationProperty);
+        if (optionalLegacyDef != null) {
+            startTimestampPropertyName = optionalLegacyDef.getStartTimestampPropertyName();
+            endTimestampPropertyName = optionalLegacyDef.getEndTimestampPropertyName();
+            EventTypeUtility.validateTimestampProperties(this, startTimestampPropertyName, endTimestampPropertyName);
         }
     }
 
-    public String getTimestampPropertyName() {
-        return timestampProperty;
+    public String getStartTimestampPropertyName() {
+        return startTimestampPropertyName;
     }
 
-    public String getDurationPropertyName() {
-        return durationProperty;
+    public String getEndTimestampPropertyName() {
+        return endTimestampPropertyName;
     }
 
     public ConfigurationEventTypeLegacy getOptionalLegacyDef() {

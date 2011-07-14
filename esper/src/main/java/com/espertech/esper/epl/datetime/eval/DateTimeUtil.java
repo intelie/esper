@@ -7,20 +7,20 @@ import java.util.Calendar;
 public class DateTimeUtil {
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
-    public static String print(long left, long leftDuration, long right, long rightDuration) {
+    public static String print(long leftStart, long leftEnd, long rightStart, long rightEnd) {
         StringWriter writer = new StringWriter();
 
         writer.append("Left starts ");
-        writer.append(print(left));
+        writer.append(print(leftStart));
 
         writer.append(" ends ");
-        writer.append(print(left + leftDuration));
+        writer.append(print(leftEnd));
 
         writer.append("  Right starts ");
-        writer.append(print(right));
+        writer.append(print(rightStart));
 
         writer.append(" ends ");
-        writer.append(print(right + rightDuration));
+        writer.append(print(rightEnd));
 
         return writer.toString();
     }

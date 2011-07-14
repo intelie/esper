@@ -156,12 +156,12 @@ public class IntervalComputerFactory {
             super(pair, true);
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return computeInternal(left, leftDuration, right, rightDuration, start, end);
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return computeInternal(leftStart, leftEnd, rightStart, rightEnd, start, end);
         }
 
-        public static Boolean computeInternal(long left, long leftDuration, long right, long rightDuration, long start, long end) {
-            long delta = left - (right + rightDuration);
+        public static Boolean computeInternal(long leftStart, long leftEnd, long rightStart, long rightEnd, long start, long end) {
+            long delta = leftStart - rightEnd;
             return start <= delta && delta <= end;
         }
     }
@@ -172,15 +172,15 @@ public class IntervalComputerFactory {
             super(pair);
         }
 
-        public boolean compute(long left, long leftDuration, long right, long rightDuration, long start, long end) {
-            return IntervalComputerConstantAfter.computeInternal(left, leftDuration, right, rightDuration, start, end);
+        public boolean compute(long leftStartTs, long leftEnd, long rightStartTs, long rightEnd, long start, long end) {
+            return IntervalComputerConstantAfter.computeInternal(leftStartTs, leftEnd, rightStartTs, rightEnd, start, end);
         }
     }
 
     public static class IntervalComputerAfterNoParam implements IntervalComputer {
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return left > (right + rightDuration);
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return leftStart > rightEnd;
         }
     }
 
@@ -193,12 +193,12 @@ public class IntervalComputerFactory {
             super(pair, true);
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return computeInternal(left, leftDuration, right, start, end);
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return computeInternal(leftStart, leftEnd, rightStart, start, end);
         }
 
-        public static Boolean computeInternal(long left, long leftDuration, long right, long start, long end) {
-            long delta = right - (left + leftDuration);
+        public static Boolean computeInternal(long left, long leftEnd, long right, long start, long end) {
+            long delta = right - leftEnd;
             return start <= delta && delta <= end;
         }
     }
@@ -209,15 +209,15 @@ public class IntervalComputerFactory {
             super(pair);
         }
 
-        public boolean compute(long left, long leftDuration, long right, long rightDuration, long start, long end) {
-            return IntervalComputerConstantBefore.computeInternal(left, leftDuration, right, start, end);
+        public boolean compute(long leftStartTs, long leftEnd, long rightStartTs, long rightEnd, long start, long end) {
+            return IntervalComputerConstantBefore.computeInternal(leftStartTs, leftEnd, rightStartTs, start, end);
         }
     }
 
     public static class IntervalComputerBeforeNoParam implements IntervalComputer {
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return (left + leftDuration) < right;
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return leftEnd < rightStart;
         }
     }
 
@@ -237,13 +237,13 @@ public class IntervalComputerFactory {
             }
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return computeInternal(left, leftDuration, right, rightDuration, start, end);
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return computeInternal(leftStart, leftEnd, rightStart, rightEnd, start, end);
         }
 
-        public static Boolean computeInternal(long left, long leftDuration, long right, long rightDuration, long startThreshold, long endThreshold) {
+        public static Boolean computeInternal(long left, long leftEnd, long right, long rightEnd, long startThreshold, long endThreshold) {
             return Math.abs(left - right) <= startThreshold &&
-                   Math.abs((left + leftDuration) - (right + rightDuration)) <= endThreshold;
+                   Math.abs(leftEnd - rightEnd) <= endThreshold;
         }
     }
 
@@ -259,7 +259,7 @@ public class IntervalComputerFactory {
             this.finish = pair.getEnd().getEvaluator();
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
             Object startValue = start.evaluate(eventsPerStream, newData, context);
             if (startValue == null) {
                 return null;
@@ -277,14 +277,14 @@ public class IntervalComputerFactory {
                 return null;
             }
 
-            return IntervalComputerConstantCoincides.computeInternal(left, leftDuration, right, rightDuration, start, end);
+            return IntervalComputerConstantCoincides.computeInternal(leftStart, leftEnd, rightStart, rightEnd, start, end);
         }
     }
 
     public static class IntervalComputerCoincidesNoParam implements IntervalComputer {
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return left == right && ((left + leftDuration) == (right + rightDuration));
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return leftStart == rightStart && leftEnd == rightEnd;
         }
     }
 
@@ -293,15 +293,15 @@ public class IntervalComputerFactory {
      */
     public static class IntervalComputerDuringNoParam implements IntervalComputer {
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return right < left && ((left + leftDuration) < (right + rightDuration));
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return rightStart < leftStart && leftEnd < rightEnd;
         }
     }
 
     public static class IntervalComputerIncludesNoParam implements IntervalComputer {
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return left < right &&  ((right + rightDuration) < (left + leftDuration));
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return leftStart < rightStart && rightEnd < leftEnd;
         }
     }
 
@@ -315,7 +315,7 @@ public class IntervalComputerFactory {
             this.threshold = threshold;
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
 
             Object thresholdValue = threshold.evaluate(eventsPerStream, newData, context);
             if (thresholdValue == null) {
@@ -325,21 +325,21 @@ public class IntervalComputerFactory {
             long threshold = IntervalComputerExprBase.toLong(thresholdValue);
 
             if (during) {
-                long deltaStart = left - right;
+                long deltaStart = leftStart - rightStart;
                 if (deltaStart <= 0 || deltaStart > threshold) {
                     return false;
                 }
 
-                long deltaEnd = (right + rightDuration) - (left + leftDuration);
+                long deltaEnd = rightEnd - leftEnd;
                 return !(deltaEnd <= 0 || deltaEnd > threshold);
             }
             else {
-                long deltaStart = right - left;
+                long deltaStart = rightStart - leftStart;
                 if (deltaStart <= 0 || deltaStart > threshold) {
                     return false;
                 }
 
-                long deltaEnd = (left + leftDuration) - (right + rightDuration);
+                long deltaEnd = leftEnd - rightEnd;
                 return !(deltaEnd <= 0 || deltaEnd > threshold);
             }
         }
@@ -357,7 +357,7 @@ public class IntervalComputerFactory {
             this.maxEval = maxEval;
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
 
             Object minObject = minEval.evaluate(eventsPerStream, newData, context);
             if (minObject == null) {
@@ -372,14 +372,14 @@ public class IntervalComputerFactory {
             long max = IntervalComputerExprBase.toLong(maxObject);
 
             if (during) {
-                return computeInternalDuring(left, leftDuration, right, rightDuration, min, max, min, max);
+                return computeInternalDuring(leftStart, leftEnd, rightStart, rightEnd, min, max, min, max);
             }
             else {
-                return computeInternalIncludes(left, leftDuration, right, rightDuration, min, max, min, max);
+                return computeInternalIncludes(leftStart, leftEnd, rightStart, rightEnd, min, max, min, max);
             }
         }
 
-        public static boolean computeInternalDuring(long left, long leftDuration, long right, long rightDuration,
+        public static boolean computeInternalDuring(long left, long leftEnd, long right, long rightEnd,
                                         long startMin, long startMax, long endMin, long endMax) {
             if (startMin <= 0) {
                 startMin = 1;
@@ -389,11 +389,11 @@ public class IntervalComputerFactory {
                 return false;
             }
 
-            long deltaEnd = (right + rightDuration) - (left + leftDuration);
+            long deltaEnd = rightEnd - leftEnd;
             return !(deltaEnd < endMin || deltaEnd > endMax);
         }
 
-        public static boolean computeInternalIncludes(long left, long leftDuration, long right, long rightDuration,
+        public static boolean computeInternalIncludes(long left, long leftEnd, long right, long rightEnd,
                                         long startMin, long startMax, long endMin, long endMax) {
             if (startMin <= 0) {
                 startMin = 1;
@@ -403,7 +403,7 @@ public class IntervalComputerFactory {
                 return false;
             }
 
-            long deltaEnd = (left + leftDuration) - (right + rightDuration);
+            long deltaEnd = leftEnd - rightEnd;
             return !(deltaEnd < endMin || deltaEnd > endMax);
         }
     }
@@ -424,7 +424,7 @@ public class IntervalComputerFactory {
             maxEndEval = params[3].getEvaluator();
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
 
             Object minStartObject = minStartEval.evaluate(eventsPerStream, newData, context);
             if (minStartObject == null) {
@@ -452,10 +452,10 @@ public class IntervalComputerFactory {
             long maxEnd = IntervalComputerExprBase.toLong(maxEndObject);
 
             if (during) {
-                return IntervalComputerDuringAndIncludesMinMax.computeInternalDuring(left, leftDuration, right, rightDuration, minStart, maxStart, minEnd, maxEnd);
+                return IntervalComputerDuringAndIncludesMinMax.computeInternalDuring(leftStart, leftEnd, rightStart, rightEnd, minStart, maxStart, minEnd, maxEnd);
             }
             else {
-                return IntervalComputerDuringAndIncludesMinMax.computeInternalIncludes(left, leftDuration, right, rightDuration, minStart, maxStart, minEnd, maxEnd);
+                return IntervalComputerDuringAndIncludesMinMax.computeInternalIncludes(leftStart, leftEnd, rightStart, rightEnd, minStart, maxStart, minEnd, maxEnd);
             }
         }
     }
@@ -465,8 +465,8 @@ public class IntervalComputerFactory {
      */
     public static class IntervalComputerFinishesNoParam implements IntervalComputer {
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return right < left && ((left + leftDuration) == (right + rightDuration));
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return rightStart < leftStart && (leftEnd == rightEnd);
         }
     }
 
@@ -479,7 +479,7 @@ public class IntervalComputerFactory {
             this.threshold = threshold;
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
 
             Object thresholdValue = threshold.evaluate(eventsPerStream, newData, context);
             if (thresholdValue == null) {
@@ -492,10 +492,10 @@ public class IntervalComputerFactory {
                 return null;
             }
 
-            if (right >= left) {
+            if (rightStart >= leftStart) {
                 return false;
             }
-            long delta = Math.abs((left + leftDuration) - (right + rightDuration));
+            long delta = Math.abs(leftEnd - rightEnd);
             return delta <= threshold;
         }
     }
@@ -505,8 +505,8 @@ public class IntervalComputerFactory {
      */
     public static class IntervalComputerFinishedByNoParam implements IntervalComputer {
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return left < right && ((left + leftDuration) == (right + rightDuration));
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return leftStart < rightStart && (leftEnd == rightEnd);
         }
     }
 
@@ -519,7 +519,7 @@ public class IntervalComputerFactory {
             this.threshold = threshold;
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
 
             Object thresholdValue = threshold.evaluate(eventsPerStream, newData, context);
             if (thresholdValue == null) {
@@ -532,10 +532,10 @@ public class IntervalComputerFactory {
                 return null;
             }
 
-            if (left >= right) {
+            if (leftStart >= rightStart) {
                 return false;
             }
-            long delta = Math.abs((left + leftDuration) - (right + rightDuration));
+            long delta = Math.abs(leftEnd - rightEnd);
             return delta <= threshold;
         }
     }
@@ -545,8 +545,8 @@ public class IntervalComputerFactory {
      */
     public static class IntervalComputerMeetsNoParam implements IntervalComputer {
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return (left + leftDuration) == right;
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return leftEnd == rightStart;
         }
     }
 
@@ -559,7 +559,7 @@ public class IntervalComputerFactory {
             this.threshold = threshold;
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
 
             Object thresholdValue = threshold.evaluate(eventsPerStream, newData, context);
             if (thresholdValue == null) {
@@ -572,7 +572,7 @@ public class IntervalComputerFactory {
                 return null;
             }
 
-            long delta = Math.abs(right - (left + leftDuration));
+            long delta = Math.abs(rightStart - leftEnd);
             return delta <= threshold;
         }
     }
@@ -582,8 +582,8 @@ public class IntervalComputerFactory {
      */
     public static class IntervalComputerMetByNoParam implements IntervalComputer {
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return (right + rightDuration) == left;
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return rightEnd == leftStart;
         }
     }
 
@@ -596,7 +596,7 @@ public class IntervalComputerFactory {
             this.threshold = threshold;
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
 
             Object thresholdValue = threshold.evaluate(eventsPerStream, newData, context);
             if (thresholdValue == null) {
@@ -609,7 +609,7 @@ public class IntervalComputerFactory {
                 return null;
             }
 
-            long delta = Math.abs(left - (right + rightDuration));
+            long delta = Math.abs(leftStart - rightEnd);
             return delta <= threshold;
         }
     }
@@ -619,10 +619,10 @@ public class IntervalComputerFactory {
      */
     public static class IntervalComputerOverlapsNoParam implements IntervalComputer {
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return (left < right) &&
-                   (right < (left + leftDuration)) &&
-                   ((left + leftDuration) < (right + rightDuration));
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return (leftStart < rightStart) &&
+                   (rightStart < leftEnd) &&
+                   (leftEnd < rightEnd);
         }
     }
 
@@ -636,7 +636,7 @@ public class IntervalComputerFactory {
             this.threshold = threshold;
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
 
             Object thresholdValue = threshold.evaluate(eventsPerStream, newData, context);
             if (thresholdValue == null) {
@@ -646,21 +646,21 @@ public class IntervalComputerFactory {
             long threshold = IntervalComputerExprBase.toLong(thresholdValue);
 
             if (overlaps) {
-                return computeInternalOverlaps(left, leftDuration, right, rightDuration, 0, threshold);
+                return computeInternalOverlaps(leftStart, leftEnd, rightStart, rightEnd, 0, threshold);
             }
             else {
-                return computeInternalOverlaps(right, rightDuration, left, leftDuration, 0, threshold);
+                return computeInternalOverlaps(rightStart, rightEnd, leftStart, leftEnd, 0, threshold);
             }
         }
 
-        public static boolean computeInternalOverlaps(long left, long leftDuration, long right, long rightDuration, long min, long max) {
+        public static boolean computeInternalOverlaps(long left, long leftEnd, long right, long rightEnd, long min, long max) {
             boolean match = ((left < right) &&
-                   (right < (left + leftDuration)) &&
-                   ((left + leftDuration) < (right + rightDuration)));
+                   (right < leftEnd) &&
+                   (leftEnd < rightEnd));
             if (!match) {
                 return false;
             }
-            long delta = (left + leftDuration) - right;
+            long delta = leftEnd - right;
             return min <= delta && delta <= max;
         }
     }
@@ -677,7 +677,7 @@ public class IntervalComputerFactory {
             this.maxEval = maxEval;
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
 
             Object minValue = minEval.evaluate(eventsPerStream, newData, context);
             if (minValue == null) {
@@ -692,10 +692,10 @@ public class IntervalComputerFactory {
             long maxThreshold = IntervalComputerExprBase.toLong(maxValue);
 
             if (overlaps) {
-                return IntervalComputerOverlapsAndByThreshold.computeInternalOverlaps(left, leftDuration, right, rightDuration, minThreshold, maxThreshold);
+                return IntervalComputerOverlapsAndByThreshold.computeInternalOverlaps(leftStart, leftEnd, rightStart, rightEnd, minThreshold, maxThreshold);
             }
             else {
-                return IntervalComputerOverlapsAndByThreshold.computeInternalOverlaps(right, rightDuration, left, leftDuration, minThreshold, maxThreshold);
+                return IntervalComputerOverlapsAndByThreshold.computeInternalOverlaps(rightStart, rightEnd, leftStart, leftEnd, minThreshold, maxThreshold);
             }
         }
     }
@@ -705,10 +705,10 @@ public class IntervalComputerFactory {
      */
     public static class IntervalComputerOverlappedByNoParam implements IntervalComputer {
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return (right < left) &&
-                   (left < (right + rightDuration)) &&
-                   ((right + rightDuration) < (left + leftDuration));
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return (rightStart < leftStart) &&
+                   (leftStart < rightEnd) &&
+                   (rightEnd < leftEnd);
         }
     }
 
@@ -717,8 +717,8 @@ public class IntervalComputerFactory {
      */
     public static class IntervalComputerStartsNoParam implements IntervalComputer {
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return (left == right) && ((left + leftDuration) < (right + rightDuration));
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return (leftStart == rightStart) && (leftEnd < rightEnd);
         }
     }
 
@@ -732,7 +732,7 @@ public class IntervalComputerFactory {
             this.threshold = threshold;
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
 
             Object thresholdValue = threshold.evaluate(eventsPerStream, newData, context);
             if (thresholdValue == null) {
@@ -745,8 +745,8 @@ public class IntervalComputerFactory {
                 return null;
             }
 
-            long delta = Math.abs(left - right);
-            return delta <= threshold && ((left + leftDuration) < (right + rightDuration));
+            long delta = Math.abs(leftStart - rightStart);
+            return delta <= threshold && (leftEnd < rightEnd);
         }
     }
 
@@ -755,8 +755,8 @@ public class IntervalComputerFactory {
      */
     public static class IntervalComputerStartedByNoParam implements IntervalComputer {
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
-            return (left == right) && ((left + leftDuration) > (right + rightDuration));
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+            return (leftStart == rightStart) && (leftEnd > rightEnd);
         }
     }
 
@@ -770,7 +770,7 @@ public class IntervalComputerFactory {
             this.threshold = threshold;
         }
 
-        public Boolean compute(long left, long leftDuration, long right, long rightDuration, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+        public Boolean compute(long leftStart, long leftEnd, long rightStart, long rightEnd, EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
 
             Object thresholdValue = threshold.evaluate(eventsPerStream, newData, context);
             if (thresholdValue == null) {
@@ -783,8 +783,8 @@ public class IntervalComputerFactory {
                 return null;
             }
 
-            long delta = Math.abs(left - right);
-            return delta <= threshold && ((left + leftDuration) > (right + rightDuration));
+            long delta = Math.abs(leftStart - rightStart);
+            return delta <= threshold && (leftEnd > rightEnd);
         }
     }
 }

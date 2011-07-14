@@ -8,13 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
-import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.MetaDefItem;
 
-import javax.xml.namespace.QName;
-import javax.xml.xpath.XPathConstants;
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -23,8 +19,8 @@ import java.util.*;
 public class ConfigurationEventTypeMap implements MetaDefItem, Serializable
 {
     private Set<String> superTypes;
-    private String timestampPropertyName;
-    private String durationPropertyName;
+    private String startTimestampPropertyName;
+    private String endTimestampPropertyName;
 
     public ConfigurationEventTypeMap() {
         superTypes = new LinkedHashSet<String>();
@@ -38,19 +34,19 @@ public class ConfigurationEventTypeMap implements MetaDefItem, Serializable
         this.superTypes = superTypes;
     }
 
-    public String getTimestampPropertyName() {
-        return timestampPropertyName;
+    public String getStartTimestampPropertyName() {
+        return startTimestampPropertyName;
     }
 
-    public void setTimestampPropertyName(String timestampPropertyName) {
-        this.timestampPropertyName = timestampPropertyName;
+    public void setStartTimestampPropertyName(String startTimestampPropertyName) {
+        this.startTimestampPropertyName = startTimestampPropertyName;
     }
 
-    public String getDurationPropertyName() {
-        return durationPropertyName;
+    public String getEndTimestampPropertyName() {
+        return endTimestampPropertyName;
     }
 
-    public void setDurationPropertyName(String durationPropertyName) {
-        this.durationPropertyName = durationPropertyName;
+    public void setEndTimestampPropertyName(String endTimestampPropertyName) {
+        this.endTimestampPropertyName = endTimestampPropertyName;
     }
 }

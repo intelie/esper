@@ -357,27 +357,25 @@ config.addEventType("MyLegacyEvent", MyLegacyEventClass.class.getName(), legacyD
 				<para>
 					The sample below shows this option in XML configuration, however the setting can also be changed via API:
 				</para>
-				<programlisting><![CDATA[<event-type name="MyLegacyEvent" class="com.mycompany.package.MyLegacyEventClass"
-  factory-method="com.mycompany.myapp.MySampleEventFactory.createMyLegacyTypeEvent" copy-method="myCopyMethod"> 
+				<programlisting><![CDATA[<event-type name="MyLegacyEvent" class="com.mycompany.package.MyLegacyEventClass">
+  <legacy-type factory-method="com.mycompany.myapp.MySampleEventFactory.createMyLegacyTypeEvent" copy-method="myCopyMethod"/>
 </event-type>]]></programlisting>
 			</sect3>
 
-			<sect3 id="config-java-timestampandduration" revision="1">
-				<title>Timestamp and Duration</title>
+			<sect3 id="config-java-startendtimestamp" revision="1">
+				<title>Start and End Timestamp</title>
 				
 				<para>
-					For use with date-time interval methods, for example, you may let the engine know which property of your class carries the timestamp value and which property carries the duration value.
+					For use with date-time interval methods, for example, you may let the engine know which property of your class carries the start and end timestamp value.
 				</para>
 								
 				<para>
-					The <literal>update</literal> clause can change event properties on an event object. For the purpose of maintaining consistency, the engine may have to copy your event object via serialization (implement the <literal>java.io.Serializable</literal> interface). If instead you do not want any copy operations to occur, or your application needs to control the copy operation, you may configure a copy method. The copy method is the name of a method on the event object that copies the event object.
+					The sample below shows this option in XML configuration, however the setting can also be changed via API. The sample sets the name of the property providing the start timestamp to <literal>startts</literal> and the name of the property providing the end timestamp <literal>endts</literal>:
 				</para>
-				<para>
-					The sample below shows this option in XML configuration, however the setting can also be changed via API:
-				</para>
-				<programlisting><![CDATA[<event-type name="MyLegacyEvent" class="com.mycompany.package.MyLegacyEventClass"
-  factory-method="com.mycompany.myapp.MySampleEventFactory.createMyLegacyTypeEvent" copy-method="myCopyMethod"> 
-</event-type>]]></programlisting>
+				<programlisting><![CDATA[<event-type name="MyLegacyEvent" class="com.mycompany.package.MyLegacyEventClass">
+  <legacy-type start-timestamp-property-name="startts" end-timestamp-property-name="endts"/>
+</event-type>
+]]></programlisting>
 			</sect3>
 
 		</sect2>
@@ -446,10 +444,10 @@ configuration.addEventType("MyMapEvent", properties);]]></programlisting>
 			</para>
 
 			<para>
-				A Map event type may declare a timestamp and duration property name. The XML shown next instructs the engine that the <literal>ts</literal> property carries the event timestamp and the <literal>dur</literal> property carries the event duration:
+				A Map event type may declare a start and end timestamp property name. The XML shown next instructs the engine that the <literal>startts</literal> property carries the event start timestamp and the <literal>endts</literal> property carries the event end timestamp:
 			</para>
 			<programlisting><![CDATA[<event-type name="AccountUpdate">
-<java-util-map timestamp-property="ts" duration-property="dur">
+<java-util-map start-timestamp-property-name="startts" end-timestamp-property-name="endts">
 ...]]></programlisting>			
 		</sect2>
 		
@@ -730,11 +728,11 @@ desc.setEventSenderValidatesRoot(false);]]></programlisting>
 						
 		  </sect3>
 
-		  <sect3 id="config-xml-dom-timestampandduration" revision="1">
-				<title>Timestamp and Duration</title>
+		  <sect3 id="config-xml-dom-startendtimestamp" revision="1">
+				<title>Start and End Timestamp</title>
 				
 				<para>
-					You may configure the name of the propetry that provides event timestamp and event duration as part of the configuration. Both properties must provide a long-type return value.
+					You may configure the name of the propetry that provides the event start timestamp and the event end timestamp as part of the configuration. Both properties must provide a long-type return value.
 				</para>
 
 				<para>
@@ -742,8 +740,8 @@ desc.setEventSenderValidatesRoot(false);]]></programlisting>
 				</para>
 
 				<programlisting><![CDATA[ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
-desc.setTimestampProperty("mytimestamp");
-desc.setDurationProperty("myduration");]]></programlisting>
+desc.setStartTimestampPropertyName("startts");
+desc.setEndTimestampPropertyName("endts");]]></programlisting>
 						
 		  </sect3>
 		</sect2>

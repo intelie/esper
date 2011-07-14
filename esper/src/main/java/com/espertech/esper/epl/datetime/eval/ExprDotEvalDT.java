@@ -31,7 +31,7 @@ public class ExprDotEvalDT implements ExprDotEval
         }
         else {  // only calendar ops
             if (inputEventType != null) {
-                returnType = ExprDotEvalTypeInfo.scalarOrUnderlying(inputEventType.getPropertyType(inputEventType.getTimestampPropertyName()));
+                returnType = ExprDotEvalTypeInfo.scalarOrUnderlying(inputEventType.getPropertyType(inputEventType.getStartTimestampPropertyName()));
             }
             else {
                 returnType = ExprDotEvalTypeInfo.scalarOrUnderlying(inputType);
@@ -99,8 +99,8 @@ public class ExprDotEvalDT implements ExprDotEval
             throw new IllegalArgumentException("Invalid input type '" + inputType + "'");
         }
 
-        EventPropertyGetter getter = inputEventType.getGetter(inputEventType.getTimestampPropertyName());
-        Class getterResultType = inputEventType.getPropertyType(inputEventType.getTimestampPropertyName());
+        EventPropertyGetter getter = inputEventType.getGetter(inputEventType.getStartTimestampPropertyName());
+        Class getterResultType = inputEventType.getPropertyType(inputEventType.getStartTimestampPropertyName());
 
         if (reformatOp != null) {
             DTLocalEvaluator inner = getEvaluator(calendarOps, getterResultType, null, reformatOp, null);
@@ -111,16 +111,16 @@ public class ExprDotEvalDT implements ExprDotEval
             return new DTLocalEvaluatorBeanCalOps(getter, inner);
         }
 
-        // have interval ops but no duration
-        if (inputEventType.getDurationPropertyName() == null) {
+        // have interval ops but no end timestamp
+        if (inputEventType.getEndTimestampPropertyName() == null) {
             DTLocalEvaluator inner = getEvaluator(calendarOps, getterResultType, null, null, intervalOp);
-            return new DTLocalEvaluatorBeanIntervalNoDuration(getter, inner);
+            return new DTLocalEvaluatorBeanIntervalNoEndTS(getter, inner);
         }
 
-        // interval ops and have duration
-        EventPropertyGetter getterDuration = inputEventType.getGetter(inputEventType.getDurationPropertyName());
+        // interval ops and have end timestamp
+        EventPropertyGetter getterEndTimestamp = inputEventType.getGetter(inputEventType.getEndTimestampPropertyName());
         DTLocalEvaluatorIntervalComp inner = (DTLocalEvaluatorIntervalComp) getEvaluator(calendarOps, getterResultType, null, null, intervalOp);
-        return new DTLocalEvaluatorBeanIntervalWithDuration(getter, getterDuration, inner);
+        return new DTLocalEvaluatorBeanIntervalWithEnd(getter, getterEndTimestamp, inner);
     }
 
     public Object evaluate(Object target, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
@@ -230,7 +230,7 @@ public class ExprDotEvalDT implements ExprDotEval
      * Interval methods.
      */
     private interface DTLocalEvaluatorIntervalComp {
-        public Object evaluate(Object target, long duration, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext);
+        public Object evaluate(Object startTimestamp, Object endTimestamp, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext);
     }
 
     private abstract static class DTLocalEvaluatorIntervalBase implements DTLocalEvaluator, DTLocalEvaluatorIntervalComp {
@@ -257,11 +257,14 @@ public class ExprDotEvalDT implements ExprDotEval
         }
 
         public Object evaluate(Object target, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            return intervalOp.evaluate(((Calendar) target).getTimeInMillis(), 0, eventsPerStream, isNewData, exprEvaluatorContext);
+            long time = ((Calendar) target).getTimeInMillis();
+            return intervalOp.evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
-        public Object evaluate(Object target, long duration, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            return intervalOp.evaluate(((Calendar) target).getTimeInMillis(), duration, eventsPerStream, isNewData, exprEvaluatorContext);
+        public Object evaluate(Object startTimestamp, Object endTimestamp, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+            long start = ((Calendar) startTimestamp).getTimeInMillis();
+            long end = ((Calendar) endTimestamp).getTimeInMillis();
+            return intervalOp.evaluate(start, end, eventsPerStream, isNewData, exprEvaluatorContext);
         }
     }
 
@@ -273,13 +276,19 @@ public class ExprDotEvalDT implements ExprDotEval
         public Object evaluate(Object target, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
             Calendar cal = (Calendar) ((Calendar) target).clone();
             evaluateCalOps(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
-            return intervalOp.evaluate(cal.getTimeInMillis(), 0, eventsPerStream, isNewData, exprEvaluatorContext);
+            long time = cal.getTimeInMillis();
+            return intervalOp.evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
-        public Object evaluate(Object target, long duration, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            Calendar cal = (Calendar) ((Calendar) target).clone();
+        public Object evaluate(Object startTimestamp, Object endTimestamp, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+            long startLong = ((Calendar) startTimestamp).getTimeInMillis();
+            long endLong = ((Calendar) endTimestamp).getTimeInMillis();
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(startLong);
             evaluateCalOps(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
-            return intervalOp.evaluate(cal.getTimeInMillis(), duration, eventsPerStream, isNewData, exprEvaluatorContext);
+            long startTime = cal.getTimeInMillis();
+            long endTime = startTime + (endLong - startLong);
+            return intervalOp.evaluate(startTime, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
         }
     }
 
@@ -289,11 +298,14 @@ public class ExprDotEvalDT implements ExprDotEval
         }
 
         public Object evaluate(Object target, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            return intervalOp.evaluate(((Date) target).getTime(), 0, eventsPerStream, isNewData, exprEvaluatorContext);
+            long time = ((Date) target).getTime();
+            return intervalOp.evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
-        public Object evaluate(Object target, long duration, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            return intervalOp.evaluate(((Date) target).getTime(), duration, eventsPerStream, isNewData, exprEvaluatorContext);
+        public Object evaluate(Object startTimestamp, Object endTimestamp, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+            long start = ((Date) startTimestamp).getTime();
+            long end = ((Date) endTimestamp).getTime();
+            return intervalOp.evaluate(start, end, eventsPerStream, isNewData, exprEvaluatorContext);
         }
     }
 
@@ -306,14 +318,19 @@ public class ExprDotEvalDT implements ExprDotEval
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(((Date) target).getTime());
             evaluateCalOps(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
-            return intervalOp.evaluate(cal.getTimeInMillis(), 0, eventsPerStream, isNewData, exprEvaluatorContext);
+            long time = cal.getTimeInMillis();
+            return intervalOp.evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
-        public Object evaluate(Object target, long duration, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public Object evaluate(Object startTimestamp, Object endTimestamp, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+            long startLong = ((Date) startTimestamp).getTime();
+            long endLong = ((Date) endTimestamp).getTime();
             Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(((Date) target).getTime());
+            cal.setTimeInMillis(startLong);
             evaluateCalOps(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
-            return intervalOp.evaluate(cal.getTimeInMillis(), duration, eventsPerStream, isNewData, exprEvaluatorContext);
+            long startTime = cal.getTimeInMillis();
+            long endTime = startTime + (endLong - startLong);
+            return intervalOp.evaluate(startTime, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
         }
     }
 
@@ -324,11 +341,14 @@ public class ExprDotEvalDT implements ExprDotEval
         }
 
         public Object evaluate(Object target, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            return intervalOp.evaluate((Long) target, 0, eventsPerStream, isNewData, exprEvaluatorContext);
+            long time = (Long) target;
+            return intervalOp.evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
-        public Object evaluate(Object target, long duration, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            return intervalOp.evaluate((Long) target, duration, eventsPerStream, isNewData, exprEvaluatorContext);
+        public Object evaluate(Object startTimestamp, Object endTimestamp, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+            long startTime = (Long) startTimestamp;
+            long endTime = (Long) endTimestamp;
+            return intervalOp.evaluate(startTime, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
         }
     }
 
@@ -342,14 +362,19 @@ public class ExprDotEvalDT implements ExprDotEval
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis((Long) target);
             evaluateCalOps(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
-            return intervalOp.evaluate(cal.getTimeInMillis(), 0, eventsPerStream, isNewData, exprEvaluatorContext);
+            long time = cal.getTimeInMillis();
+            return intervalOp.evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
-        public Object evaluate(Object target, long duration, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public Object evaluate(Object startTimestamp, Object endTimestamp, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+            long startLong = (Long) startTimestamp;
+            long endLong = (Long) endTimestamp;
             Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis((Long) target);
+            cal.setTimeInMillis(startLong);
             evaluateCalOps(calendarOps, cal, eventsPerStream, isNewData, exprEvaluatorContext);
-            return intervalOp.evaluate(cal.getTimeInMillis(), duration, eventsPerStream, isNewData, exprEvaluatorContext);
+            long startTime = cal.getTimeInMillis();
+            long endTime = startTime + (endLong - startLong);
+            return intervalOp.evaluate(startTime, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
         }
     }
 
@@ -371,11 +396,11 @@ public class ExprDotEvalDT implements ExprDotEval
         }
     }
 
-    private static class DTLocalEvaluatorBeanIntervalNoDuration implements DTLocalEvaluator {
+    private static class DTLocalEvaluatorBeanIntervalNoEndTS implements DTLocalEvaluator {
         private final EventPropertyGetter getter;
         private final DTLocalEvaluator inner;
 
-        private DTLocalEvaluatorBeanIntervalNoDuration(EventPropertyGetter getter, DTLocalEvaluator inner) {
+        private DTLocalEvaluatorBeanIntervalNoEndTS(EventPropertyGetter getter, DTLocalEvaluator inner) {
             this.getter = getter;
             this.inner = inner;
         }
@@ -389,27 +414,27 @@ public class ExprDotEvalDT implements ExprDotEval
         }
     }
 
-    private class DTLocalEvaluatorBeanIntervalWithDuration implements DTLocalEvaluator {
-        private final EventPropertyGetter getterTimestamp;
-        private final EventPropertyGetter getterDuration;
+    private class DTLocalEvaluatorBeanIntervalWithEnd implements DTLocalEvaluator {
+        private final EventPropertyGetter getterStartTimestamp;
+        private final EventPropertyGetter getterEndTimestamp;
         private final DTLocalEvaluatorIntervalComp inner;
 
-        private DTLocalEvaluatorBeanIntervalWithDuration(EventPropertyGetter getterTimestamp, EventPropertyGetter getterDuration, DTLocalEvaluatorIntervalComp inner) {
-            this.getterTimestamp = getterTimestamp;
-            this.getterDuration = getterDuration;
+        private DTLocalEvaluatorBeanIntervalWithEnd(EventPropertyGetter getterStartTimestamp, EventPropertyGetter getterEndTimestamp, DTLocalEvaluatorIntervalComp inner) {
+            this.getterStartTimestamp = getterStartTimestamp;
+            this.getterEndTimestamp = getterEndTimestamp;
             this.inner = inner;
         }
 
         public Object evaluate(Object target, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            Object timestamp = getterTimestamp.get((EventBean)target);
-            if (timestamp == null) {
+            Object startTimestamp = getterStartTimestamp.get((EventBean)target);
+            if (startTimestamp == null) {
                 return null;
             }
-            Object duration = getterDuration.get((EventBean)target);
-            if (duration == null) {
+            Object endTimestamp = getterEndTimestamp.get((EventBean)target);
+            if (endTimestamp == null) {
                 return null;
             }
-            return inner.evaluate(timestamp, (Long) duration, eventsPerStream, isNewData, exprEvaluatorContext);
+            return inner.evaluate(startTimestamp, endTimestamp, eventsPerStream, isNewData, exprEvaluatorContext);
         }
     }
 
