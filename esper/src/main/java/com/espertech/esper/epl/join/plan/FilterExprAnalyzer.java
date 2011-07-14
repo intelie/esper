@@ -8,7 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.plan;
 
-import com.espertech.esper.epl.datetime.DatetimeMethodEnum;
+import com.espertech.esper.epl.datetime.eval.DatetimeMethodEnum;
+import com.espertech.esper.epl.datetime.eval.ExprDotNodeFilterAnalyzerDTIntervalDesc;
 import com.espertech.esper.epl.expression.*;
 
 import java.util.Set;
@@ -62,14 +63,9 @@ public class FilterExprAnalyzer
         if (interval == null) {
             return;
         }
-        if (!interval.getMethodEnum().equals(DatetimeMethodEnum.BEFORE)) {
-            return;
-        }
-        return;
-// TOOD
-//        queryGraph.addRelationalOpStrict(interval.getStreamIdLeft(), interval.getPropertyLeft(), interval.getPropertyLeftExpr(),
-//                interval.getStreamIdRight(), interval.getPropertyRight(), interval.getPropertyRightExpr(),
-//                interval.getRelationalOpEnum());
+        queryGraph.addRelationalOpStrict(interval.getStreamIdLeft(), interval.getPropertyLeft(), interval.getPropertyLeftExpr(),
+                interval.getStreamIdRight(), interval.getPropertyRight(), interval.getPropertyRightExpr(),
+                interval.getRelationalOpEnum());
     }
 
     private static void analyzeRelationalOpNode(ExprRelationalOpNode relNode, QueryGraph queryGraph) {

@@ -1,14 +1,11 @@
 package com.espertech.esper.epl.datetime.interval;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.datetime.DateTimeUtil;
-import com.espertech.esper.epl.datetime.DatetimeMethodEnum;
+import com.espertech.esper.epl.datetime.eval.DatetimeMethodEnum;
 import com.espertech.esper.epl.expression.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.StringWriter;
-import java.util.Calendar;
 import java.util.List;
 
 public class IntervalComputerFactory {

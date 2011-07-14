@@ -6,9 +6,10 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package com.espertech.esper.epl.expression;
+package com.espertech.esper.epl.datetime.eval;
 
-import com.espertech.esper.epl.datetime.DatetimeMethodEnum;
+import com.espertech.esper.epl.datetime.eval.DatetimeMethodEnum;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.type.RelationalOpEnum;
 
 public class ExprDotNodeFilterAnalyzerDTIntervalDesc

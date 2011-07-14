@@ -1,7 +1,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.datetime.TimePeriod;
+import com.espertech.esper.epl.datetime.eval.TimePeriod;
 
 /**
  * Expression representing a time period.

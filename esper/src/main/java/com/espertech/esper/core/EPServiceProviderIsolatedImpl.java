@@ -11,7 +11,7 @@ import java.util.*;
  */
 public class EPServiceProviderIsolatedImpl implements EPServiceProviderIsolatedSPI
 {
-    private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);
+    private static final Log log = LogFactory.getLog(EPServiceProviderIsolatedImpl.class);
 
     private final String name;
     private final EPRuntimeIsolatedImpl runtime;

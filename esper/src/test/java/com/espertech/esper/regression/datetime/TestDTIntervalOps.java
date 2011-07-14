@@ -241,11 +241,11 @@ public class TestDTIntervalOps extends TestCase {
 
         configBean.setDurationProperty(null);
         configBean.setTimestampProperty("string");
-        tryInvalidConfig(configBean, "Declared timestamp property does not return a Date, Calendar or long-typed value for property 'string'");
+        tryInvalidConfig(configBean, "Declared timestamp property 'string' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.String'");
 
         configBean.setTimestampProperty("longPrimitive");
         configBean.setDurationProperty("string");
-        tryInvalidConfig(configBean, "Declared duration property does not return a Date, Calendar or long-typed value for property 'string'");
+        tryInvalidConfig(configBean, "Declared duration property 'string' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.String'");
     }
 
     private void tryInvalidConfig(ConfigurationEventTypeLegacy config, String message) {

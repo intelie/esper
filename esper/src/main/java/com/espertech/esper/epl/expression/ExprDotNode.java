@@ -13,7 +13,7 @@ import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.PropertyResolutionDescriptor;
 import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.datetime.DatetimeMethodEnum;
+import com.espertech.esper.epl.datetime.eval.*;
 import com.espertech.esper.epl.enummethod.dot.*;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.util.JavaClassHelper;

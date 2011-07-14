@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.epl.datetime.eval.ExprDotNodeFilterAnalyzerDTIntervalDesc;
+
 public class ExprDotNodeRealizedChain
 {
     private final ExprDotEval[] chain;

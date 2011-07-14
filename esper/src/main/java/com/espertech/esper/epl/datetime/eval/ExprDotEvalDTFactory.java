@@ -1,4 +1,4 @@
-package com.espertech.esper.epl.datetime;
+package com.espertech.esper.epl.datetime.eval;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
@@ -70,7 +70,14 @@ public class ExprDotEvalDTFactory {
             }
             else if (opFactory instanceof IntervalOpFactory) {
                 intervalOp = ((IntervalOpFactory) opFactory).getOp(typesPerStream, currentMethod, currentMethodName, currentParameters, evaluators);
-                intervalFilterDesc = intervalOp.getFilterDesc(typesPerStream, inputDesc, inputPropertyName);
+
+                // compile filter analyzer information if there are no calendar ops in the chain
+                if (calendarOps.isEmpty()) {
+                    intervalFilterDesc = intervalOp.getFilterDesc(typesPerStream, currentMethod, currentParameters, inputDesc, inputPropertyName);
+                }
+                else {
+                    intervalFilterDesc = null;
+                }
             }
             else {
                 throw new IllegalStateException("Invalid op factory class " + opFactory);

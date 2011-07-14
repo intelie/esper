@@ -1,7 +1,7 @@
 package com.espertech.esper.epl.datetime.calop;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.datetime.TimePeriod;
+import com.espertech.esper.epl.datetime.eval.TimePeriod;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 

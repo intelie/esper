@@ -9,9 +9,8 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.epl.datetime.DatetimeMethodEnum;
-import com.espertech.esper.epl.datetime.ExprDotEvalDTFactory;
-import com.espertech.esper.epl.datetime.ExprDotEvalDTMethodDesc;
+import com.espertech.esper.epl.datetime.eval.*;
+import com.espertech.esper.epl.datetime.eval.ExprDotNodeFilterAnalyzerDTIntervalDesc;
 import com.espertech.esper.epl.enummethod.dot.*;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.map.MapEventType;

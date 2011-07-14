@@ -51,6 +51,6 @@ public class SortedTableLookupPlan extends TableLookupPlan
     {
         return "SortedTableLookupPlan " +
                 super.toString() +
-               " keyProperties=" + rangeKeyPair;
+               " keyProperties=" + rangeKeyPair.toQueryPlan();
     }
 }
