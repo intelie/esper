@@ -155,7 +155,12 @@ public enum ViewEnum
     /**
      * Match-recognize.
      */
-    INTERNAL_MATCH_RECOG("internal", "match_recognize", EventRowRegexNFAViewFactory.class, null);
+    INTERNAL_MATCH_RECOG("internal", "match_recognize", EventRowRegexNFAViewFactory.class, null),
+
+    /**
+     * Length window.
+     */
+    EXPRESSION_WINDOW("win", "expr", ExpressionWindowViewFactory.class, null);
 
     private final String namespace;
     private final String name;

@@ -91,6 +91,7 @@ public class TestPerfDTIntervalOps extends TestCase {
         // assert OVERLAPPEDY
         String eplOverlappedBy = "select a.key as c0 from AWindow as a, B b unidirectional where a.overlappedBy(b)";
         runAssertion(eplOverlappedBy, "2002-05-30T9:59:59.950", 100, "ALater");
+        runAssertion(eplOverlappedBy, "2002-05-30T7:59:59.950", 100, "AEarlier");
 
         // assert STARTS
         String eplStarts = "select a.key as c0 from AWindow as a, B b unidirectional where a.starts(b)";

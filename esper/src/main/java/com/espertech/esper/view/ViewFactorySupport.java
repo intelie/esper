@@ -177,7 +177,7 @@ public abstract class ViewFactorySupport implements ViewFactory
         }
     }
 
-    private static ExprNode validateExpr(StatementContext statementContext, ExprNode expression, StreamTypeService streamTypeService, int expressionNumber)
+    public static ExprNode validateExpr(StatementContext statementContext, ExprNode expression, StreamTypeService streamTypeService, int expressionNumber)
             throws ViewParameterException
     {
         ExprNode validated;
