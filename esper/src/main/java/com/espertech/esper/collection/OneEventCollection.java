@@ -83,4 +83,10 @@ public class OneEventCollection
 
         return events;
     }
+
+    public void add(EventBean[] events) {
+        for (EventBean event : events) {
+            add(event);
+        }
+    }
 }

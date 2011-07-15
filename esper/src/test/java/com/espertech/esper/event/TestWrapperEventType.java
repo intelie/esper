@@ -28,7 +28,8 @@ public class TestWrapperEventType extends TestCase
         properties.put("additionalString", String.class);
         properties.put("additionalInt", Integer.class);
         eventAdapterService = SupportEventAdapterService.getService();
-        eventType = new WrapperEventType(null, "mytype", 1, underlyingEventTypeOne, properties, eventAdapterService);
+        EventTypeMetadata meta = EventTypeMetadata.createWrapper("test", true, false, false);
+        eventType = new WrapperEventType(meta, "mytype", 1, underlyingEventTypeOne, properties, eventAdapterService);
 	}
 	
 	public void testInvalidRepeatedNames()
@@ -75,16 +76,17 @@ public class TestWrapperEventType extends TestCase
 	public void testEquals()
 	{
 		Map<String, Object> otherProperties = new HashMap<String, Object>(properties);
-		EventType otherType = new WrapperEventType(null, "mytype", 1, underlyingEventTypeOne, otherProperties, eventAdapterService);
+        EventTypeMetadata meta = EventTypeMetadata.createWrapper("test", true, false, false);
+		EventType otherType = new WrapperEventType(meta, "mytype", 1, underlyingEventTypeOne, otherProperties, eventAdapterService);
 		assertTrue(eventType.equals(otherType));
 		assertTrue(otherType.equals(eventType));
 		
-		otherType = new WrapperEventType(null, "mytype", 1, underlyingEventTypeTwo, otherProperties, eventAdapterService);
+		otherType = new WrapperEventType(meta, "mytype", 1, underlyingEventTypeTwo, otherProperties, eventAdapterService);
 		assertFalse(eventType.equals(otherType));
 		assertFalse(otherType.equals(eventType));
 		
 		otherProperties.put("anotherProperty", Integer.class);
-		otherType = new WrapperEventType(null, "mytype", 1, underlyingEventTypeOne, otherProperties, eventAdapterService);
+		otherType = new WrapperEventType(meta, "mytype", 1, underlyingEventTypeOne, otherProperties, eventAdapterService);
 		assertFalse(eventType.equals(otherType));
 		assertFalse(otherType.equals(eventType));
 		

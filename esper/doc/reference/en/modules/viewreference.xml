@@ -128,6 +128,11 @@
 						<entry>win:firsttime(<emphasis>time period</emphasis>)</entry>
 						<entry>Retains the events arriving until the time interval has passed, disregarding all subsequent events.</entry>
 					</row>
+					<row>
+						<entry>Expiry Expression</entry>
+						<entry>win:expr(<emphasis>expiry expression</emphasis>)</entry>
+						<entry>Expire events based on the result of an expiry expression passed as a parameter.</entry>
+					</row>
 				</tbody>
 			</tgroup>
 		</table> 
@@ -559,6 +564,133 @@ following conditions occurs, whichever occurs first: the data window has collect
 					The below example creates a view that retains only those events arriving within 1 minute and 10 seconds of statement start:
 				</para>
 				<programlisting><![CDATA[select * from MyEvent.win:firsttime(1 minute 10 seconds)]]></programlisting>				
+			</sect2>
+
+			<sect2 id="view-win-expr" >
+			   <title>Expiry Expression (<literal>win:expr</literal>)</title>
+		
+				<indexterm><primary>expression window</primary></indexterm>
+				<indexterm><primary>views</primary><secondary>expiry expression window</secondary></indexterm>
+
+				<para>
+					The <literal>expr</literal> view applies an expiry expression and removes events from the data window when the expression returns false.
+				</para>
+				
+				<para>
+				  Use this view to implement dynamically shrinking or expanding time and/or length windows by defining an expiry expression with one or more variables.
+				</para>
+				
+				<para>
+				  Use this view to expire events based on a custom expiry policy. For example, the view can consider locale-specific work day or time information when used with a user-defined function.
+				</para>
+
+				<para>
+					The synopsis is:
+				</para>
+				<synopsis>win:expr(<emphasis>expiry_expression</emphasis>)</synopsis>
+
+				<para>
+					The expiry expression can be any expression including expressions on event properties, variables or user-defined functions. The view applies this expression only to the oldest event(s) currently in the view, as described next.
+				</para>
+
+				<para>
+					When a new event arrives, or when a variable value referenced by the expiry expression changes, the view applies the expiry expression starting from the oldest event in the data window.
+					If the expiry expression returns false for the oldest event, the view removes the event from the data window. The view then applies the expression to the next oldest event.
+					If the expiry expression returns true for the oldest event, no further evaluation takes place and the view indicates any new and expired events through insert and remove stream.
+				</para>
+
+				<para>
+					By using variables in the expiry expression it is possible to change the behavior of the view dynamically at runtime. When one or more variables used in the expression are updated the view evaluates the expiry expression starting from the oldest event.
+				</para>
+
+				<para>
+					The engine makes the following built-in properties available to the expiry expression:
+				</para>
+				
+			   <table frame="topbot">
+					<title>Built-in Properties of the Expiry Expression Data Window View</title>
+					<tgroup cols="3">
+						<colspec colwidth="1.0*"/>
+						<colspec colwidth="1.0*"/>
+						<colspec colwidth="3*"/>
+						<thead>
+							<row>
+								<entry>Name</entry>
+								<entry>Type</entry>
+								<entry>Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry>current_count</entry>
+								<entry>int</entry>
+								<entry>The number of events in the data window including the currently-arriving event.</entry>
+							</row>
+							<row>
+								<entry>expired_count</entry>
+								<entry>int</entry>
+								<entry>The number of events expired during this evaluation.</entry>
+							</row>
+							<row>
+								<entry>newest_timestamp</entry>
+								<entry>long</entry>
+								<entry>The engine timestamp associated with the last-arriving event.</entry>
+							</row>
+							<row>
+								<entry>oldest_timestamp</entry>
+								<entry>long</entry>
+								<entry>The engine timestamp associated with the currently-evaluated event.</entry>
+							</row>
+							<row>
+								<entry>view_reference</entry>
+								<entry>Object</entry>
+								<entry>The object handle to this view.</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table> 
+				
+				<para>
+					This EPL declares an expiry expression that retains the last 2 events:
+				</para>
+				<programlisting><![CDATA[select * from MyEvent.win:expr(current_count <= 2)]]></programlisting>
+				
+				<para>
+					The following example implements a dynamically-sized length window by means of a SIZE variable. As the SIZE variable value changes 
+					the view retains the number of events according to the current value of SIZE:
+				</para>
+				<programlisting><![CDATA[create variable int SIZE = 1000]]></programlisting>
+				<programlisting><![CDATA[select * from MyEvent.win:expr(current_count <= SIZE)]]></programlisting>
+
+				<para>
+					The next EPL retains the last 2 seconds of events:
+				</para>
+				<programlisting><![CDATA[select * from MyEvent.win:expr(oldest_timestamp > newest_timestamp - 2000)]]></programlisting>
+
+				<para>
+					The following example implements a dynamically-sized time window. As the SIZE millisecond variable value changes 
+					the view retains a time interval accordingly:
+				</para>
+				<programlisting><![CDATA[create variable long SIZE = 1000]]></programlisting>
+				<programlisting><![CDATA[select * from MyEvent.win:expr(newest_timestamp - oldest_timestamp < SIZE)]]></programlisting>
+
+				<para>
+					The following example declares a KEEP variable and flushes all events from the data window when the variable turns false:
+				</para>
+				<programlisting><![CDATA[create variable boolean KEEP = true]]></programlisting>
+				<programlisting><![CDATA[select * from MyEvent.win:expr(KEEP)]]></programlisting>
+
+				<sect4 id="view-win-expr-limit" >
+				   <title>Limitations</title>
+
+					<para>
+						You may not use subqueries, aggregation functions or the <literal>prev</literal> and <literal>prior</literal> functions as part of the expiry expression. Consider using a named window and <literal>on-delete</literal> or <literal>on-merge</literal> instead.
+					</para>
+					
+					<para>
+					  When using variables in the expiry expression, the thread that updates the variable does not evaluate the view. The thread that updates the variable instead schedules a reevaluation and view evaluates by timer execution.
+					</para>					
+				</sect4>
 			</sect2>
 
 	   </sect1>

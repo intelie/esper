@@ -9,18 +9,19 @@
 package com.espertech.esper.view.window;
 
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.core.ExpressionResultCacheService;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.core.ViewResourceCallback;
-import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
+import com.espertech.esper.event.map.MapEventBean;
+import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.*;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Factory for {@link com.espertech.esper.view.window.ExpressionWindowView}.
@@ -38,7 +39,9 @@ public class ExpressionWindowViewFactory implements DataWindowViewFactory
     protected boolean isRemoveStreamHandling;
 
     private EventType eventType;
-    protected ExprNode validatedExpr;
+    protected ExprNode expiryExpression;
+    protected MapEventBean builtinMapBean;
+    protected Set<String> variableNames;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
@@ -46,19 +49,42 @@ public class ExpressionWindowViewFactory implements DataWindowViewFactory
             String errorMessage = "Expression window view requires a single expression as a parameter";
             throw new ViewParameterException(errorMessage);
         }
-
-        Map<String, Object> builtinTypeDef = new LinkedHashMap<String, Object>();
-        builtinTypeDef.put("event_count", Integer.class);
-        EventType builtinMapType = viewFactoryContext.getEventAdapterService().createAnonymousMapType(viewFactoryContext.getStatementId() + "_exprview", builtinTypeDef);
-
-        StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {eventType, builtinMapType}, new String[2], new boolean[2], viewFactoryContext.getStatementContext().getEngineURI(), false);
-
-        validatedExpr = ViewFactorySupport.validateExpr(viewFactoryContext.getStatementContext(), expressionParameters.get(0), streamTypeService, 0);
+        expiryExpression = expressionParameters.get(0);
     }
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
         this.eventType = parentEventType;
+
+        // define built-in fields
+        Map<String, Object> builtinTypeDef = new LinkedHashMap<String, Object>();
+        builtinTypeDef.put(ExpressionWindowView.CURRENT_COUNT, Integer.class);
+        builtinTypeDef.put(ExpressionWindowView.OLDEST_TIMESTAMP, Long.class);
+        builtinTypeDef.put(ExpressionWindowView.NEWEST_TIMESTAMP, Long.class);
+        builtinTypeDef.put(ExpressionWindowView.EXPIRED_COUNT, Integer.class);
+        builtinTypeDef.put(ExpressionWindowView.VIEW_REFERENCE, Object.class);
+        EventType builtinMapType = statementContext.getEventAdapterService().createAnonymousMapType(statementContext.getStatementId() + "_exprview", builtinTypeDef);
+        builtinMapBean = new MapEventBean(new HashMap<String, Object>(), builtinMapType);
+        StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {eventType, builtinMapType}, new String[2], new boolean[2], statementContext.getEngineURI(), false);
+
+        // validate expression
+        expiryExpression = ViewFactorySupport.validateExpr(statementContext, expiryExpression, streamTypeService, 0);
+
+        ExprNodeSummaryVisitor summaryVisitor = new ExprNodeSummaryVisitor();
+        expiryExpression.accept(summaryVisitor);
+        if (summaryVisitor.isHasAggregation() || summaryVisitor.isHasSubselect() || summaryVisitor.isHasStreamSelect() || summaryVisitor.isHasPreviousPrior()) {
+            throw new ViewParameterException("Invalid expiry expression: Aggregation, sub-select, previous or prior functions are not supported in this context");
+        }
+
+        Class returnType = expiryExpression.getExprEvaluator().getType();
+        if (JavaClassHelper.getBoxedType(returnType) != Boolean.class) {
+            throw new ViewParameterException("Invalid return value for expiry expression, expected a boolean return value but received " + JavaClassHelper.getParameterAsString(returnType));
+        }
+
+        // determine variables used, if any
+        ExprNodeVariableVisitor visitor = new ExprNodeVariableVisitor();
+        expiryExpression.accept(visitor);
+        variableNames = visitor.getVariableNames();
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -95,7 +121,7 @@ public class ExpressionWindowViewFactory implements DataWindowViewFactory
         resourceCallback.setViewResource(randomAccessGetterImpl);
     }
 
-    public View makeView(StatementContext statementContext)
+    public View makeView(final StatementContext statementContext)
     {
         IStreamRandomAccess randomAccess = null;
 
@@ -105,15 +131,18 @@ public class ExpressionWindowViewFactory implements DataWindowViewFactory
             randomAccessGetterImpl.updated(randomAccess);
         }
 
-        if (isRemoveStreamHandling)
+        ExprEvaluatorContext evaluatorContext = new ExprEvaluatorContext()
         {
-            // TODO return new LengthWindowViewRStream(this, size);
-        }
-        else
-        {
-            return new ExpressionWindowView(this, randomAccess);
-        }
-        return null; // TODO
+            public TimeProvider getTimeProvider()
+            {
+                return statementContext.getTimeProvider();
+            }
+
+            public ExpressionResultCacheService getExpressionResultCacheService() {
+                return null;
+            }
+        };
+        return new ExpressionWindowView(this, randomAccess, expiryExpression.getExprEvaluator(), evaluatorContext, builtinMapBean, variableNames, statementContext);
     }
 
     public EventType getEventType()
@@ -123,7 +152,6 @@ public class ExpressionWindowViewFactory implements DataWindowViewFactory
 
     public boolean canReuse(View view)
     {
-        //return myView.isEmpty(); // TODO
         return false;
     }
 }

@@ -28,9 +28,10 @@ public class TestWrapperEventBean extends TestCase
 		Map<String, Object> typeMap = new HashMap<String, Object>();
 		typeMap.put("string", String.class);
 		typeMap.put("int", Integer.class);
-		
-		eventTypeSimple = new WrapperEventType(null, "mytype", 1, underlyingEventTypeSimple, typeMap, eventService);
-		eventTypeCombined = new WrapperEventType(null, "mytype", 1, underlyingEventTypeCombined, typeMap, eventService);
+
+        EventTypeMetadata meta = EventTypeMetadata.createWrapper("test", true, false, false);
+		eventTypeSimple = new WrapperEventType(meta, "mytype", 1, underlyingEventTypeSimple, typeMap, eventService);
+		eventTypeCombined = new WrapperEventType(meta, "mytype", 1, underlyingEventTypeCombined, typeMap, eventService);
 		properties = new HashMap<String, Object>();
 		properties.put("string", "xx");
 		properties.put("int", 11);

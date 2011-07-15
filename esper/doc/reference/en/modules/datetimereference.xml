@@ -878,6 +878,9 @@ from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programl
 		     The query planning is generally most effective when no additional thresholds or ranges are provided to interval algebra methods, as the query planner may not consider an interval algebra method that it cannot plan.
 		   </para>
 		   		  
+		   <para>
+		     The query planner may also not optimally plan the query execution if events or expressions return different types of date representation. Query planning works best if all date representations use the same long, Date or Calendar types.
+		   </para>
 		 </sect4>
 
 		<sect4 id="datetime-method-limitations">

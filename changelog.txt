@@ -11,6 +11,7 @@ Major API or EPL changes
   - Support for {} array operator to be input to enumeration methods
   - Support for subqueries that return multiple result columns to be used in an expression definition  
   - Support for interval algebra methods among the existing date-time methods
+  - Support for a new expression-driven data window "win:expr". Use for dynamically shrinking and expanding time or length windows, or for custom expiry logic based on work days, for example.
 
 Changes in version 4.2.0
 ------------------------

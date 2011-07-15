@@ -47,6 +47,10 @@ public class ExprDotNodeFilterAnalyzerDTIntervalDesc
         ExprIdentNode parameterStartExpr = getExprNode(typesPerStream, parameterStreamNum, parameterStartProp);
         ExprIdentNode parameterEndExpr = getExprNode(typesPerStream, parameterStreamNum, parameterEndProp);
 
+        if (targetStartExpr.getExprEvaluator().getType() != parameterStartExpr.getExprEvaluator().getType()) {
+            return;
+        }
+
         if (currentMethod == DatetimeMethodEnum.BEFORE) {
             // a.end < b.start
             queryGraph.addRelationalOpStrict(targetStreamNum, targetEndProp, targetEndExpr,
