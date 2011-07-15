@@ -21,7 +21,7 @@ public class TestPerfDTIntervalOps extends TestCase {
         listener = new SupportUpdateListener();
     }
 
-    public void testBeforeNoDurationStream() {
+    public void testPerf() {
 
         ConfigurationEventTypeLegacy config = new ConfigurationEventTypeLegacy();
         config.setStartTimestampPropertyName("msecdateStart");
@@ -33,26 +33,89 @@ public class TestPerfDTIntervalOps extends TestCase {
         epService.getEPAdministrator().createEPL("insert into AWindow select * from A");
 
         // preload
-        System.out.println("Preloading");
         for (int i = 0; i < 10000; i++) {
-            epService.getEPRuntime().sendEvent(SupportTimeStartEndA.make("A" + i, "2002-05-30T9:00:00.000", 0));
+            epService.getEPRuntime().sendEvent(SupportTimeStartEndA.make("A" + i, "2002-05-30T9:00:00.000", 100));
         }
-        epService.getEPRuntime().sendEvent(SupportTimeStartEndA.make("AX", "2002-05-30T8:00:00.000", 0));
-        System.out.println("Preloading done");
+        epService.getEPRuntime().sendEvent(SupportTimeStartEndA.make("AEarlier", "2002-05-30T8:00:00.000", 100));
+        epService.getEPRuntime().sendEvent(SupportTimeStartEndA.make("ALater", "2002-05-30T10:00:00.000", 100));
 
-        // query with BEFORE
-        String epl = "select a.key as c0 from AWindow as a, B b unidirectional where a.before(b)";
+        // assert BEFORE
+        String eplBefore = "select a.key as c0 from AWindow as a, B b unidirectional where a.before(b)";
+        runAssertion(eplBefore, "2002-05-30T9:00:00.000", 0, "AEarlier");
+
+        String eplBeforeMSec = "select a.key as c0 from AWindow as a, B b unidirectional where a.msecdateEnd.before(b.msecdateStart)";
+        runAssertion(eplBeforeMSec, "2002-05-30T9:00:00.000", 0, "AEarlier");
+        
+        String eplBeforeMSecMix1 = "select a.key as c0 from AWindow as a, B b unidirectional where a.msecdateEnd.before(b)";
+        runAssertion(eplBeforeMSecMix1, "2002-05-30T9:00:00.000", 0, "AEarlier");
+
+        String eplBeforeMSecMix2 = "select a.key as c0 from AWindow as a, B b unidirectional where a.before(b.msecdateStart)";
+        runAssertion(eplBeforeMSecMix2, "2002-05-30T9:00:00.000", 0, "AEarlier");
+
+        // assert AFTER
+        String eplAfter = "select a.key as c0 from AWindow as a, B b unidirectional where a.after(b)";
+        runAssertion(eplAfter, "2002-05-30T9:00:00.000", 0, "ALater");
+
+        // assert COINCIDES
+        String eplCoincides = "select a.key as c0 from AWindow as a, B b unidirectional where a.coincides(b)";
+        runAssertion(eplCoincides, "2002-05-30T8:00:00.000", 100, "AEarlier");
+
+        // assert DURING
+        String eplDuring = "select a.key as c0 from AWindow as a, B b unidirectional where a.during(b)";
+        runAssertion(eplDuring, "2002-05-30T7:59:59.000", 2000, "AEarlier");
+
+        // assert FINISHES
+        String eplFinishes = "select a.key as c0 from AWindow as a, B b unidirectional where a.finishes(b)";
+        runAssertion(eplFinishes, "2002-05-30T7:59:59.950", 150, "AEarlier");
+
+        // assert FINISHED-BY
+        String eplFinishedBy = "select a.key as c0 from AWindow as a, B b unidirectional where a.finishedBy(b)";
+        runAssertion(eplFinishedBy, "2002-05-30T8:00:00.050", 50, "AEarlier");
+
+        // assert INCLUDES
+        String eplIncludes = "select a.key as c0 from AWindow as a, B b unidirectional where a.includes(b)";
+        runAssertion(eplIncludes, "2002-05-30T8:00:00.050", 20, "AEarlier");
+
+        // assert MEETS
+        String eplMeets = "select a.key as c0 from AWindow as a, B b unidirectional where a.meets(b)";
+        runAssertion(eplMeets, "2002-05-30T8:00:00.100", 0, "AEarlier");
+
+        // assert METBY
+        String eplMetBy = "select a.key as c0 from AWindow as a, B b unidirectional where a.metBy(b)";
+        runAssertion(eplMetBy, "2002-05-30T7:59:59.950", 50, "AEarlier");
+
+        // assert OVERLAPS
+        String eplOverlaps = "select a.key as c0 from AWindow as a, B b unidirectional where a.overlaps(b)";
+        runAssertion(eplOverlaps, "2002-05-30T8:00:00.050", 100, "AEarlier");
+
+        // assert OVERLAPPEDY
+        String eplOverlappedBy = "select a.key as c0 from AWindow as a, B b unidirectional where a.overlappedBy(b)";
+        runAssertion(eplOverlappedBy, "2002-05-30T9:59:59.950", 100, "ALater");
+
+        // assert STARTS
+        String eplStarts = "select a.key as c0 from AWindow as a, B b unidirectional where a.starts(b)";
+        runAssertion(eplStarts, "2002-05-30T8:00:00.000", 150, "AEarlier");
+
+        // assert STARTEDBY
+        String eplEnds = "select a.key as c0 from AWindow as a, B b unidirectional where a.startedBy(b)";
+        runAssertion(eplEnds, "2002-05-30T8:00:00.000", 50, "AEarlier");
+    }
+
+    private void runAssertion(String epl, String timestampB, long durationB, String expectedAKey) {
+
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
 
         // query
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 1000; i++) {
-            epService.getEPRuntime().sendEvent(SupportTimeStartEndB.make("B", "2002-05-30T9:00:00.000", 0));
-            assertEquals("AX", listener.assertOneGetNewAndReset().get("c0"));
+            epService.getEPRuntime().sendEvent(SupportTimeStartEndB.make("B", timestampB, durationB));
+            assertEquals(expectedAKey, listener.assertOneGetNewAndReset().get("c0"));
         }
         long endTime = System.currentTimeMillis();
         long delta = endTime - startTime;
         assertTrue("Delta=" + delta/1000d, delta < 500);
+
+        stmt.destroy();
     }
 }

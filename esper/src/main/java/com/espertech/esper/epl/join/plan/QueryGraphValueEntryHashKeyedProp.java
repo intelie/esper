@@ -22,5 +22,9 @@ public class QueryGraphValueEntryHashKeyedProp extends QueryGraphValueEntryHashK
     public String getKeyProperty() {
         return keyProperty;
     }
+
+    public String toQueryPlan() {
+        return keyProperty;
+    }
 }
 

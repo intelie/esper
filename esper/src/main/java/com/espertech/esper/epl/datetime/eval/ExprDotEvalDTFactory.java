@@ -23,13 +23,11 @@ public class ExprDotEvalDTFactory {
             throws ExprValidationException
     {
         // verify input
-        String inputPropertyName = null;
         String message = "Date-time enumeration method '" + dtMethodName + "' requires either a Calendar, Date or long value as input or events of an event type that declares a timestamp property";
         if (inputType.getEventType() != null) {
             if (inputType.getEventType().getStartTimestampPropertyName() == null) {
                 throw new ExprValidationException(message);
             }
-            inputPropertyName = inputType.getEventType().getStartTimestampPropertyName();
         }
         else {
             if (!inputType.isScalar() || inputType.getScalar() == null) {
@@ -73,7 +71,7 @@ public class ExprDotEvalDTFactory {
 
                 // compile filter analyzer information if there are no calendar ops in the chain
                 if (calendarOps.isEmpty()) {
-                    intervalFilterDesc = intervalOp.getFilterDesc(typesPerStream, currentMethod, currentParameters, inputDesc, inputPropertyName);
+                    intervalFilterDesc = intervalOp.getFilterDesc(typesPerStream, currentMethod, currentParameters, inputDesc);
                 }
                 else {
                     intervalFilterDesc = null;

@@ -16,6 +16,7 @@ import com.espertech.esper.epl.join.exec.base.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
 
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,6 @@ public class IndexedTableLookupPlanMulti extends TableLookupPlan
     {
         return "IndexedTableLookupPlan " +
                 super.toString() +
-               " keyProperties=" + keyProperties;
+               " keyProperties=" + QueryGraphValueEntryHashKeyed.toQueryPlan(keyProperties);
     }
 }

@@ -27,5 +27,9 @@ public class QueryGraphValueEntryHashKeyedExpr extends QueryGraphValueEntryHashK
     public boolean isConstant() {
         return super.getKeyExpr() instanceof ExprConstantNode;
     }
+
+    public String toQueryPlan() {
+        return getKeyExpr().toExpressionString();
+    }
 }
 

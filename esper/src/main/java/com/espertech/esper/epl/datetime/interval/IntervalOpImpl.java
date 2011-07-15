@@ -16,8 +16,11 @@ import java.util.List;
 public class IntervalOpImpl implements IntervalOp {
 
     private final ExprEvaluator evaluatorTimestamp;
-    private final Integer inputEventStreamNum;
-    private final String timestampPropertyName;
+
+    private Integer parameterStreamNum;
+    private String parameterPropertyStart;
+    private String parameterPropertyEnd;
+
     private final IntervalOpEval intervalOpEval;
 
     public IntervalOpImpl(DatetimeMethodEnum method, String methodNameUse, EventType[] typesPerStream, List<ExprNode> expressions)
@@ -28,27 +31,36 @@ public class IntervalOpImpl implements IntervalOp {
 
         if (expressions.get(0) instanceof ExprStreamUnderlyingNode) {
             ExprStreamUnderlyingNode und = (ExprStreamUnderlyingNode) expressions.get(0);
-            inputEventStreamNum = und.getStreamId();
-            EventType type = typesPerStream[inputEventStreamNum];
-            timestampPropertyName = type.getStartTimestampPropertyName();
-            if (timestampPropertyName == null) {
+            parameterStreamNum = und.getStreamId();
+            EventType type = typesPerStream[parameterStreamNum];
+            parameterPropertyStart = type.getStartTimestampPropertyName();
+            if (parameterPropertyStart == null) {
                 throw new ExprValidationException("For date-time method '" + methodNameUse + "' the first parameter is event type '" + type.getName() + "', however no timestamp property has been defined for this event type");
             }
 
-            timestampType = type.getPropertyType(timestampPropertyName);
-            EventPropertyGetter getter = type.getGetter(timestampPropertyName);
-            evaluatorTimestamp = new ExprEvaluatorStreamLongProp(inputEventStreamNum, getter);
+            timestampType = type.getPropertyType(parameterPropertyStart);
+            EventPropertyGetter getter = type.getGetter(parameterPropertyStart);
+            evaluatorTimestamp = new ExprEvaluatorStreamLongProp(parameterStreamNum, getter);
 
             if (type.getEndTimestampPropertyName() != null) {
+                parameterPropertyEnd = type.getEndTimestampPropertyName();
                 EventPropertyGetter getterEndTimestamp = type.getGetter(type.getEndTimestampPropertyName());
-                evaluatorEndTimestamp = new ExprEvaluatorStreamLongProp(inputEventStreamNum, getterEndTimestamp);
+                evaluatorEndTimestamp = new ExprEvaluatorStreamLongProp(parameterStreamNum, getterEndTimestamp);
+            }
+            else {
+                parameterPropertyEnd = parameterPropertyStart;
             }
         }
         else {
-            inputEventStreamNum = null;
-            timestampPropertyName = null;
             evaluatorTimestamp = expressions.get(0).getExprEvaluator();
             timestampType = evaluatorTimestamp.getType();
+
+            if (expressions.get(0) instanceof ExprIdentNode) {
+                ExprIdentNode identNode = (ExprIdentNode) expressions.get(0);
+                parameterStreamNum = identNode.getStreamId();
+                parameterPropertyStart = identNode.getResolvedPropertyName();
+                parameterPropertyEnd = parameterPropertyStart;
+            }
 
             if (!JavaClassHelper.isDatetimeClass(evaluatorTimestamp.getType())) {
                 throw new ExprValidationException("For date-time method '" + methodNameUse + "' the first parameter expression returns '" + evaluatorTimestamp.getType() + "', however requires a Date, Calendar, Long-type return value or event (with timestamp)");
@@ -95,27 +107,43 @@ public class IntervalOpImpl implements IntervalOp {
      * @param currentMethod
      * @param currentParameters
      * @param inputDesc descriptor of what the input to this interval method is
-     * @param inputPropertyName   @return
      * */
-    public ExprDotNodeFilterAnalyzerDTIntervalDesc getFilterDesc(EventType[] typesPerStream, DatetimeMethodEnum currentMethod, List<ExprNode> currentParameters, ExprDotNodeFilterAnalyzerInput inputDesc, String inputPropertyName) {
-        if ((!(inputDesc instanceof ExprDotNodeFilterAnalyzerInputStream)) ||
-                inputPropertyName == null ||
-                inputEventStreamNum == null ||
-                currentParameters.size() > 1) {
-            return null;
-        }
-        if (currentMethod != DatetimeMethodEnum.BEFORE) {
+    public ExprDotNodeFilterAnalyzerDTIntervalDesc getFilterDesc(EventType[] typesPerStream, DatetimeMethodEnum currentMethod, List<ExprNode> currentParameters, ExprDotNodeFilterAnalyzerInput inputDesc) {
+
+        // with intervals is not currently query planned
+        if (currentParameters.size() > 1) {
             return null;
         }
 
-        ExprDotNodeFilterAnalyzerInputStream inputStream = (ExprDotNodeFilterAnalyzerInputStream) inputDesc;
-        ExprIdentNode inputIdentNode = new ExprIdentNodeImpl(typesPerStream[inputStream.getStreamNum()], inputPropertyName, inputStream.getStreamNum());
-        ExprIdentNode paramIdentNode = new ExprIdentNodeImpl(typesPerStream[inputEventStreamNum], timestampPropertyName, inputEventStreamNum);
-        return new ExprDotNodeFilterAnalyzerDTIntervalDesc(currentMethod,
-                inputStream.getStreamNum(), inputPropertyName, inputIdentNode,  // (A)
-                inputEventStreamNum, timestampPropertyName, paramIdentNode,     // (B)
-                RelationalOpEnum.LT
-                );
+        // Get input (target)
+        int targetStreamNum;
+        String targetPropertyStart;
+        String targetPropertyEnd;
+        if (inputDesc instanceof ExprDotNodeFilterAnalyzerInputStream) {
+            ExprDotNodeFilterAnalyzerInputStream targetStream = (ExprDotNodeFilterAnalyzerInputStream) inputDesc;
+            targetStreamNum = targetStream.getStreamNum();
+            EventType targetType = typesPerStream[targetStreamNum];
+            targetPropertyStart = targetType.getStartTimestampPropertyName();
+            targetPropertyEnd = targetType.getEndTimestampPropertyName() != null ? targetType.getEndTimestampPropertyName() : targetPropertyStart;
+        }
+        else if (inputDesc instanceof ExprDotNodeFilterAnalyzerInputProp) {
+            ExprDotNodeFilterAnalyzerInputProp targetStream = (ExprDotNodeFilterAnalyzerInputProp) inputDesc;
+            targetStreamNum = targetStream.getStreamNum();
+            targetPropertyStart = targetStream.getPropertyName();
+            targetPropertyEnd = targetStream.getPropertyName();
+        }
+        else {
+            return null;
+        }
+
+        // check parameter info
+        if (parameterPropertyStart == null) {
+            return null;
+        }
+
+        return new ExprDotNodeFilterAnalyzerDTIntervalDesc(currentMethod, typesPerStream,
+                targetStreamNum, targetPropertyStart, targetPropertyEnd,
+                parameterStreamNum, parameterPropertyStart, parameterPropertyEnd);
     }
 
     public Object evaluate(long startTs, long endTs, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {

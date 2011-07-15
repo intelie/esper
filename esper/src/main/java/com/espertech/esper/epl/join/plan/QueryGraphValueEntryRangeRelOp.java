@@ -25,6 +25,6 @@ public class QueryGraphValueEntryRangeRelOp extends QueryGraphValueEntryRange {
     }
 
     public String toQueryPlan() {
-        return this.getClass().getSimpleName();
+        return getType().getStringOp() + " on " + expression.toExpressionString();
     }
 }

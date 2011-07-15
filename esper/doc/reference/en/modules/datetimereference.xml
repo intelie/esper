@@ -21,7 +21,7 @@
 			</listitem>
 			<listitem>
 				<para>
-                    Any event for which the event type declares a start timestamp property name and optionally also a end timestamp property name. Date-time methods operate on events by means of the <emphasis>stream-alias</emphasis>.<emphasis>method-name</emphasis> syntax.
+                    Any event for which the event type declares a start timestamp property name and optionally also an end timestamp property name. Date-time methods operate on events by means of the <emphasis>stream-alias</emphasis>.<emphasis>method-name</emphasis> syntax.
                 </para>
 			</listitem>
 		</orderedlist>
@@ -79,7 +79,7 @@
 						<entry>during(event or timestamp)</entry>
 						<entry>
 							<para>
-								Returns true if an event happens during the occurance of another event, or when a timestamps falls within the occurance of an event.
+								Returns true if an event happens during the occurrence of another event, or when a timestamps falls within the occurrence of an event.
 							</para>
 							<para>
 								<xref linkend="datetime-method-during"/>.
@@ -155,7 +155,7 @@
 						<entry>includes(event or timestamp)</entry>
 						<entry>
 							<para>
-								Returns true if the parameter event happens during the occurance of the event, or when a timestamps falls within the occurance of an event.
+								Returns true if the parameter event happens during the occurrence of the event, or when a timestamps falls within the occurrence of an event.
 							</para>
 							<para>
 								<xref linkend="datetime-method-includes"/>.
@@ -447,7 +447,7 @@ from MyEvent]]></programlisting>
 			<programlisting><![CDATA[select timeTaken.roundFloor('min') as timeTakenRounded from RFIDEvent]]></programlisting>
 			
 			<para>
-				You may apply a date-time method to events. This examples assumes that the RFIDEvent and WifiEvent event types both have a timestamp property defined. The EPL compares the timestamps of the RFIDEvent and the WifiEvent: 
+				You may apply a date-time method to events. This example assumes that the RFIDEvent and WifiEvent event types both have a timestamp property defined. The EPL compares the timestamps of the RFIDEvent and the WifiEvent: 
 			</para>			
 			<programlisting><![CDATA[select rfid.after(wifi) as isAfter 
 from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programlisting>
@@ -808,11 +808,11 @@ from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programl
 		</para>
 		
 		<para>
-		  When expression input is a event stream alias, the engine determine the event type for the stream. If the event type declares a start timestamp property name, the engine uses that start timestamp property to determine the start timestamp for the event. If the event type also declares an end timestamp property name, the engine uses that end timestamp property to determine the end timestamp for the event (i.e. an event with duration). If an end timestamp property name is not declared, the start and end timestamp for each event is the same value and the event is considered to have zero duration (i.e. a point-in-time event).
+		  When expression input is an event stream alias, the engine determine the event type for the stream. If the event type declares a start timestamp property name, the engine uses that start timestamp property to determine the start timestamp for the event. If the event type also declares an end timestamp property name, the engine uses that end timestamp property to determine the end timestamp for the event (i.e. an event with duration). If an end timestamp property name is not declared, the start and end timestamp for each event is the same value and the event is considered to have zero duration (i.e. a point-in-time event).
 		</para>
 		
 		<para>
-			Interval algebra methods all return <literal>Boolean</literal>-type value. When the input value start timestamp is null, or the end timestamp (if defined) is null or any of the start timestamp and end timestamp values of the first parameter is null, the result value is null.
+			Interval algebra methods all return <literal>Boolean</literal>-type value. When the input value start timestamp is null, or the end timestamp (if declared for the event type) is null or any of the start timestamp and end timestamp (if declared for the event type) values of the first parameter is null, the result value is null.
 		</para>
 
 		<sect4 id="datetime-method-examples">
@@ -852,7 +852,7 @@ from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programl
 			<orderedlist>
 				<listitem>
 					<para>
-						A constant, an event property or more generally any expression returning a numeric value that is the number of seconds. For example: <literal>a.before(b, 2)</literal> (the parameter 2 means 2 seconds). <literal>a.before(b, myIntervalProperty)</literal>.
+						A constant, an event property or more generally any expression returning a numeric value that is the number of seconds. For example, in the expression <literal>a.before(b, 2)</literal> the parameter 2 is interpreted to mean 2 seconds. The expression <literal>a.before(b, myIntervalProperty)</literal> is interpreted to mean <literal>myIntervalProperty</literal> seconds.
 					</para>
 				</listitem>
 				<listitem>
@@ -863,8 +863,21 @@ from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programl
 			</orderedlist>		   
 
 			<para>
-				When an Interval parameter is provided and is null, the method result value is null.
+				When an interval parameter is provided and is null, the method result value is null.
 			</para>
+		 </sect4>
+
+		<sect4 id="datetime-method-performance">
+		  <title>Performance</title>
+		  
+		   <para>
+			  The engine analyzes interval algebra methods in the where-clause and builds a query plan for execution of joins and subqueries. The query plan can include hash and btree index lookups using the start and end timestamps as computed by expressions or provided by events as applicable. Consider turning on query plan logging to obtain information on the query plan used.
+		   </para>
+		   
+		   <para>
+		     The query planning is generally most effective when no additional thresholds or ranges are provided to interval algebra methods, as the query planner may not consider an interval algebra method that it cannot plan.
+		   </para>
+		   		  
 		 </sect4>
 
 		<sect4 id="datetime-method-limitations">
@@ -1039,7 +1052,7 @@ from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programl
 		<sect2 id="datetime-method-during">
 		  <title>During</title>
 		  	<para>
-				The <literal>during</literal> date-time method returns true if an event happens during the occurance of another event, or when a timestamps falls within the occurance of an event..
+				The <literal>during</literal> date-time method returns true if an event happens during the occurrence of another event, or when a timestamps falls within the occurrence of an event..
 			</para>
 
 		  	<para>
@@ -1172,7 +1185,7 @@ from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programl
 		<sect2 id="datetime-method-includes">
 		  <title>Includes</title>
 		  	<para>
-				The <literal>includes</literal> date-time method returns true if the parameter event happens during the occurance of the input event, or when a timestamps falls within the occurance of an event.
+				The <literal>includes</literal> date-time method returns true if the parameter event happens during the occurrence of the input event, or when a timestamps falls within the occurrence of an event.
 			</para>
 
 		  	<para>
@@ -1435,7 +1448,7 @@ from RFIDEvent.std:lastevent() rfid, WifiEvent.std:lastevent() wifi]]></programl
 		<sect2 id="datetime-method-startedby">
 		  <title>Started By</title>
 		  	<para>
-				The <literal>startedBy</literal> date-time method returns returns true if an event and another event start at the same time and the other event's end happens before the input event's end.
+				The <literal>startedBy</literal> date-time method returns true if an event and another event start at the same time and the other event's end happens before the input event's end.
 			</para>
 
 		  	<para>

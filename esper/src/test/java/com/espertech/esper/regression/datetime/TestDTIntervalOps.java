@@ -407,9 +407,8 @@ public class TestDTIntervalOps extends TestCase {
         Validator expectedValidator = new AfterValidator(1L, Long.MAX_VALUE);
         String seedTime = "2002-05-30T9:00:00.000";
         Object[][] expected = {
-                // TODO
-                // {"2002-05-30T8:59:59.000", 0, false},
-                //{"2002-05-30T9:00:00.000", 0, false},
+                {"2002-05-30T8:59:59.000", 0, false},
+                {"2002-05-30T9:00:00.000", 0, false},
                 {"2002-05-30T9:00:00.001", 0, true},
         };
         assertExpression(seedTime, 0, "a.after(b)", expected, expectedValidator);

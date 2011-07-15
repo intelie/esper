@@ -5140,7 +5140,8 @@ create schema CompositeEvent(group String, innerEvents SecurityEvent[])
 create schema WebPageVisitEvent(userId String) inherits PageHitEvent
 
 // Declare a type with start and end timestamp (i.e. event with duration).
-create schema RoboticArmMovement (robotId string, startts long, endts long) starttimestamp startts endtimestamp endts]]></programlisting>	
+create schema RoboticArmMovement (robotId string, startts long, endts long) 
+  starttimestamp startts endtimestamp endts]]></programlisting>	
 		</sect2>
 
 		<sect2 id="epl_createschema_class" revision="1">

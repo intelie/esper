@@ -63,9 +63,7 @@ public class FilterExprAnalyzer
         if (interval == null) {
             return;
         }
-        queryGraph.addRelationalOpStrict(interval.getStreamIdLeft(), interval.getPropertyLeft(), interval.getPropertyLeftExpr(),
-                interval.getStreamIdRight(), interval.getPropertyRight(), interval.getPropertyRightExpr(),
-                interval.getRelationalOpEnum());
+        interval.apply(queryGraph);
     }
 
     private static void analyzeRelationalOpNode(ExprRelationalOpNode relNode, QueryGraph queryGraph) {

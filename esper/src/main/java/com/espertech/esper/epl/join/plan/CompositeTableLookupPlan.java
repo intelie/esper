@@ -54,7 +54,7 @@ public class CompositeTableLookupPlan extends TableLookupPlan
     {
         return "CompositeTableLookupPlan " +
                 super.toString() +
-                " directKeys=" + Arrays.toString(hashKeys.toArray()) +
-                " rangeKeys=" + Arrays.toString(rangeKeyPairs.toArray());
+                " directKeys=" + QueryGraphValueEntryHashKeyed.toQueryPlan(hashKeys) +
+                " rangeKeys=" + QueryGraphValueEntryRange.toQueryPlan(rangeKeyPairs);
     }
 }

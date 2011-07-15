@@ -11,6 +11,8 @@ package com.espertech.esper.epl.join.plan;
 import com.espertech.esper.epl.expression.ExprNode;
 
 import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.List;
 
 public abstract class QueryGraphValueEntryHashKeyed implements QueryGraphValueEntry, Serializable
 {
@@ -24,5 +26,18 @@ public abstract class QueryGraphValueEntryHashKeyed implements QueryGraphValueEn
         return keyExpr;
     }
 
+    public abstract String toQueryPlan();
+
+    public static String toQueryPlan(List<QueryGraphValueEntryHashKeyed> keyProperties) {
+        StringWriter writer = new StringWriter();
+        String delimiter = "";
+        for (QueryGraphValueEntryHashKeyed item : keyProperties) {
+            writer.write(delimiter);
+            writer.write(item.toQueryPlan());
+            delimiter = ", ";
+        }
+        return writer.toString();
+    }
+    
 }
 

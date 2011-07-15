@@ -732,11 +732,11 @@ desc.setEventSenderValidatesRoot(false);]]></programlisting>
 				<title>Start and End Timestamp</title>
 				
 				<para>
-					You may configure the name of the propetry that provides the event start timestamp and the event end timestamp as part of the configuration. Both properties must provide a long-type return value.
+					You may configure the name of the properties that provides the event start timestamp and the event end timestamp as part of the configuration.
 				</para>
 
 				<para>
-					An example:
+					An example that configures <literal>startts</literal> as the property name providing the start timestamp and <literal>endts</literal> as the property name providing the end timestamp:
 				</para>
 
 				<programlisting><![CDATA[ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
