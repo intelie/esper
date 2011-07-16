@@ -33,11 +33,11 @@ import java.util.Set;
  * This view is a moving window extending the into the past until the expression passed to it returns false.
  */
 public final class ExpressionWindowView extends ViewSupport implements DataWindowView, CloneableView, StoppableView, VariableChangeCallback {
-    protected final static String CURRENT_COUNT = "current_count";
-    protected final static String OLDEST_TIMESTAMP = "oldest_timestamp";
-    protected final static String NEWEST_TIMESTAMP = "newest_timestamp";
-    protected final static String EXPIRED_COUNT = "expired_count";
-    protected final static String VIEW_REFERENCE = "view_reference";
+    public final static String CURRENT_COUNT = "current_count";
+    public final static String OLDEST_TIMESTAMP = "oldest_timestamp";
+    public final static String NEWEST_TIMESTAMP = "newest_timestamp";
+    public final static String EXPIRED_COUNT = "expired_count";
+    public final static String VIEW_REFERENCE = "view_reference";
 
     private final ExpressionWindowViewFactory dataWindowViewFactory;
     private final ViewUpdatedCollection viewUpdatedCollection;
