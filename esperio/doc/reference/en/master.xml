@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
+                      "../support/docbook-dtd/docbookx.dtd" [
+	<!ENTITY adapter_overview SYSTEM "modules/adapter_overview.xml">
+	<!ENTITY adapter_csv SYSTEM "modules/adapter_csv.xml">
+	<!ENTITY adapter_jms_spring SYSTEM "modules/adapter_jms_spring.xml">
+	<!ENTITY adapter_db SYSTEM "modules/adapter_db.xml">	
+	<!ENTITY adapter_http SYSTEM "modules/adapter_http.xml">	
+	<!ENTITY adapter_socket SYSTEM "modules/adapter_socket.xml">	
+	<!ENTITY adapter_xmljson SYSTEM "modules/adapter_xmljson.xml">	
+	<!ENTITY adapter_event_representations SYSTEM "modules/adapter_event_representations.xml">	
+]>
+<book lang="en">
+	<bookinfo>
+		<title>EsperIO Adapters</title>
+		<subtitle>EsperIO Reference Documentation</subtitle>
+		<releaseinfo>4.3.0</releaseinfo>
+        <copyright>
+            <year>2011</year>
+            <holder>EsperTech Inc.</holder>
+        </copyright>
+	</bookinfo>
+	<toc/>
+	<preface id="preface" revision="1">
+		<title>Preface</title>
+		<para>
+			This document describes input and output adapters for the Esper Java event stream and complex event processor.
+        </para>
+        
+		<para>
+			If you are new to Esper, the Esper reference manual should be your first stop.
+		</para>
+			
+		<para>
+			If you are looking for information on a specific adapter, you are at the right spot.
+		</para>
+
+	</preface>
+
+    &adapter_overview;
+    
+    &adapter_csv;
+
+    &adapter_jms_spring;
+    
+    &adapter_http;
+
+    &adapter_socket;
+
+    &adapter_db;
+
+    &adapter_xmljson;
+
+    &adapter_event_representations;
+
+</book>

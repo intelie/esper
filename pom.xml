@@ -1,0 +1,43 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <name>Esper</name>
+  <groupId>com.espertech</groupId>
+  <version>4.3.0</version>
+  <artifactId>esperdist</artifactId>
+  <packaging>pom</packaging>
+  <modules>
+    <module>esper</module>
+    <module>esperio-csv</module>
+    <module>esperio-db</module>
+    <module>esperio-http</module>
+    <module>esperio-socket</module>
+    <module>esperio-springjms</module>
+    <module>esperio-stax</module>
+    <module>examples</module>
+  </modules>
+  <build>
+	<extensions>
+		  <extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-1</version>
+		  </extension>
+	</extensions>
+  </build>
+  <distributionManagement>
+	<repository>
+	  <id>codehaus.org</id>
+	  <name>Central Repository</name>
+	  <url>dav:https://dav.codehaus.org/repository/esper/</url>
+	</repository>
+	<snapshotRepository>
+	  <id>codehaus.org</id>
+	  <name>Central Development Repository</name>
+	  <url>dav:https://dav.codehaus.org/snapshots.repository/esper/</url>
+	</snapshotRepository>
+	<site>
+	  <id>codehaus.org</id>
+	  <url>dav:https://dav.codehaus.org/esper/</url>
+	</site>
+  </distributionManagement>
+</project>
