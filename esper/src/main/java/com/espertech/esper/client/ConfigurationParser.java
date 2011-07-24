@@ -955,6 +955,13 @@ class ConfigurationParser {
 
     private static void handleDefaultsThreading(Configuration configuration, Element parentElement)
     {
+        String engineFairlockStr = getOptionalAttribute(parentElement, "engine-fairlock");
+        if (engineFairlockStr != null)
+        {
+            boolean isEngineFairlock = Boolean.parseBoolean(engineFairlockStr);
+            configuration.getEngineDefaults().getThreading().setEngineFairlock(isEngineFairlock);
+        }
+
         DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
         while (nodeIterator.hasNext())
         {

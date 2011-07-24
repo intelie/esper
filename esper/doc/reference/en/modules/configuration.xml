@@ -1422,6 +1422,35 @@ config.getEngineDefaults().getThreading().setThreadPoolInboundNumThreads(2);]]><
 				</para>
 
 			</sect3>
+
+			<sect3 id="config-engine-execution-enginefairlock" revision="1">
+				<title>Engine Fair Locking</title>
+				<para>
+					By default Esper configures the engine-level lock without fair locking. The engine-level lock coordinates event processing threads (threads that send events) with threads that perform administrative functions (threads that start or destroy statements, for example).
+					A fair lock is generally less performing that an unfair lock thus the default configuration is an unfair lock.
+				</para>
+
+				<para>				
+					If your application is multi-threaded and multiple threads sends events without gaps and if the per-event processing time is significant, then configuring a fair lock can help prioritize administrative functions. Administrative functions exclude event-processing threads until the administrative function completed. You may need to set this flag to prevent lock starvation to perform an administrative function in the face of concurrent event processing. Please consult the Java API documentation under <literal>ReentrantReadWriteLock</literal> and <emphasis>Fair Mode</emphasis> for more information.
+				</para>
+		
+				<para>
+					 The XML configuration to enable fair locking, which is disabled by default, is as follows:
+				</para>
+	
+				<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <threading engine-fairlock="true"/>
+  </defaults>
+</engine-settings>]]></programlisting>
+			
+				<para>
+				 The API to change the setting:
+				</para>
+	
+				<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getThreading().setEngineFairlock(true);]]></programlisting>
+			</sect3>
 		</sect2>
 
 		<sect2 id="config-engine-eventmeta" revision="1">
@@ -1993,7 +2022,7 @@ config.getEngineDefaults().getExecution().setPrioritized(true);]]></programlisti
 			</sect3>
 
 			<sect3 id="config-engine-execution-fairlock" revision="1">
-				<title>Fair Locking</title>
+				<title>Statement Fair Locking</title>
 				<para>
 					By default Esper configures statement-level locks without fair locking. If your application is multi-threaded and performs very frequent reads via iterator or fire-and-forget queries, you may need to set this flag to prevent lock starvation in the face of concurrent reads and writes. Please consult the Java API documentation under <literal>ReentrantReadWriteLock</literal> and <emphasis>Fair Mode</emphasis> for more information.
 				</para>
@@ -2015,6 +2044,7 @@ config.getEngineDefaults().getExecution().setPrioritized(true);]]></programlisti
 				<programlisting><![CDATA[Configuration config = new Configuration();
 config.getEngineDefaults().getExecution().setFairlock(true);]]></programlisting>
 			</sect3>
+
 		</sect2>
 
 		<sect2 id="config-engine-exceptionhandling" revision="1">

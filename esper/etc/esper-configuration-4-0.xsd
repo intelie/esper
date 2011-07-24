@@ -404,6 +404,7 @@
 					<xs:element ref="esper:threadpool-routeexec" minOccurs="0"/>
 				</xs:choice>
 			</xs:sequence>
+			<xs:attribute name="engine-fairlock" type="xs:boolean" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="event-meta">

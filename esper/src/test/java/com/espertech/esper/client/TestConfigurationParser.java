@@ -68,6 +68,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(null, config.getEngineDefaults().getThreading().getThreadPoolOutboundCapacity());
         assertEquals(null, config.getEngineDefaults().getThreading().getThreadPoolRouteExecCapacity());
         assertEquals(null, config.getEngineDefaults().getThreading().getThreadPoolTimerExecCapacity());
+        assertTrue(config.getEngineDefaults().getThreading().isEngineFairlock());
 
         assertEquals(Configuration.PropertyResolutionStyle.CASE_SENSITIVE, config.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
         assertEquals(ConfigurationEventTypeLegacy.AccessorStyle.JAVABEAN, config.getEngineDefaults().getEventMeta().getDefaultAccessorStyle());

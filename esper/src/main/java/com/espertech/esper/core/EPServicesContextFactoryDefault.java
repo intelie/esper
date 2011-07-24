@@ -84,7 +84,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         init(eventAdapterService, configSnapshot);
 
         // New read-write lock for concurrent event processing
-        ManagedReadWriteLock eventProcessingRWLock = new ManagedReadWriteLock("EventProcLock", false);
+        ManagedReadWriteLock eventProcessingRWLock = new ManagedReadWriteLock("EventProcLock", configSnapshot.getEngineDefaults().getThreading().isEngineFairlock());
 
         TimeSourceService timeSourceService = makeTimeSource(configSnapshot);
         SchedulingServiceSPI schedulingService = SchedulingServiceProvider.newService(timeSourceService);

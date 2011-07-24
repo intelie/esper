@@ -256,6 +256,8 @@ public class ConfigurationEngineDefaults implements Serializable
         private Integer threadPoolRouteExecCapacity;
         private Integer threadPoolOutboundCapacity;
 
+        private boolean engineFairlock;
+
         /**
          * Ctor - sets up defaults.
          */
@@ -664,6 +666,30 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setThreadPoolOutboundCapacity(Integer capacity)
         {
             this.threadPoolOutboundCapacity = capacity;
+        }
+
+        /**
+         * Returns true if the engine-level lock is configured as a fair lock (default is false).
+         * <p>
+         * This lock coordinates
+         * event processing threads (threads that send events) with threads that
+         * perform administrative functions (threads that start or destroy statements, for example).
+         * @return
+         */
+        public boolean isEngineFairlock() {
+            return engineFairlock;
+        }
+
+        /**
+         * Set to true to configured the engine-level lock as a fair lock (default is false).
+         * <p>
+         * This lock coordinates
+         * event processing threads (threads that send events) with threads that
+         * perform administrative functions (threads that start or destroy statements, for example).
+         * @param engineFairlock true for fair lock
+         */
+        public void setEngineFairlock(boolean engineFairlock) {
+            this.engineFairlock = engineFairlock;
         }
 
         /**
