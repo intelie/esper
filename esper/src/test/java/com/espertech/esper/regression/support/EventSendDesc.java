@@ -1,0 +1,33 @@
+/*
+ * *************************************************************************************
+ *  Copyright (C) 2008 EsperTech, Inc. All rights reserved.                            *
+ *  http://esper.codehaus.org                                                          *
+ *  http://www.espertech.com                                                           *
+ *  ---------------------------------------------------------------------------------- *
+ *  The software in this package is published under the terms of the GPL license       *
+ *  a copy of which has been included with this distribution in the license.txt file.  *
+ * *************************************************************************************
+ */
+
+package com.espertech.esper.regression.support;
+
+import com.espertech.esper.support.bean.SupportMarketDataBean;
+
+public class EventSendDesc
+{
+    private SupportMarketDataBean event;
+    private String eventDesc;
+
+    public EventSendDesc(SupportMarketDataBean event, String eventDesc) {
+        this.event = event;
+        this.eventDesc = eventDesc;
+    }
+
+    public SupportMarketDataBean getEvent() {
+        return event;
+    }
+
+    public String getEventDesc() {
+        return eventDesc;
+    }
+}
