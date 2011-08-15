@@ -151,20 +151,17 @@
 			</testResource>
 		</testResources>
 	</build>
-	<distributionManagement>
-	  <repository>
-		  <id>codehaus.org</id>
-		  <name>Central Repository</name>
-		  <url>dav:https://dav.codehaus.org/repository/esper/</url>
-		</repository>
-		<snapshotRepository>
-		  <id>codehaus.org</id>
-		  <name>Central Development Repository</name>
-		  <url>dav:https://dav.codehaus.org/snapshots.repository/esper/</url>
-		</snapshotRepository>
-		<site>
-	    <id>Esper</id>
-	    <url>webdav://dav.codehaus.org/esper</url>
-	  </site>
-	</distributionManagement>
+        <distributionManagement>
+        <!-- releases -->
+        <repository>
+            <id>internal</id>
+            <url>http://archiva.intelie.net:8080/archiva/repository/internal</url>
+        </repository>
+
+        <!-- snapshots -->
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>http://archiva.intelie.net:8080/archiva/repository/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

@@ -103,18 +103,18 @@ public class TestOrderBySimple extends TestCase {
 
     public void testCollatorSortLocale()
     {
-        List<String> items = Arrays.asList("péché,pêche".split(","));
-        String[] sortedFrench = "pêche,péché".split(",");
-        String[] sortedUS = "péché,pêche".split(",");
+        List<String> items = Arrays.asList("pÃ©chÃ©,pÃªche".split(","));
+        String[] sortedFrench = "pÃªche,pÃ©chÃ©".split(",");
+        String[] sortedUS = "pÃ©chÃ©,pÃªche".split(",");
 
-        assertEquals(1, "pêche".compareTo("péché"));
-        assertEquals(-1, "péché".compareTo("pêche"));
+        assertEquals(1, "pÃªche".compareTo("pÃ©chÃ©"));
+        assertEquals(-1, "pÃ©chÃ©".compareTo("pÃªche"));
         Locale.setDefault(Locale.FRENCH);
-        assertEquals(1, "pêche".compareTo("péché"));
-        assertEquals(-1, Collator.getInstance().compare("pêche", "péché"));
-        assertEquals(-1, "péché".compareTo("pêche"));
-        assertEquals(1, Collator.getInstance().compare("péché", "pêche"));
-        assertFalse("péché".equals("pêche"));
+        assertEquals(1, "pÃªche".compareTo("pÃ©chÃ©"));
+        assertEquals(-1, Collator.getInstance().compare("pÃªche", "pÃ©chÃ©"));
+        assertEquals(-1, "pÃ©chÃ©".compareTo("pÃªche"));
+        assertEquals(1, Collator.getInstance().compare("pÃ©chÃ©", "pÃªche"));
+        assertFalse("pÃ©chÃ©".equals("pÃªche"));
 
         /*
         Collections.sort(items);
@@ -139,8 +139,8 @@ public class TestOrderBySimple extends TestCase {
         // test order by
         String stmtText = "select string from SupportBean.win:keepall() order by string asc";
         EPStatement stmtOne = epService.getEPAdministrator().createEPL(stmtText);
-        epService.getEPRuntime().sendEvent(new SupportBean("péché", 1));
-        epService.getEPRuntime().sendEvent(new SupportBean("pêche", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("pÃ©chÃ©", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("pÃªche", 1));
         ArrayAssertionUtil.assertEqualsExactOrder(stmtOne.iterator(), "string".split(","), new Object[][] {{sortedFrench[0]}, {sortedFrench[1]}});
 
         // test sort view
@@ -149,11 +149,11 @@ public class TestOrderBySimple extends TestCase {
         EPStatement stmtTwo = epService.getEPAdministrator().createEPL(stmtText);
         stmtTwo.addListener(listener);
 
-        epService.getEPRuntime().sendEvent(new SupportBean("péché", 1));
-        epService.getEPRuntime().sendEvent(new SupportBean("pêche", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("pÃ©chÃ©", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("pÃªche", 1));
         epService.getEPRuntime().sendEvent(new SupportBean("abc", 1));
 
-        assertEquals("péché", listener.getLastOldData()[0].get("string"));
+        assertEquals("pÃ©chÃ©", listener.getLastOldData()[0].get("string"));
         Locale.setDefault(Locale.US);
     }
 

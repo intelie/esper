@@ -18,9 +18,9 @@ import com.espertech.esper.event.EventAdapterService;
 
 import java.io.StringWriter;
 import java.util.*;
+import java.util.prefs.BackingStoreException;
 
-public class ExprAccessAggNode extends ExprAggregateNodeBase implements ExprEvaluatorEnumeration
-{
+public class ExprAccessAggNode extends ExprAggregateNodeBase implements ExprEvaluatorEnumeration {
     private static final long serialVersionUID = -6088874732989061687L;
 
     private final AggregationAccessType accessType;
@@ -32,16 +32,14 @@ public class ExprAccessAggNode extends ExprAggregateNodeBase implements ExprEval
     /**
      * Ctor.
      */
-    public ExprAccessAggNode(AggregationAccessType accessType, boolean wildcard, String streamWildcard)
-    {
+    public ExprAccessAggNode(AggregationAccessType accessType, boolean wildcard, String streamWildcard) {
         super(false);
         this.accessType = accessType;
         this.isWildcard = wildcard;
         this.streamWildcard = streamWildcard;
     }
 
-    public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
-    {
+    public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException {
         int streamNum;
         Class resultType;
         ExprEvaluator evaluator;
@@ -60,17 +58,17 @@ public class ExprAccessAggNode extends ExprAggregateNodeBase implements ExprEval
             resultType = streamTypeService.getEventTypes()[0].getUnderlyingType();
             final Class returnType = resultType;
             evaluator = new ExprEvaluator() {
-                public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context)
-                {
+                public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
                     if ((eventsPerStream == null) || (eventsPerStream[0] == null)) {
                         return null;
                     }
                     return eventsPerStream[0].getUnderlying();
                 }
-                public Class getType()
-                {
+
+                public Class getType() {
                     return returnType;
                 }
+
                 public Map<String, Object> getEventType() {
                     return null;
                 }
@@ -80,8 +78,7 @@ public class ExprAccessAggNode extends ExprAggregateNodeBase implements ExprEval
                 throw new ExprValidationException(getErrorPrefix() + " requires that the aggregated events provide a remove stream; Defined a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead");
             }
             this.getChildNodes().add(0, new ExprStreamUnderlyingNodeImpl(null, true, streamNum, resultType));
-        }
-        else if (streamWildcard != null) {
+        } else if (streamWildcard != null) {
             streamNum = streamTypeService.getStreamNumForStreamName(streamWildcard);
             if (streamNum == -1) {
                 throw new ExprValidationException(getErrorPrefix() + " stream wildcard '" + streamWildcard + "' does not resolve to any stream");
@@ -95,25 +92,23 @@ public class ExprAccessAggNode extends ExprAggregateNodeBase implements ExprEval
             final int streamNumUsed = streamNum;
             final Class returnType = resultType;
             evaluator = new ExprEvaluator() {
-                public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context)
-                {
+                public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
                     if ((eventsPerStream == null) || (eventsPerStream[streamNumUsed] == null)) {
                         return null;
                     }
                     return eventsPerStream[streamNumUsed].getUnderlying();
                 }
 
-                public Class getType()
-                {
+                public Class getType() {
                     return returnType;
                 }
+
                 public Map<String, Object> getEventType() {
                     return null;
                 }
             };
             this.getChildNodes().add(0, new ExprStreamUnderlyingNodeImpl(streamWildcard, false, streamNum, resultType));
-        }
-        else {
+        } else {
             if (this.getChildNodes().isEmpty()) {
                 throw new ExprValidationException(getErrorPrefix() + " requires a expression or wildcard (*) or stream wildcard (stream-alias.*)");
             }
@@ -158,37 +153,36 @@ public class ExprAccessAggNode extends ExprAggregateNodeBase implements ExprEval
         return accessType.toString().toLowerCase();
     }
 
-    public String toExpressionString()
-    {
+    public String toExpressionString() {
         StringWriter writer = new StringWriter();
         writer.append(accessType.toString().toLowerCase());
         writer.append('(');
+
         if (isWildcard) {
             writer.append('*');
-        }
-        else if (streamWildcard != null) {
+        } else if (streamWildcard != null) {
             writer.append(streamWildcard);
             writer.append(".*");
-        }
-        else {
+        } else {
             writer.append(this.getChildNodes().get(0).toExpressionString());
+            if (this.getChildNodes().size() > 1) {
+                writer.append(", ");
+                writer.append(this.getChildNodes().get(1).toExpressionString());
+            }
         }
         writer.append(')');
         return writer.toString();
     }
 
-    public AggregationAccessType getAccessType()
-    {
+    public AggregationAccessType getAccessType() {
         return accessType;
     }
 
-    public boolean isWildcard()
-    {
+    public boolean isWildcard() {
         return isWildcard;
     }
 
-    public String getStreamWildcard()
-    {
+    public String getStreamWildcard() {
         return streamWildcard;
     }
 

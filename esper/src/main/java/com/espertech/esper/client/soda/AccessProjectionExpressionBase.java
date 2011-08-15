@@ -9,6 +9,7 @@
 package com.espertech.esper.client.soda;
 
 import java.io.StringWriter;
+import java.util.List;
 
 /**
  * Represents the base expression for "first", "last" and "window" aggregation functions.
@@ -92,10 +93,16 @@ public abstract class AccessProjectionExpressionBase extends ExpressionBase
             writer.write(".*");
             delimiter = ", ";
         }
-        if (this.getChildren().size() > 0)
+        List<Expression> children = this.getChildren();
+        if (children.size() > 0)
         {
             writer.write(delimiter);
-            this.getChildren().get(0).toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+
+            children.get(0).toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            for(int i=1; i<children.size(); i++) {
+                writer.write(", ");
+                children.get(i).toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            }
         }
         writer.write(")");
     }
