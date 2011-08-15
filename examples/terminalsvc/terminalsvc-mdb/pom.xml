@@ -16,7 +16,8 @@
 		<dependency>
 			<groupId>com.espertech</groupId>
 			<artifactId>esper</artifactId>
-			<version>4.3.0</version>
+			<version>4.3.0-intelie</version>
+
       	</dependency>
 		<dependency>
 			<groupId>com.espertech</groupId>

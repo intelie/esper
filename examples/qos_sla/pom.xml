@@ -3,7 +3,8 @@
 	<parent>
 		<groupId>com.espertech</groupId>
 		<artifactId>esper_examples</artifactId>
-		<version>4.3.0</version>
+		<version>4.3.0-intelie</version>
+
 	</parent>
 	<name>Esper Examples - QualityOfServiceSLA</name>
 	<groupId>com.espertech</groupId>
